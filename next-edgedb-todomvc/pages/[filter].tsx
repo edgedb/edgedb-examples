@@ -1,4 +1,6 @@
+import axios from 'axios';
 import clsx from 'clsx';
+
 import {
   GetStaticPaths,
   GetStaticPropsContext,
@@ -12,44 +14,16 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import 'todomvc-app-css/index.css';
 import 'todomvc-common/base.css';
 import { inferQueryOutput, trpc } from '../utils/trpc';
+import { usePool } from '../utils/usePool';
 import { appRouter, createContext } from './api/trpc/[trpc]';
 
-type Task = inferQueryOutput<'todos.all'>[number];
+export type Task = {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: Date;
+};
 
-/**
- * Hook for checking when the user clicks outside the passed ref
- */
-function useClickOutside({
-  ref,
-  callback,
-  enabled,
-}: {
-  ref: RefObject<any>;
-  callback: () => void;
-  enabled: boolean;
-}) {
-  const callbackRef = useRef(callback);
-  callbackRef.current = callback;
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-    /**
-     * Alert if clicked on outside of element
-     */
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target)) {
-        callbackRef.current();
-      }
-    }
-    // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [ref, enabled]);
-}
 function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
   const [editing, setEditing] = useState(false);
   const wrapperRef = useRef(null);
@@ -58,56 +32,22 @@ function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
   const utils = trpc.useQueryUtils();
   const [text, setText] = useState(task.text);
   const [completed, setCompleted] = useState(task.completed);
+
   useEffect(() => {
     setText(task.text);
   }, [task.text]);
+
   useEffect(() => {
     setCompleted(task.completed);
   }, [task.completed]);
 
   const editTask = trpc.useMutation('todos.edit', {
-    async onMutate({ id, data }) {
-      await utils.cancelQuery(['todos.all']);
-      utils.setQueryData(
-        ['todos.all'],
-        allTasks.map((t) =>
-          t.id === id
-            ? {
-                ...t,
-                ...data,
-              }
-            : t,
-        ),
-      );
-    },
-    onSettled: () => {
-      utils.invalidateQuery(['todos.all']);
-    },
+    onSettled: () => utils.invalidateQuery(['todos.all']),
   });
   const deleteTask = trpc.useMutation('todos.delete', {
-    async onMutate() {
-      await utils.cancelQuery(['todos.all']);
-      utils.setQueryData(
-        ['todos.all'],
-        allTasks.filter((t) => t.id != task.id),
-      );
-    },
-    onSettled: () => {
-      utils.invalidateQuery(['todos.all']);
-    },
+    onSettled: () => utils.invalidateQuery(['todos.all']),
   });
 
-  useClickOutside({
-    ref: wrapperRef,
-    enabled: editing,
-    callback() {
-      editTask.mutate({
-        id: task.id,
-        data: { text },
-      });
-      setEditing(false);
-    },
-  });
   return (
     <li
       key={task.id}
@@ -124,7 +64,7 @@ function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
             setCompleted(checked);
             editTask.mutate({
               id: task.id,
-              data: { completed: checked },
+              data: { completed: checked, text: task.text },
             });
           }}
           autoFocus={editing}
@@ -156,7 +96,7 @@ function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
           if (e.key === 'Enter') {
             editTask.mutate({
               id: task.id,
-              data: { text },
+              data: { text, completed: task.completed },
             });
             setEditing(false);
           }
@@ -172,42 +112,15 @@ export default function TodosPage({
   const allTasks = trpc.useQuery(['todos.all'], {
     staleTime: 3000,
   });
+
   const utils = trpc.useQueryUtils();
   const addTask = trpc.useMutation('todos.add', {
-    async onMutate({ text }) {
-      await utils.cancelQuery(['todos.all']);
-      const tasks = allTasks.data ?? [];
-      utils.setQueryData(
-        ['todos.all'],
-        [
-          ...tasks,
-          {
-            id: `${Math.random()}`,
-            completed: false,
-            text,
-            createdAt: new Date(),
-          },
-        ],
-      );
-    },
-    onSettled: () => {
-      utils.invalidateQuery(['todos.all']);
-    },
+    onSettled: () => utils.invalidateQuery(['todos.all']),
+  });
+  const clearCompleted = trpc.useMutation('todos.clearCompleted', {
+    onSettled: () => utils.invalidateQuery(['todos.all']),
   });
 
-  const clearCompleted = trpc.useMutation('todos.clearCompleted', {
-    async onMutate() {
-      await utils.cancelQuery(['todos.all']);
-      const tasks = allTasks.data ?? [];
-      utils.setQueryData(
-        ['todos.all'],
-        tasks.filter((t) => !t.completed),
-      );
-    },
-    onSettled: () => {
-      utils.invalidateQuery(['todos.all']);
-    },
-  });
   return (
     <>
       <Head>
@@ -260,7 +173,7 @@ export default function TodosPage({
             <strong>
               {allTasks.data?.reduce(
                 (sum, task) => (!task.completed ? sum + 1 : sum),
-                0,
+                0
               )}
             </strong>{' '}
             item left
@@ -272,7 +185,7 @@ export default function TodosPage({
                 <a
                   className={clsx(
                     !['active', 'completed'].includes(filter as string) &&
-                      'selected',
+                      'selected'
                   )}
                 >
                   All
@@ -337,10 +250,27 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps = async (
-  context: GetStaticPropsContext<{ filter: string }>,
+  context: GetStaticPropsContext<{ filter: string }>
 ) => {
   const ctx = await createContext();
   const ssr = trpc.ssr(appRouter, ctx);
+
+  // const pool = await usePool();
+  // const result = await pool.queryJSON('SELECT Task { id, text, completed };');
+  // console.log(`edgedb result`);
+  // console.log(result);
+  // console.log(JSON.parse(result));
+
+  // console.log(process.env['EDGEDB_URL']);
+  // const httpResult = await axios({
+  //   url: process.env['EDGEDB_URL']!,
+  //   method: 'POST',
+  //   data: {
+  //     query: `SELECT 1+1;`,
+  //   },
+  // });
+  // console.log(httpResult.data);
+  console.log('asdf');
 
   await ssr.prefetchQuery('todos.all');
 
