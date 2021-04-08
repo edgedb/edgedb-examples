@@ -5,7 +5,7 @@ import { Task } from '../../../pages/[filter]';
 
 export const todoRouter = createRouter()
   .query('all', {
-    async resolve({ ctx }) {
+    async resolve() {
       const pool = await usePool();
       const result = await pool.queryJSON(
         'SELECT Task { id, text, completed } ORDER BY .id;'
@@ -19,17 +19,11 @@ export const todoRouter = createRouter()
     input: z.object({
       text: z.string().min(1),
     }),
-    async resolve({ ctx, input }) {
-      const todo = await ctx.task.create({
-        data: input,
-      });
+    async resolve({ input }) {
       const pool = await usePool();
-      const result = await pool.queryJSON(
-        'INSERT Task { text := <str>$text };',
-        {
-          text: input.text,
-        }
-      );
+      await pool.queryJSON('INSERT Task { text := <str>$text };', {
+        text: input.text,
+      });
       return true;
     },
   })
@@ -41,7 +35,7 @@ export const todoRouter = createRouter()
         text: z.string().min(1),
       }),
     }),
-    async resolve({ ctx, input }) {
+    async resolve({ input }) {
       const pool = await usePool();
 
       await pool.queryJSON(
@@ -53,17 +47,11 @@ export const todoRouter = createRouter()
         }
       );
       return true;
-      // const { id, data } = input;
-      // const todo = await ctx.task.update({
-      //   where: { id },
-      //   data,
-      // });
-      // return todo;
     },
   })
   .mutation('delete', {
     input: z.string().uuid(),
-    async resolve({ input, ctx }) {
+    async resolve({ input }) {
       const pool = await usePool();
 
       await pool.queryJSON(`DELETE Task FILTER .id = <uuid>$id;`, {
@@ -74,8 +62,7 @@ export const todoRouter = createRouter()
     },
   })
   .mutation('clearCompleted', {
-    async resolve({ ctx }) {
-      // await ctx.task.deleteMany({ where: { completed: true } });
+    async resolve() {
       const pool = await usePool();
       await pool.queryJSON(`delete Task filter .completed = true;`);
       return true;

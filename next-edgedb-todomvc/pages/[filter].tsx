@@ -1,4 +1,3 @@
-import axios from 'axios';
 import clsx from 'clsx';
 
 import {
@@ -8,13 +7,12 @@ import {
 } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { RefObject, useEffect, useRef, useState } from 'react';
-import { useQueryClient } from 'react-query';
+
 import { ReactQueryDevtools } from 'react-query/devtools';
 import 'todomvc-app-css/index.css';
 import 'todomvc-common/base.css';
-import { inferQueryOutput, trpc } from '../utils/trpc';
-import { usePool } from '../utils/usePool';
+import { ListItem } from '../components/ListItem';
+import { trpc } from '../utils/trpc';
 import { appRouter, createContext } from './api/trpc/[trpc]';
 
 export type Task = {
@@ -23,88 +21,6 @@ export type Task = {
   completed: boolean;
   createdAt: Date;
 };
-
-function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
-  const [editing, setEditing] = useState(false);
-  const wrapperRef = useRef(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const utils = trpc.useQueryUtils();
-  const [text, setText] = useState(task.text);
-  const [completed, setCompleted] = useState(task.completed);
-
-  useEffect(() => {
-    setText(task.text);
-  }, [task.text]);
-
-  useEffect(() => {
-    setCompleted(task.completed);
-  }, [task.completed]);
-
-  const editTask = trpc.useMutation('todos.edit', {
-    onSettled: () => utils.invalidateQuery(['todos.all']),
-  });
-  const deleteTask = trpc.useMutation('todos.delete', {
-    onSettled: () => utils.invalidateQuery(['todos.all']),
-  });
-
-  return (
-    <li
-      key={task.id}
-      className={clsx(editing && 'editing', completed && 'completed')}
-      ref={wrapperRef}
-    >
-      <div className="view">
-        <input
-          className="toggle"
-          type="checkbox"
-          checked={task.completed}
-          onChange={(e) => {
-            const checked = e.currentTarget.checked;
-            setCompleted(checked);
-            editTask.mutate({
-              id: task.id,
-              data: { completed: checked, text: task.text },
-            });
-          }}
-          autoFocus={editing}
-        />
-        <label
-          onDoubleClick={(e) => {
-            setEditing(true);
-            e.currentTarget.focus();
-          }}
-        >
-          {text}
-        </label>
-        <button
-          className="destroy"
-          onClick={() => {
-            deleteTask.mutate(task.id);
-          }}
-        />
-      </div>
-      <input
-        className="edit"
-        value={text}
-        ref={inputRef}
-        onChange={(e) => {
-          const newText = e.currentTarget.value;
-          setText(newText);
-        }}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            editTask.mutate({
-              id: task.id,
-              data: { text, completed: task.completed },
-            });
-            setEditing(false);
-          }
-        }}
-      />
-    </li>
-  );
-}
 
 export default function TodosPage({
   filter,
@@ -252,33 +168,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps = async (
   context: GetStaticPropsContext<{ filter: string }>
 ) => {
-  const ctx = await createContext();
-  const ssr = trpc.ssr(appRouter, ctx);
-
-  // const pool = await usePool();
-  // const result = await pool.queryJSON('SELECT Task { id, text, completed };');
-  // console.log(`edgedb result`);
-  // console.log(result);
-  // console.log(JSON.parse(result));
-
-  // console.log(process.env['EDGEDB_URL']);
-  // const httpResult = await axios({
-  //   url: process.env['EDGEDB_URL']!,
-  //   method: 'POST',
-  //   data: {
-  //     query: `SELECT 1+1;`,
-  //   },
-  // });
-  // console.log(httpResult.data);
-  console.log('asdf');
-
-  await ssr.prefetchQuery('todos.all');
-
   return {
     props: {
-      dehydratedState: ssr.dehydrate(),
       filter: context.params?.filter ?? 'all',
     },
-    revalidate: 1,
   };
 };
