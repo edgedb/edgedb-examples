@@ -6,10 +6,10 @@ This project implements the standard [TodoMVC](https://todomvc.com/) project wit
 
 - TypeScript
 - React
-- [Next.js](https://nextjs.org/)
-- [EdgeDB](https://edgedb.com/) (1.0.0-beta.1)
-- The `edgedb` npm module ([docs](https://www.edgedb.com/docs/clients/01_js/index/))
-- [Axios](https://github.com/axios/axios) for HTTP requests
+- Next.js/
+- [EdgeDB](https://edgedb.com/) (1-beta.1)
+- The `edgedb` NPM module ([docs](https://www.edgedb.com/docs/clients/01_js/index/))
+- [react-query](https://github.com/tannerlinsley/react-query) and [Axios](https://github.com/axios/axios) for HTTP
 
 ### Getting started
 
@@ -20,6 +20,7 @@ This project implements the standard [TodoMVC](https://todomvc.com/) project wit
 ```sh
 git clone git@github.com:edgedb/edgedb-examples.git
 cd edgedb-examples/nextjs-todomvc
+npm install # install dependencies
 ```
 
 **Install EdgeDB**
