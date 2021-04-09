@@ -1,3 +1,4 @@
+import axios from 'axios';
 import clsx from 'clsx';
 
 import {
@@ -7,13 +8,13 @@ import {
 } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useCallback } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import { ReactQueryDevtools } from 'react-query/devtools';
 import 'todomvc-app-css/index.css';
 import 'todomvc-common/base.css';
 import { ListItem } from '../components/ListItem';
-import { trpc } from '../utils/trpc';
-import { appRouter, createContext } from './api/trpc/[trpc]';
 
 export type Task = {
   id: string;
@@ -25,17 +26,31 @@ export type Task = {
 export default function TodosPage({
   filter,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const allTasks = trpc.useQuery(['todos.all'], {
-    staleTime: 3000,
-  });
+  const allTasks = useQuery<Task[]>('todos', () =>
+    axios.get('/api/todo').then((res) => res.data)
+  );
+  const refetchTasks = allTasks.refetch as () => void;
 
-  const utils = trpc.useQueryUtils();
-  const addTask = trpc.useMutation('todos.add', {
-    onSettled: () => utils.invalidateQuery(['todos.all']),
-  });
-  const clearCompleted = trpc.useMutation('todos.clearCompleted', {
-    onSettled: () => utils.invalidateQuery(['todos.all']),
-  });
+  const addTask = useMutation(
+    (text: string) => axios.post('/api/todo', { text }),
+    { onSuccess: refetchTasks }
+  );
+
+  const editTask = useMutation(
+    (arg: { id: string; data: { text: string; completed: boolean } }) =>
+      axios.patch(`/api/todo/${arg.id}`, arg.data),
+    { onSuccess: refetchTasks }
+  );
+
+  const deleteTask = useMutation(
+    (id: string) => axios.delete(`/api/todo/${id}`),
+    { onSuccess: refetchTasks }
+  );
+
+  const clearCompleted = useMutation(
+    () => axios.post('/api/todo/clearCompleted').then((res) => res.data),
+    { onSuccess: refetchTasks }
+  );
 
   return (
     <>
@@ -54,7 +69,7 @@ export default function TodosPage({
             onKeyDown={(e) => {
               const text = e.currentTarget.value.trim();
               if (e.key === 'Enter' && text) {
-                addTask.mutate({ text });
+                addTask.mutate(text);
                 e.currentTarget.value = '';
               }
             }}
@@ -78,7 +93,12 @@ export default function TodosPage({
                 return true;
               })
               .map((task) => (
-                <ListItem key={task.id} task={task} allTasks={allTasks.data} />
+                <ListItem
+                  key={task.id}
+                  task={task}
+                  editTask={editTask.mutate}
+                  deleteTask={deleteTask.mutate}
+                />
               ))}
           </ul>
         </section>
@@ -128,7 +148,7 @@ export default function TodosPage({
             <button
               className="clear-completed"
               onClick={() => {
-                clearCompleted.mutate(null);
+                clearCompleted.mutate();
               }}
             >
               Clear completed
@@ -144,7 +164,7 @@ export default function TodosPage({
         </p>
         {/* Change this out with your name and url ↓ */}
         <p>
-          Created with <a href="http://trpc.io">tRPC</a>
+          Created with <a href="http://edgedb.com">EdgeDB</a>
         </p>
         <p>
           Part of <a href="http://todomvc.com">TodoMVC</a>

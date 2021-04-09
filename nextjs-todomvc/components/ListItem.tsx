@@ -1,14 +1,24 @@
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
-import { trpc } from '../utils/trpc';
+
 import { Task } from '../pages/[filter]';
 
-export function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
+export function ListItem({
+  task,
+  editTask,
+  deleteTask,
+}: {
+  task: Task;
+  editTask: (arg: {
+    id: string;
+    data: { text: string; completed: boolean };
+  }) => any;
+  deleteTask: (id: string) => any;
+}) {
   const [editing, setEditing] = useState(false);
   const wrapperRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const utils = trpc.useQueryUtils();
   const [text, setText] = useState(task.text);
   const [completed, setCompleted] = useState(task.completed);
 
@@ -19,13 +29,6 @@ export function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
   useEffect(() => {
     setCompleted(task.completed);
   }, [task.completed]);
-
-  const editTask = trpc.useMutation('todos.edit', {
-    onSettled: () => utils.invalidateQuery(['todos.all']),
-  });
-  const deleteTask = trpc.useMutation('todos.delete', {
-    onSettled: () => utils.invalidateQuery(['todos.all']),
-  });
 
   return (
     <li
@@ -41,7 +44,7 @@ export function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
           onChange={(e) => {
             const checked = e.currentTarget.checked;
             setCompleted(checked);
-            editTask.mutate({
+            editTask({
               id: task.id,
               data: { completed: checked, text: task.text },
             });
@@ -59,7 +62,7 @@ export function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
         <button
           className="destroy"
           onClick={() => {
-            deleteTask.mutate(task.id);
+            deleteTask(task.id);
           }}
         />
       </div>
@@ -73,7 +76,7 @@ export function ListItem({ task, allTasks }: { task: Task; allTasks: Task[] }) {
         }}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            editTask.mutate({
+            editTask({
               id: task.id,
               data: { text, completed: task.completed },
             });
