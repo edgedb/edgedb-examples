@@ -16,8 +16,7 @@
     "react-dom": "^17.0.1",
     "react-query": "^3.13.5",
     "todomvc-app-css": "^2.3.0",
-    "todomvc-common": "^1.0.5",
-    "zod": "^1.11.11"
+    "todomvc-common": "^1.0.5"
   },
   "devDependencies": {
     "@types/node": "^14.14.17",
