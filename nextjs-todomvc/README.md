@@ -6,30 +6,15 @@ This project implements the standard [TodoMVC](https://todomvc.com/) project wit
 
 - TypeScript
 - React
-- Next.js/
-- [EdgeDB](https://edgedb.com/) (1-beta.1)
+- Next.js
+- [EdgeDB](https://edgedb.com/) (1-beta.2)
 - The `edgedb` NPM module ([docs](https://www.edgedb.com/docs/clients/01_js/index/))
-- [react-query](https://github.com/tannerlinsley/react-query) and [Axios](https://github.com/axios/axios) for HTTP
+- [react-query](https://github.com/tannerlinsley/react-query) for fetching
+- [Axios](https://github.com/axios/axios) for HTTP
 
 ### Getting started
 
-> If you aren't famililar with EdgeDB, check out the [Getting Started](https://www.edgedb.com/docs/tutorial/index) guide first. It walks you through installing EdgeDB on your computer and gives you an overview of EdgeQL syntax.
-
-### Install EdgeDB
-
-You'll need to EdgeDB and the `edgedb` CLI installed.
-
-If you don't already, start by downloading the CLI:
-
-```sh
-# macOS and Unix
-$ curl https://sh.edgedb.com --proto '=https' -sSf1 | sh
-
-# Windows
-$ iwr https://ps1.edgedb.com -useb | iex
-```
-
-Then **restart your terminal** (so the `edgedb` command is available) and run `edgedb server install` to install the latest version of EdgeDB to your computer. You might be asked for your password.
+If you aren't famililar with EdgeDB, check out the [Quickstart](https://www.edgedb.com/docs/tutorial/index) first. It will walk you through how to install EdgeDB, set up an instance, and write some simple queries.
 
 ### Download the starter project
 
@@ -44,7 +29,7 @@ npm install # install dependencies
 
 ### Initialize the database
 
-Create a new EdgeDB instance called `todomvc`. Each instance can contain multiple databases.
+Initialize the EdgeDB project:
 
 ```bash
 $ edgedb project init
