@@ -1,4 +1,3 @@
-
 using extension edgeql_http;
 using extension graphql;
 

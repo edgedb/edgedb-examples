@@ -1,6 +1,8 @@
+import 'todomvc-app-css/index.css';
+import 'todomvc-common/base.css';
+
 import axios from 'axios';
 import clsx from 'clsx';
-
 import {
   GetStaticPaths,
   GetStaticPropsContext,
@@ -8,12 +10,9 @@ import {
 } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-
+import { useMutation, useQuery } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import 'todomvc-app-css/index.css';
-import 'todomvc-common/base.css';
+
 import { ListItem } from '../components/ListItem';
 
 export type Task = {

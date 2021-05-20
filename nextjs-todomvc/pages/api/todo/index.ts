@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createPool } from 'edgedb';
+
 import { usePool } from '../../../utils/usePool';
 import { Task } from '../../[filter]';
 
@@ -14,6 +14,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const data = JSON.parse(result) as Task[];
     return res.status(200).json(data);
   }
+  `update User { 
+    posts += (insert BlogPost { 
+      title := 'On Edgedb', 
+      published := false
+ }) } filter .id = <uuid>'af512f80-9d33-11eb-9a94-eb1b8a4d31ed';`;
 
   // POST /api/todo
   // expects { text: string }

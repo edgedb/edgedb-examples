@@ -6,3 +6,5 @@ export const usePool = async () => {
   pool = await createPool('todomvc');
   return pool;
 };
+
+export const asdasdf = 'asdf';
