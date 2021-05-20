@@ -27,9 +27,7 @@ cd todomvc
 npm install # install dependencies
 ```
 
-### Initialize the database
-
-Initialize the EdgeDB project:
+### Initialize the project
 
 ```bash
 $ edgedb project init
