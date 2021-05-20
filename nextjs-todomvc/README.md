@@ -21,7 +21,7 @@ If you aren't famililar with EdgeDB, check out the [Quickstart](https://www.edge
 This uses a utility called `degit` that downloads a copy of the project from GitHub without cloning it:
 
 ```sh
-
+cd ~/Documents
 npx degit edgedb/edgedb-examples/nextjs-todomvc todomvc
 cd todomvc
 npm install # install dependencies
@@ -45,8 +45,10 @@ The database is now fully configured and ready for use!
 
 ### Start the server
 
-```
-yarn dev
+Start the server.
+
+```bash
+$ yarn dev
 ```
 
-Now start playing around with the code to learn how to build applications with EdgeDB!
+Then go to [localhost:3000](http://localhost:3000), and creating some todos, and start looking through the code to learn how to build applications with EdgeDB!
