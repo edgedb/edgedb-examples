@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createPool } from 'edgedb';
+
 import { usePool } from '../../../utils/usePool';
 import { Task } from '../../[filter]';
 
