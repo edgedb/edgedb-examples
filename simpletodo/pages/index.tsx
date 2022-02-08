@@ -142,11 +142,6 @@ export default function TodosPage() {
         </footer>
       </section>
       <footer className="info">
-        <p>Double-click to edit a todo</p>
-        {/* Remove the below line ↓ */}
-        <p>
-          Template by <a href="http://sindresorhus.com">Sindre Sorhus</a>
-        </p>
         {/* Change this out with your name and url ↓ */}
         <p>
           Created with <a href="http://edgedb.com">EdgeDB</a>
