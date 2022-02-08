@@ -6,6 +6,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   //   POST /api/todo
   //   PATCH /api/todo/:id
 
+  console.log(`${req.method} ${req.url}`);
+
   // get id
   const id = req.query.id?.[0];
 
@@ -29,6 +31,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     //  insert Task {
     //    text := <str>$text
     //  };
+    console.log(req.body.text);
+    console.log(id);
     return res.status(500).send('500: Not implemented!');
   }
 
@@ -38,6 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     //  update Task
     //  filter .id = req.query.id
     //  set { completed := not .completed };
+
     return res.status(500).send('500: Not implemented!');
   }
 
