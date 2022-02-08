@@ -54,6 +54,7 @@ export default function TodosPage() {
       }
       return true;
     }) || [];
+  const activeTasks = allTasks.data?.filter((task) => !task.completed) || [];
 
   return (
     <>
@@ -104,7 +105,7 @@ export default function TodosPage() {
                 0
               )}
             </strong>
-            {` item${filteredTasks.length > 1 ? 's' : ''} left`}
+            {` item${activeTasks.length > 1 ? 's' : ''} left`}
           </span>
           {/* Remove this if you don't implement routing */}
           <ul className="filters">
