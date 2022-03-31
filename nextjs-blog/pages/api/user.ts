@@ -7,9 +7,11 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const result = e.insert(e.User, {
-    name: req.body.name as string,
-    email: req.body.name as string,
-  });
+  const result = e
+    .insert(e.User, {
+      name: req.body.name as string,
+      email: req.body.email as string,
+    })
+    .run(client);
   res.json(result);
 }
