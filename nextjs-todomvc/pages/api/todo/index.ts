@@ -1,14 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import {NextApiRequest, NextApiResponse} from 'next';
 
-import { usePool } from '../../../utils/usePool';
-import { Task } from '../../[filter]';
+import {client} from '../../../client';
+import {Task} from '../../[filter]';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const pool = await usePool();
-
   // GET /api/todo
   if (req.method === 'GET') {
-    const result = await pool.queryJSON(
+    const result = await client.queryJSON(
       'SELECT Task { id, text, completed } ORDER BY .id;'
     );
     const data = JSON.parse(result) as Task[];
@@ -18,7 +16,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   // POST /api/todo
   // expects { text: string }
   if (req.method === 'POST') {
-    await pool.queryJSON('INSERT Task { text := <str>$text };', {
+    await client.queryJSON('INSERT Task { text := <str>$text };', {
       text: req.body.text,
     });
     return res.status(200).send('Success');
