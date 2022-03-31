@@ -2,6 +2,7 @@ import type {NextApiRequest, NextApiResponse} from 'next';
 import {client, e} from '../../../client';
 
 // PUT /api/publish/:id
+
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
