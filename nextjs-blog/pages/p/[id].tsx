@@ -1,28 +1,28 @@
-import React from 'react'
-import { GetServerSideProps } from 'next'
-import ReactMarkdown from 'react-markdown'
-import Layout from '../../components/Layout'
-import Router from 'next/router'
-import { PostProps } from '../../components/Post'
+import React from 'react';
+import {GetServerSideProps} from 'next';
+import ReactMarkdown from 'react-markdown';
+import Layout from '../../components/Layout';
+import Router from 'next/router';
+import {PostProps} from '../../components/Post';
 
 async function publish(id: number): Promise<void> {
   await fetch(`http://localhost:3000/api/publish/${id}`, {
     method: 'PUT',
-  })
-  await Router.push('/')
+  });
+  await Router.push('/');
 }
 
 async function destroy(id: number): Promise<void> {
   await fetch(`http://localhost:3000/api/post/${id}`, {
     method: 'DELETE',
-  })
-  await Router.push('/')
+  });
+  await Router.push('/');
 }
 
-const Post: React.FC<PostProps> = props => {
-  let title = props.title
+const Post: React.FC<PostProps> = (props) => {
+  let title = props.title;
   if (!props.published) {
-    title = `${title} (Draft)`
+    title = `${title} (Draft)`;
   }
 
   return (
@@ -32,13 +32,9 @@ const Post: React.FC<PostProps> = props => {
         <p>By {props?.author?.name || 'Unknown author'}</p>
         <ReactMarkdown children={props.content} />
         {!props.published && (
-          <button onClick={() => publish(props.id)}>
-            Publish
-          </button>
+          <button onClick={() => publish(props.id)}>Publish</button>
         )}
-        <button onClick={() => destroy(props.id)}>
-          Delete
-        </button>
+        <button onClick={() => destroy(props.id)}>Delete</button>
       </div>
       <style jsx>{`
         .page {
@@ -62,13 +58,15 @@ const Post: React.FC<PostProps> = props => {
         }
       `}</style>
     </Layout>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const res = await fetch(`http://localhost:3000/api/post/${context.params.id}`)
-  const data = await res.json()
-  return { props: { ...data } }
-}
+  const res = await fetch(
+    `http://localhost:3000/api/post/${context.params!.id}`
+  );
+  const data = await res.json();
+  return {props: {...data}};
+};
 
-export default Post
+export default Post;
