@@ -79,7 +79,7 @@
   resolved "https://registry.yarnpkg.com/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-12.1.2.tgz#37412a314bcf4c6006a74e1ef9764048344f3848"
   integrity sha512-MLNcurEpQp0+7OU9261f7PkN52xTGkfrt4IYTIXau7DO/aHj927oK6piIJdl9EOHdX/KN5W6qlyErj170PSHtw==
 
-"@prisma/client@3.11.1":
+"@prisma/client@^3.11.1":
   version "3.11.1"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-3.11.1.tgz#bde6dec71ae133d04ce1c6658e3d76627a3c6dc7"
   integrity sha512-B3C7zQG4HbjJzUr2Zg9UVkBJutbqq9/uqkl1S138+keZCubJrwizx3RuIvGwI+s+pm3qbsyNqXiZgL3Ir0fSng==
@@ -90,11 +90,6 @@
   version "3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9"
   resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9.tgz#81a1835b495ad287ad7824dbd62f74e9eee90fb9"
   integrity sha512-HkcsDniA4iNb/gi0iuyOJNAM7nD/LwQ0uJm15v360O5dee3TM4lWdSQiTYBMK6FF68ACUItmzSur7oYuUZ2zkQ==
-
-"@prisma/engines@3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9":
-  version "3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9"
-  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9.tgz#09ac23f8f615a8586d8d44538060ada199fe872c"
-  integrity sha512-MILbsGnvmnhCbFGa2/iSnsyGyazU3afzD7ldjCIeLIGKkNBMSZgA2IvpYsAXl+6qFHKGrS3B2otKfV31dwMSQw==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.8"
@@ -249,6 +244,11 @@ diff@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-5.0.0.tgz#7ed6ad76d859d030787ec35855f5b1daf31d852b"
   integrity sha512-/VTCrvm5Z0JGty/BWHljh+BAiw3IK+2j87NGMu8Nwc/f48WoDAC395uomO9ZD117ZOBaHmkX1oyLvkVM/aIT3w==
+
+edgedb@^0.20.2:
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/edgedb/-/edgedb-0.20.2.tgz#ffc72f05ac2da14f1b4e06cdbf95895fb9de90e4"
+  integrity sha512-U9uYj6ZZC3uoZN7lFuj+dj/jSbJj3Hbe0xqR9U2eq6s9Hdy0KCNCaNf8gk6GetRZE+CPD7D/it9EtKxnunf9PQ==
 
 extend@^3.0.0:
   version "3.0.2"
@@ -602,13 +602,6 @@ postcss@8.4.5:
     nanoid "^3.1.30"
     picocolors "^1.0.0"
     source-map-js "^1.0.1"
-
-prisma@3.11.1:
-  version "3.11.1"
-  resolved "https://registry.yarnpkg.com/prisma/-/prisma-3.11.1.tgz#fff9c0bcf83cb30c2e1d650882d5eb3c5565e028"
-  integrity sha512-aYn8bQwt1xwR2oSsVNHT4PXU7EhsThIwmpNB/MNUaaMx5OPLTro6VdNJe/sJssXFLxhamfWeMjwmpXjljo6xkg==
-  dependencies:
-    "@prisma/engines" "3.11.1-1.1a2506facaf1a4727b7c26850735e88ec779dee9"
 
 prop-types@^15.0.0:
   version "15.8.1"
