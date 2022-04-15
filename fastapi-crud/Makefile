@@ -1,4 +1,4 @@
-path := .
+path := ./
 
 define Comment
 	- Run `make help` to see all the available options.
@@ -15,13 +15,12 @@ lint: black isort flake mypy	## Apply all the linters.
 
 .PHONY: lint-check
 lint-check:  ## Check whether the codebase satisfies the linter rules.
-	@echo
 	@echo "Checking linter rules..."
 	@echo "========================"
 	@echo
 	@black --fast --check $(path)
 	@isort --check $(path)
-	@flake8 $(path)
+	@flake8 $(path) 
 	@echo 'y' | mypy $(path) --install-types
 
 
