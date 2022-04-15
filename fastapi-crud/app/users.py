@@ -74,9 +74,10 @@ async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData
     try:
         updated_users = await client.query(
             """
-            SELECT
-            (UPDATE User FILTER .name=<str>$filter_name SET {name:=<str>$name})
-            {name, created_at};
+            SELECT (
+                UPDATE User FILTER .name=<str>$filter_name
+                SET {name:=<str>$name}
+            ) {name, created_at};
             """,
             name=user.name,
             filter_name=filter_name,
@@ -103,8 +104,9 @@ async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData
 async def delete_user(filter_name: str) -> Iterable[ResponseData]:
     try:
         deleted_users = await client.query(
-            """SELECT
-            (DELETE User FILTER .name=<str>$filter_name) {name, created_at};
+            """SELECT (
+                DELETE User FILTER .name=<str>$filter_name
+            ) {name, created_at};
             """,
             filter_name=filter_name,
         )

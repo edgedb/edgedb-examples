@@ -81,13 +81,13 @@ async def post_event(event: RequestData) -> ResponseData:
             WITH name:=<str>$name, address:=<str>$address,
             schedule:=<str>$schedule, host_name:=<str>$host_name
 
-            SELECT (INSERT Event {
+            SELECT (
+                INSERT Event {
                 name:=name,
                 address:=address,
                 schedule:=<datetime>schedule,
                 host:=assert_single((SELECT DETACHED User FILTER .name=host_name))
-            })
-            {name, address, schedule, host: {name}};
+            }) {name, address, schedule, host: {name}};
             """,
             name=event.name,
             address=event.address,
@@ -130,15 +130,17 @@ async def put_event(event: RequestData, filter_name: str) -> Iterable[ResponseDa
         updated_events = await client.query(
             """
             WITH filter_name:=<str>$filter_name, name:=<str>$name,
-                address:=<str>$address, schedule:=<str>$schedule,
-                host_name:=<str>$host_name
+            address:=<str>$address, schedule:=<str>$schedule,
+            host_name:=<str>$host_name
 
             SELECT (
-            UPDATE Event FILTER .name=filter_name
-            SET {name:=name, address:=address, schedule:=<datetime>schedule,
-            host:=(SELECT User filter .name=host_name)
-            }
-            ) {name, address, schedule, host: {name}}
+                UPDATE Event FILTER .name=filter_name
+                SET {
+                    name:=name, address:=address,
+                    schedule:=<datetime>schedule,
+                    host:=(SELECT User filter .name=host_name)
+                    }
+                ) {name, address, schedule, host: {name}}
 
             ;
             """,
@@ -185,8 +187,8 @@ async def put_event(event: RequestData, filter_name: str) -> Iterable[ResponseDa
 async def delete_event(filter_name: str) -> Iterable[ResponseData]:
     deleted_events = await client.query(
         """
-        SELECT
-        (DELETE Event FILTER .name=<str>$filter_name)
+        SELECT (
+            DELETE Event FILTER .name=<str>$filter_name)
             {name, address, schedule, host : {name}};
         """,
         filter_name=filter_name,
@@ -197,6 +199,7 @@ async def delete_event(filter_name: str) -> Iterable[ResponseData]:
             name=deleted_event.name,
             address=deleted_event.address,
             schedule=deleted_event.schedule,
+            host=Host(name=deleted_event.host.name) if deleted_event.host else None,
         )
         for deleted_event in deleted_events
     )
