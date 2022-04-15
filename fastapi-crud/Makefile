@@ -19,7 +19,9 @@ lint-check:  ## Check whether the codebase satisfies the linter rules.
 	@echo "Checking linter rules..."
 	@echo "========================"
 	@echo
-	@make lint-check
+	@black --fast --check $(path)
+	@isort --check $(path)
+	@flake8 $(path)
 	@echo 'y' | mypy $(path) --install-types
 
 
