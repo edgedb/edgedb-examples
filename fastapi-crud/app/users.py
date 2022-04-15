@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import datetime
+from http import HTTPStatus
 from typing import Iterable
 
 import edgedb
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -35,10 +36,10 @@ async def get_users(name: str = Query(None, max_length=50)) -> Iterable[Response
             """SELECT User {name, created_at} FILTER User.name=<str>$name""",
             name=name,
         )
-    users_deserialized = (
+    response = (
         ResponseData(name=user.name, created_at=user.created_at) for user in users
     )
-    return users_deserialized
+    return response
 
 
 ################################
@@ -46,14 +47,21 @@ async def get_users(name: str = Query(None, max_length=50)) -> Iterable[Response
 ################################
 
 
-@router.post("/users")
+@router.post("/users", status_code=HTTPStatus.CREATED)
 async def post_user(user: RequestData) -> ResponseData:
-    (created_user,) = await client.query(
-        """SELECT (INSERT User {name:=<str>$name}) {name, created_at};""",
-        name=user.name,
-    )
 
-    return ResponseData(name=created_user.name, created_at=created_user.created_at)
+    try:
+        (created_user,) = await client.query(
+            """SELECT (INSERT User {name:=<str>$name}) {name, created_at};""",
+            name=user.name,
+        )
+    except edgedb.errors.ConstraintViolationError:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={"error": f"Username '{user.name}' already exists,"},
+        )
+    response = ResponseData(name=created_user.name, created_at=created_user.created_at)
+    return response
 
 
 ################################
@@ -63,20 +71,27 @@ async def post_user(user: RequestData) -> ResponseData:
 
 @router.put("/users")
 async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData]:
-    updated_users = await client.query(
-        """
-        SELECT
-        (UPDATE User FILTER .name=<str>$filter_name SET {name:=<str>$name})
-        {name, created_at};
-        """,
-        name=user.name,
-        filter_name=filter_name,
-    )
-    users_deserialized = (
+    try:
+        updated_users = await client.query(
+            """
+            SELECT
+            (UPDATE User FILTER .name=<str>$filter_name SET {name:=<str>$name})
+            {name, created_at};
+            """,
+            name=user.name,
+            filter_name=filter_name,
+        )
+    except edgedb.errors.ConstraintViolationError:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={"error": f"Username '{filter_name}' already exists."},
+        )
+
+    response = (
         ResponseData(name=user.name, created_at=user.created_at)
         for user in updated_users
     )
-    return users_deserialized
+    return response
 
 
 ################################
@@ -86,15 +101,22 @@ async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData
 
 @router.delete("/users")
 async def delete_user(filter_name: str) -> Iterable[ResponseData]:
-    deleted_users = client.query(
-        """SELECT
-        (DELETE User FILTER .name=<str>$filter_name) {name, created_at};
-        """,
-        filter_name=filter_name,
+    try:
+        deleted_users = await client.query(
+            """SELECT
+            (DELETE User FILTER .name=<str>$filter_name) {name, created_at};
+            """,
+            filter_name=filter_name,
+        )
+    except edgedb.errors.ConstraintViolationError:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={"error": "User attached to an event. Cannot delete."},
+        )
+
+    response = (
+        ResponseData(name=deleted_user.name, created_at=deleted_user.created_at)
+        for deleted_user in deleted_users
     )
 
-    users_deserialized = (
-        ResponseData(name=user.name, created_at=user.created_at)
-        for user in deleted_users
-    )
-    return users_deserialized
+    return response

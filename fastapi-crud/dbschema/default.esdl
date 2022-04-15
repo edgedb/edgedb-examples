@@ -9,6 +9,7 @@ module default {
   type User extending AuditLog {
     annotation description := "Event host.";
     required property name -> str {
+      constraint exclusive;
       constraint max_len_value(50);
     };
   }
