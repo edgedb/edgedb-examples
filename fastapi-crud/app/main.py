@@ -14,9 +14,11 @@ fast_api.add_middleware(
     allow_headers=["*"],
 )
 
+
 @fast_api.get("/health_check")
 async def health_check() -> dict[str, str]:
     return {"message": "Ok"}
+
 
 fast_api.include_router(events.router)
 fast_api.include_router(users.router)
