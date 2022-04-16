@@ -1,4 +1,4 @@
-path := .
+path := ./
 
 define Comment
 	- Run `make help` to see all the available options.
@@ -15,7 +15,6 @@ lint: black isort flake mypy	## Apply all the linters.
 
 .PHONY: lint-check
 lint-check:  ## Check whether the codebase satisfies the linter rules.
-	@echo
 	@echo "Checking linter rules..."
 	@echo "========================"
 	@echo
@@ -80,3 +79,9 @@ dep-lock: ## Freeze deps in 'requirements.txt' file.
 .PHONY: dep-sync
 dep-sync: ## Sync venv installation with 'requirements.txt' file.
 	@pip-sync
+
+
+.PHONY: health-check
+health-check: ## Perfrom health check on the uvicorn server.
+	@chmod +x ./scripts/health_check
+	@./scripts/health_check

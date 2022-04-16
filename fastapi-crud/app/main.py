@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -13,6 +15,12 @@ fast_api.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@fast_api.get("/health_check")
+async def health_check() -> dict[str, str]:
+    return {"message": "Ok"}
+
 
 fast_api.include_router(events.router)
 fast_api.include_router(users.router)

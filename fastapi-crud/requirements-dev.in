@@ -9,5 +9,5 @@ pip-tools
 
 # For testing.
 pytest
-httpx
+httpx[cli]
 pytest-asyncio
