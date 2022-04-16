@@ -20,7 +20,7 @@ lint-check:  ## Check whether the codebase satisfies the linter rules.
 	@echo
 	@black --fast --check $(path)
 	@isort --check $(path)
-	@flake8 $(path) 
+	@flake8 $(path)
 	@echo 'y' | mypy $(path) --install-types
 
 
@@ -79,3 +79,9 @@ dep-lock: ## Freeze deps in 'requirements.txt' file.
 .PHONY: dep-sync
 dep-sync: ## Sync venv installation with 'requirements.txt' file.
 	@pip-sync
+
+
+.PHONY: health-check
+health-check: ## Perfrom health check on the uvicorn server.
+	@chmod +x ./scripts/health_check
+	@./scripts/health_check

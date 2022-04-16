@@ -1,4 +1,4 @@
-name: Run Tests
+name: FastAPI CRUD
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
       - main
 
   schedule:
-    # Every day at 1.00 UTC.
-    - cron: "0 1 * * *"
+    # Every week at 00 UTC.
+    - cron: "0 0 * * 0"
 
 # If you trigger a new workflow while the previous one is running,
 # this will cancel the previous one.
@@ -62,7 +62,7 @@ jobs:
           echo "Checking linter formatting..."
           make lint-check
 
-      - name: Run Tests
+      - name: Health check
         run: |
-          echo "Running the tests..."
-          python -m pytest -v -s
+          echo "Checking uvicorn server health..."
+          make health-check
