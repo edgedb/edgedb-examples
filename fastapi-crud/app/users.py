@@ -101,14 +101,14 @@ async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData
 
 
 @router.delete("/users")
-async def delete_user(filter_name: str) -> Iterable[ResponseData]:
+async def delete_user(name: str) -> Iterable[ResponseData]:
     try:
         deleted_users = await client.query(
             """SELECT (
-                DELETE User FILTER .name=<str>$filter_name
+                DELETE User FILTER .name=<str>$name
             ) {name, created_at};
             """,
-            filter_name=filter_name,
+            name=name,
         )
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
