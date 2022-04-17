@@ -31,15 +31,15 @@ class ResponseData(BaseModel):
 
 
 ################################
-# Get users
+# Get events
 ################################
 
 
 @router.get("/events")
-async def get_users(
-    host_name: str = Query(None, max_length=50)
+async def get_events(
+    name: str = Query(None, max_length=50)
 ) -> Iterable[ResponseData]:
-    if not host_name:
+    if not name:
         events = await client.query(
             """
         SELECT Event {name, address, schedule, host : {name}};
@@ -52,16 +52,16 @@ async def get_users(
             SELECT Event {
                 name, address, schedule,
                 host : {name}
-            } FILTER .name=<str>$host_name
+            } FILTER .name=<str>$name
             """,
-            host_name=host_name,
+            name=name,
         )
     response = (
         ResponseData(
             name=event.name,
             address=event.address,
             schedule=event.schedule,
-            host=Host(name=host_name),
+            host=Host(name=event.host.name if event.host else None),
         )
         for event in events
     )
@@ -69,11 +69,11 @@ async def get_users(
 
 
 # ################################
-# # Create events
+# Create events
 # ################################
 
 
-@router.post("/events")
+@router.post("/events", status_code=HTTPStatus.CREATED)
 async def post_event(event: RequestData) -> ResponseData:
     try:
         (created_event,) = await client.query(
@@ -119,7 +119,7 @@ async def post_event(event: RequestData) -> ResponseData:
 
 
 # ################################
-# # Update events
+# Update events
 # ################################
 
 
@@ -179,7 +179,7 @@ async def put_event(event: RequestData, filter_name: str) -> Iterable[ResponseDa
 
 
 # ################################
-# # Delete events
+# Delete events
 # ################################
 
 
