@@ -58,7 +58,7 @@ async def post_user(user: RequestData) -> ResponseData:
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail={"error": f"Username '{user.name}' already exists,"},
+            detail={"error": f"Username '{user.name}' already exists."},
         )
     response = ResponseData(name=created_user.name, created_at=created_user.created_at)
     return response

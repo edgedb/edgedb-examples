@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from http import HTTPStatus
-from typing import Iterable
+from typing import Iterable, Optional
 
 import edgedb
 from fastapi import APIRouter, HTTPException, Query
@@ -20,14 +20,14 @@ class RequestData(BaseModel):
 
 
 class Host(BaseModel):
-    name: str | None
+    name: Optional[str]
 
 
 class ResponseData(BaseModel):
     name: str
     address: str
     schedule: datetime.datetime
-    host: Host | None
+    host: Optional[Host]
 
 
 ################################
@@ -73,7 +73,7 @@ async def get_users(
 # ################################
 
 
-@router.post("/event")
+@router.post("/events")
 async def post_event(event: RequestData) -> ResponseData:
     try:
         (created_event,) = await client.query(
