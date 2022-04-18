@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# Run the uvicorn server in the background.
+
+nohup uvicorn app.main:fast_api --port 5000 --reload >> /dev/null &
+
+# Run the healthcheck.
+string='My string';
+
+if [[ $(httpx -m GET http://localhost:5000/health_check) =~ "OK" ]]; then
+   echo "Healthcheck passed!"
+else
+   echo "Healthcheck failed!"
+   exit 1
+fi
