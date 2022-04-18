@@ -7,6 +7,12 @@ from app import events, users
 
 fast_api = FastAPI()
 
+
+@fast_api.get("/health_check", include_in_schema=False)
+async def health_check() -> dict[str, str]:
+    return {"status": "Ok"}
+
+
 # Set all CORS enabled origins
 fast_api.add_middleware(
     CORSMiddleware,
