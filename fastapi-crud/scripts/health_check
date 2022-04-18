@@ -7,10 +7,10 @@ set -euo pipefail
 nohup uvicorn app.main:fast_api --port 5000 --reload >> /dev/null &
 
 # Run the healthcheck.
-string='My string';
 
-if [[ $(httpx -m GET http://localhost:5000/health_check) =~ "OK" ]]; then
+if [[ $(httpx -m GET http://localhost:5000/health_check 2>&1) =~ "OK" ]]; then
    echo "Healthcheck passed!"
+   exit 0
 else
    echo "Healthcheck failed!"
    exit 1
