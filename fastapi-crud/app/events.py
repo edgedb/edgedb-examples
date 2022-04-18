@@ -36,9 +36,7 @@ class ResponseData(BaseModel):
 
 
 @router.get("/events")
-async def get_events(
-    name: str = Query(None, max_length=50)
-) -> Iterable[ResponseData]:
+async def get_events(name: str = Query(None, max_length=50)) -> Iterable[ResponseData]:
     if not name:
         events = await client.query(
             """
