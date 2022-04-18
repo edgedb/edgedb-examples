@@ -52,12 +52,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install the Dependencies
+      - name: Install the dependencies
         run: |
           echo "Installing the dependencies..."
           python -m pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Check Linter
+      - name: Check linter
         run: |
           echo "Checking linter formatting..."
           make lint-check
+
+      - name: Run healthcheck
+        run: |
+          echo "Running healthcheck..."
+          make health-check
