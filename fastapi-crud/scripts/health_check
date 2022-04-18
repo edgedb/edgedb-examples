@@ -6,9 +6,12 @@ set -euo pipefail
 
 nohup uvicorn app.main:fast_api --port 5000 --reload >> /dev/null &
 
+# Give the server enough time to be ready before acceping requests.
+sleep 2
+
 # Run the healthcheck.
 
-if [[ $(httpx -m GET http://localhost:5000/health_check 2>&1) =~ "OK" ]]; then
+if [[ $(httpx -m GET http://localhost:5000/health_check 2>&1) =~ "200 OK" ]]; then
    echo "Healthcheck passed!"
    exit 0
 else
