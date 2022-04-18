@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-
 anyio==3.5.0
     # via starlette
 asgiref==3.5.0
@@ -12,9 +11,9 @@ asgiref==3.5.0
 click==8.1.2
     # via uvicorn
 edgedb==0.23.0
-    # via -r requirements.in
-fastapi==0.75.1
-    # via -r requirements.in
+    # via -r fastapi-crud/requirements.in
+fastapi==0.75.2
+    # via -r fastapi-crud/requirements.in
 h11==0.12.0
     # via uvicorn
 idna==3.3
@@ -30,4 +29,4 @@ typing-extensions==4.1.1
     #   edgedb
     #   pydantic
 uvicorn==0.17.6
-    # via -r requirements.in
+    # via -r fastapi-crud/requirements.in
