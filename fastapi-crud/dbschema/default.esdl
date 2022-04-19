@@ -1,12 +1,12 @@
 module default {
-  abstract type AuditLog {
+  abstract type Auditable {
     annotation description := "Add 'create_at' and 'update_at' properties to all types.";
     property created_at -> datetime {
       default := datetime_current();
     }
   }
 
-  type User extending AuditLog {
+  type User extending Auditable {
     annotation description := "Event host.";
     required property name -> str {
       constraint exclusive;
@@ -14,7 +14,7 @@ module default {
     };
   }
 
-  type Event extending AuditLog {
+  type Event extending Auditable {
     annotation description := "Some grand event.";
     required property name -> str {
       constraint exclusive;
