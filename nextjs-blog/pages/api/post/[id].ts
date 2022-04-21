@@ -1,50 +1,43 @@
 import type {NextApiRequest, NextApiResponse} from 'next';
-import {client, e} from '../../../client';
+import {client} from '../..';
+import e from '../../../dbschema/edgeql-js';
 
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const postId = req.query.id as string;
+  console.log(`${req.method} /api/post`);
 
-  if (req.method === 'GET') {
-    handleGET(postId, res);
-  } else if (req.method === 'DELETE') {
-    handleDELETE(postId, res);
-  } else {
-    throw new Error(
-      `The HTTP ${req.method} method is not supported at this route.`
-    );
-  }
-}
+  if (req.method === 'POST') {
+    const payload = req.body;
+    console.log(payload);
+    /**
+     * update BlogPost by Id
+     * set title, content, published
+     */
 
-// GET /api/post/:id
-async function handleGET(postId: string, res: NextApiResponse) {
-  const post = await e
-    .select(e.Post, (post) => ({
+    const query = e.update(e.BlogPost, (post) => ({
       filter: e.op(post.id, '=', e.uuid(postId)),
+      set: {
+        title: payload.title,
+        content: payload.content,
+        publishedAt: e.datetime_current(),
+      },
+    }));
+
+    const fetchQuery = e.select(query, (q) => ({
       id: true,
-      title: true,
       content: true,
-      published: true,
-      createdAt: true,
-      viewCount: true,
-      author: {name: true, id: true},
-    }))
-    .run(client);
+      title: true,
+      publishedAtStr: e.cast(e.str, q.publishedAt),
+    }));
 
-  res.json(post);
-}
-
-// DELETE /api/post/:id
-async function handleDELETE(postId: string, res: NextApiResponse) {
-  const post = await e
-    .delete(e.Post, (post) => ({
-      filter: e.op(post.id, '=', e.uuid(postId)),
-    }))
-    .run(client);
-  // const post = await prisma.post.delete({
-  //   where: {id: Number(postId)},
-  // });
-  res.json(post);
+    const result = await fetchQuery.run(client);
+    console.log(result);
+    res.json(result);
+  } else {
+    console.log(`Invalid request`);
+    res.status(404);
+  }
 }

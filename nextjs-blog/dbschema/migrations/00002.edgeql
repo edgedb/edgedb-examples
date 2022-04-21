@@ -1,9 +1,14 @@
-CREATE MIGRATION m1xt5nrizxohwyh4rg3ulwgimc56n4gduss344ncoha5bmeidetcva
-    ONTO m1prjlzk6hbd3lutbny63ogirg4yukcclr5vcz5g7lkelnveorfjla
+CREATE MIGRATION m1vgituovm3bextaqquavpr7r6xzsojjjuizspmkyyq5evweuuhycq
+    ONTO m1s44oki2aihkslwj4zpxl6464fxqxcdafbtp23ch6bffuwsrnu2za
 {
-  ALTER TYPE default::User {
-      ALTER LINK posts {
-          USING (.<author[IS default::Post]);
+  ALTER TYPE default::BlogPost {
+      ALTER PROPERTY content {
+          SET default := '';
+      };
+  };
+  ALTER TYPE default::BlogPost {
+      ALTER PROPERTY title {
+          SET default := 'Untitled';
       };
   };
 };
