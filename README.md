@@ -10,7 +10,11 @@ This repo contains starter projects that demonstrate usage of EdgeDB with differ
 
 ## Python
 
-Coming soon.
+| Framework | Link                                                                                 |
+| --------- | ------------------------------------------------------------------------------------ |
+| FastAPI   | [fastapi-crud](https://github.com/edgedb/edgedb-examples/tree/main/fastapi-crud)|
+
+
 
 ## Go
 
