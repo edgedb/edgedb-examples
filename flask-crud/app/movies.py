@@ -1,9 +1,11 @@
-from flask import Blueprint, request
 from http import HTTPStatus
+
 import edgedb
+from flask import Blueprint, request
 
 movie = Blueprint("movie", __name__)
 client = edgedb.create_client()
+
 
 @movie.route("/movies", methods=["GET"])
 def get_movies():
@@ -39,19 +41,22 @@ def post_movies():
     actor = client.query_single_json(
         """
         WITH name:=<str>$name, year:=<optional int16>$year,
-            actor_names:=<optional str>$actor_names
+            actor_names:=<optional array<str>>$actor_names
             SELECT (
-                INSERT Actor {name:=name, year:=year,
-                actors:=}
-            ){name, age, height};
+                INSERT Movie {
+                name:=name, year:=year,
+                actors:=(
+                    SELECT DETACHED Actor FILTER
+                    .name in array_unpack(actor_names))
+                }
+            ){name, year, actors: {name}};
         """,
         name=name,
-        age=age,
-        height=height,
+        year=year,
+        actor_names=actor_names,
     )
 
     return actor, HTTPStatus.CREATED
-
 
 
 @movie.route("/movies", methods=["PUT"])

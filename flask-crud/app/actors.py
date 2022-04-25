@@ -120,7 +120,7 @@ def put_actors():
 
 @actor.route("/actors", methods=["DELETE"])
 def delete_actors():
-    if not (filter_name:=request.args.get("filter_name")):
+    if not (filter_name := request.args.get("filter_name")):
         return {
             "error": "Query parameter 'filter_name' must be provided",
         }, HTTPStatus.BAD_REQUEST
