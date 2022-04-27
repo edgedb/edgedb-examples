@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import json
 from http import HTTPStatus
 
 import edgedb
@@ -12,22 +15,23 @@ client = edgedb.create_client()
 
 
 @actor.route("/actors", methods=["GET"])
-def get_actors() -> tuple[str, int]:
+def get_actors() -> tuple[dict, int]:
     actors = client.query_json(
         """
         SELECT Actor {name, age, height}
     """
     )
-    return actors, HTTPStatus.OK
+    response_payload = {"result": json.loads(actors)}
+    return response_payload, HTTPStatus.OK
 
 
 ################################
-# Create actors
+# Create actor
 ################################
 
 
 @actor.route("/actors", methods=["POST"])
-def post_actors():
+def post_actor() -> tuple[dict, int]:
     incoming_payload = request.json
 
     # Exception handling.
@@ -35,18 +39,24 @@ def post_actors():
         return {"error": "Bad request"}, HTTPStatus.BAD_REQUEST
 
     if not (name := incoming_payload.get("name")):
-        return {"error": "Field 'name' is required."}
+        return {"error": "Field 'name' is required."}, HTTPStatus.BAD_REQUEST
 
     if len(name) > 50:
-        return {"error": "Field 'name' cannot be longer than 50 characters."}
+        return {
+            "error": "Field 'name' cannot be longer than 50 characters."
+        }, HTTPStatus.BAD_REQUEST
 
     if age := incoming_payload.get("age"):
         if age <= 0:
-            return {"error": "Field 'age' cannot be less than or equal to 0."}
+            return {
+                "error": "Field 'age' cannot be less than or equal to 0."
+            }, HTTPStatus.BAD_REQUEST
 
     if height := incoming_payload.get("height"):
         if not 0 <= height <= 300:
-            return {"error": "Field 'height' must between 0 and 300 cm."}
+            return {
+                "error": "Field 'height' must between 0 and 300 cm."
+            }, HTTPStatus.BAD_REQUEST
 
     # Save data to db.
     actor = client.query_single_json(
@@ -61,8 +71,8 @@ def post_actors():
         age=age,
         height=height,
     )
-
-    return actor, HTTPStatus.CREATED
+    response_payload = {"result": json.loads(actor)}
+    return response_payload, HTTPStatus.CREATED
 
 
 ################################
@@ -71,7 +81,7 @@ def post_actors():
 
 
 @actor.route("/actors", methods=["PUT"])
-def put_actors():
+def put_actors() -> tuple[dict, int]:
     incoming_payload = request.json
     filter_name = request.args.get("filter_name")
 
@@ -84,18 +94,24 @@ def put_actors():
         }, HTTPStatus.BAD_REQUEST
 
     if not (name := incoming_payload.get("name")):
-        return {"error": "Field 'name' is required."}
+        return {"error": "Field 'name' is required."}, HTTPStatus.BAD_REQUEST
 
     if len(name) > 50:
-        return {"error": "Field 'name' cannot be longer than 50 characters."}
+        return {
+            "error": "Field 'name' cannot be longer than 50 characters."
+        }, HTTPStatus.BAD_REQUEST
 
     if age := incoming_payload.get("age"):
         if age <= 0:
-            return {"error": "Field 'age' cannot be less than or equal to 0."}
+            return {
+                "error": "Field 'age' cannot be less than or equal to 0."
+            }, HTTPStatus.BAD_REQUEST
 
     if height := incoming_payload.get("height"):
         if not 0 <= height <= 300:
-            return {"error": "Field 'height' must between 0 and 300 cm."}
+            return {
+                "error": "Field 'height' must between 0 and 300 cm."
+            }, HTTPStatus.BAD_REQUEST
 
     actors = client.query_json(
         """
@@ -103,14 +119,15 @@ def put_actors():
             age:=<optional int16>$age, height:=<optional int16>$height
             SELECT (
                 UPDATE Actor FILTER .name=filter_name
-                SET {name:=name, age:=age, height:=height}
+                SET {name:=name, age:=age ?? .age, height:=height ?? .height}
              ){name, age, height};""",
         filter_name=filter_name,
         name=name,
         age=age,
         height=height,
     )
-    return actors, HTTPStatus.OK
+    response_payload = {"result": json.loads(actors)}
+    return response_payload, HTTPStatus.OK
 
 
 ################################
@@ -119,7 +136,7 @@ def put_actors():
 
 
 @actor.route("/actors", methods=["DELETE"])
-def delete_actors():
+def delete_actors() -> tuple[dict, int]:
     if not (filter_name := request.args.get("filter_name")):
         return {
             "error": "Query parameter 'filter_name' must be provided",
@@ -129,5 +146,5 @@ def delete_actors():
         "SELECT (DELETE Actor FILTER .name=<str>$filter_name){name}",
         filter_name=filter_name,
     )
-
-    return actors, HTTPStatus.OK
+    response_payload = {"result": json.loads(actors)}
+    return response_payload, HTTPStatus.OK

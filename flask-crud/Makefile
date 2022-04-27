@@ -19,7 +19,9 @@ lint-check:  ## Check whether the codebase satisfies the linter rules.
 	@echo "Checking linter rules..."
 	@echo "========================"
 	@echo
-	@make lint-check
+	@black --fast --check $(path)
+	@isort --check --profile black $(path)
+	@flake8 $(path)
 	@echo 'y' | mypy $(path) --install-types
 
 
@@ -78,3 +80,8 @@ dep-lock: ## Freeze deps in 'requirements.txt' file.
 .PHONY: dep-sync
 dep-sync: ## Sync venv installation with 'requirements.txt' file.
 	@pip-sync
+
+
+.PHONY: dev-server
+dev-server: ## Sync venv installation with 'requirements.txt' file.
+	@export FLASK_APP=app.main:app && flask run --reload
