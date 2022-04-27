@@ -37,7 +37,6 @@ def get_movies() -> tuple[dict, int]:
     return response_payload, HTTPStatus.OK
 
 
-
 ################################
 # Create movie
 ################################
