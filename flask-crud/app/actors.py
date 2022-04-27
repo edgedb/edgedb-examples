@@ -163,7 +163,7 @@ def delete_actors() -> tuple[dict, int]:
         return (
             {
                 "error": f"Cannot delete '{filter_name}. \
-                    Actor is associated with a movie."
+                    Actor is associated with at least one movie."
             },
             HTTPStatus.BAD_REQUEST,
         )
