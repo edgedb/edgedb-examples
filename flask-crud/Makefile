@@ -83,7 +83,7 @@ dep-sync: ## Sync venv installation with 'requirements.txt' file.
 
 
 .PHONY: dev-server
-dev-server: ## Sync venv installation with 'requirements.txt' file.
+dev-server: ## Spin up local dev server.
 	@export FLASK_APP=app.main:app && flask run --reload
 
 
