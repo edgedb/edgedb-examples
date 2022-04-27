@@ -1,4 +1,4 @@
-name: FastAPI CRUD
+name: Flask CRUD
 
 on:
   push:
