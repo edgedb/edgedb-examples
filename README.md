@@ -13,7 +13,6 @@ This repo contains starter projects that demonstrate usage of EdgeDB with differ
 | Framework | Link                                                                                 |
 | --------- | ------------------------------------------------------------------------------------ |
 | FastAPI   | [fastapi-crud](https://github.com/edgedb/edgedb-examples/tree/main/fastapi-crud)|
------------------------------------------------------------------------------------- |
 | Flask   | [flask-crud](https://github.com/edgedb/edgedb-examples/tree/main/flask-crud)|
 
 ## Go
