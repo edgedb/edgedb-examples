@@ -85,3 +85,9 @@ dep-sync: ## Sync venv installation with 'requirements.txt' file.
 .PHONY: dev-server
 dev-server: ## Sync venv installation with 'requirements.txt' file.
 	@export FLASK_APP=app.main:app && flask run --reload
+
+
+.PHONY: health-check
+health-check: ## Perfrom health check on the uvicorn server.
+	@chmod +x ./scripts/health_check
+	@./scripts/health_check
