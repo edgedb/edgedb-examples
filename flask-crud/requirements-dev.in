@@ -1,0 +1,12 @@
+# For linting.
+black
+flake8
+isort
+mypy
+pre-commit
+
+# For dep management.
+pip-tools
+
+# For testing.
+pytest
