@@ -16,11 +16,22 @@ client = edgedb.create_client()
 
 @actor.route("/actors", methods=["GET"])
 def get_actors() -> tuple[dict, int]:
-    actors = client.query_json(
-        """
-        SELECT Actor {name, age, height}
-    """
-    )
+    filter_name = request.args.get("filter_name")
+
+    if not filter_name:
+        actors = client.query_json(
+            """
+            SELECT Actor {name, age, height}
+            """
+        )
+    else:
+        actors = client.query_json(
+            """
+            SELECT Actor {name, age, height} FILTER .name=<str>$filter_name
+            """,
+            filter_name=filter_name,
+        )
+
     response_payload = {"result": json.loads(actors)}
     return response_payload, HTTPStatus.OK
 
@@ -47,9 +58,9 @@ def post_actor() -> tuple[dict, int]:
         }, HTTPStatus.BAD_REQUEST
 
     if age := incoming_payload.get("age"):
-        if age <= 0:
+        if 0 <= age <= 100:
             return {
-                "error": "Field 'age' cannot be less than or equal to 0."
+                "error": "Field 'age' must be between 0 and 100."
             }, HTTPStatus.BAD_REQUEST
 
     if height := incoming_payload.get("height"):
@@ -76,7 +87,7 @@ def post_actor() -> tuple[dict, int]:
 
 
 ################################
-# Update users
+# Update actors
 ################################
 
 
@@ -93,18 +104,15 @@ def put_actors() -> tuple[dict, int]:
             "error": "Query parameter 'filter_name' must be provided",
         }, HTTPStatus.BAD_REQUEST
 
-    if not (name := incoming_payload.get("name")):
-        return {"error": "Field 'name' is required."}, HTTPStatus.BAD_REQUEST
-
-    if len(name) > 50:
+    if (name := incoming_payload.get("name")) and len(name) > 50:
         return {
             "error": "Field 'name' cannot be longer than 50 characters."
         }, HTTPStatus.BAD_REQUEST
 
     if age := incoming_payload.get("age"):
-        if age <= 0:
+        if not 0 <= age <= 100:
             return {
-                "error": "Field 'age' cannot be less than or equal to 0."
+                "error": "Field 'age' must be between 0 and 100 years."
             }, HTTPStatus.BAD_REQUEST
 
     if height := incoming_payload.get("height"):
@@ -115,11 +123,15 @@ def put_actors() -> tuple[dict, int]:
 
     actors = client.query_json(
         """
-        WITH filter_name:=<str>$filter_name, name:=<str>$name,
+        WITH filter_name:=<str>$filter_name, name:=<optional str>$name,
             age:=<optional int16>$age, height:=<optional int16>$height
             SELECT (
                 UPDATE Actor FILTER .name=filter_name
-                SET {name:=name, age:=age ?? .age, height:=height ?? .height}
+                SET {
+                    name:=name ?? .name,
+                    age:=age ?? .age,
+                    height:=height ?? .height
+                }
              ){name, age, height};""",
         filter_name=filter_name,
         name=name,
@@ -131,7 +143,7 @@ def put_actors() -> tuple[dict, int]:
 
 
 ################################
-# Delete users
+# Delete actors
 ################################
 
 
@@ -142,9 +154,19 @@ def delete_actors() -> tuple[dict, int]:
             "error": "Query parameter 'filter_name' must be provided",
         }, HTTPStatus.BAD_REQUEST
 
-    actors = client.query_json(
-        "SELECT (DELETE Actor FILTER .name=<str>$filter_name){name}",
-        filter_name=filter_name,
-    )
+    try:
+        actors = client.query_json(
+            "SELECT (DELETE Actor FILTER .name=<str>$filter_name){name}",
+            filter_name=filter_name,
+        )
+    except edgedb.errors.ConstraintViolationError:
+        return (
+            {
+                "error": f"Cannot delete '{filter_name}. \
+                    Actor is associated with a movie."
+            },
+            HTTPStatus.BAD_REQUEST,
+        )
+
     response_payload = {"result": json.loads(actors)}
     return response_payload, HTTPStatus.OK

@@ -10,23 +10,36 @@ movie = Blueprint("movie", __name__)
 client = edgedb.create_client()
 
 ################################
-# Get actors
+# Get movies
 ################################
 
 
 @movie.route("/movies", methods=["GET"])
 def get_movies() -> tuple[dict, int]:
-    movies = client.query_json(
-        """
-        SELECT Movie {name, year, actors:{name, age}}
-    """
-    )
+    filter_name = request.args.get("filter_name")
+
+    if not filter_name:
+        movies = client.query_json(
+            """
+            SELECT Movie {name, year, actors : {name, age}};
+            """
+        )
+    else:
+        movies = client.query_json(
+            """
+            SELECT Movie {name, year, actors : {name, age}}
+                FILTER .name=<str>$filter_name
+            """,
+            filter_name=filter_name,
+        )
+
     response_payload = {"result": json.loads(movies)}
     return response_payload, HTTPStatus.OK
 
 
+
 ################################
-# Create actor
+# Create movie
 ################################
 
 
@@ -77,7 +90,7 @@ def post_movie() -> tuple[dict, int]:
 
 
 ################################
-# Update actors
+# Update movies
 ################################
 
 
@@ -135,7 +148,7 @@ def put_movies() -> tuple[dict, int]:
 
 
 ################################
-# Delete actors
+# Delete movies
 ################################
 
 
