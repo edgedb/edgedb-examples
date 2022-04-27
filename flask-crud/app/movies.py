@@ -159,9 +159,19 @@ def delete_movies() -> tuple[dict, int]:
             "error": "Query parameter 'filter_name' must be provided",
         }, HTTPStatus.BAD_REQUEST
 
-    movies = client.query_json(
-        "SELECT (DELETE Movie FILTER .name=<str>$filter_name){name}",
-        filter_name=filter_name,
-    )
+    try:
+        movies = client.query_json(
+            "SELECT (DELETE Movie FILTER .name=<str>$filter_name){name}",
+            filter_name=filter_name,
+        )
+    except edgedb.errors.ConstraintViolationError:
+        return (
+            {
+                "error": f"Cannot delete '{filter_name}. \
+                    Movie is associated with at least one actor."
+            },
+            HTTPStatus.BAD_REQUEST,
+        )
+
     response_payload = {"result": json.loads(movies)}
     return response_payload, HTTPStatus.OK
