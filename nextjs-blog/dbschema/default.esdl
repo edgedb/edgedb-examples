@@ -1,13 +1,8 @@
 module default {
-  
   type BlogPost {
-    required property title -> str {
-      default := 'Untitled'
-    }
+    required property title -> str;
     required property content -> str {
-      default := ''
+      default := ""
     };
-    property publishedAt -> datetime;
   }
-
 }
