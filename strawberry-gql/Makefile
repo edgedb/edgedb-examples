@@ -80,3 +80,8 @@ dep-lock: ## Freeze deps in 'requirements.txt' file.
 .PHONY: dep-sync
 dep-sync: ## Sync venv installation with 'requirements.txt' file.
 	@pip-sync
+
+
+.PHONY: dev-server
+dev-server: ## Start the development server.
+	@uvicorn app.main:app --port 5000 --reload
