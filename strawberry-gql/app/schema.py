@@ -36,4 +36,15 @@ class Query:
         return [movie]
 
 
-schema = strawberry.Schema(query=Query)
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    def add_actor(self, name: str, age: int | None, height: float | None) -> Actor:
+        return Actor(name, age, height)
+
+    @strawberry.mutation
+    def add_movie(self, name: str, year: int | None, actor_names: list[str]) -> Movie:
+        return Movie(name, year, [Actor(name) for name in actor_names])
+
+
+schema = strawberry.Schema(query=Query, mutation=Mutation)

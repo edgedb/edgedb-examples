@@ -16,7 +16,7 @@ security = HTTPBasic()
 
 def auth(credentials: HTTPBasicCredentials = Depends(security)) -> Literal[True]:
     """Simple HTTP Basic Auth."""
-    
+
     correct_username = secrets.compare_digest(credentials.username, "ubuntu")
     correct_password = secrets.compare_digest(credentials.password, "debian")
 

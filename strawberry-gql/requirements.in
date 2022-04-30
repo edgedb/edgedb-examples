@@ -1,4 +1,5 @@
 edgedb
+fastapi
 httpx[cli]
 strawberry-graphql
 uvicorn[standard]
