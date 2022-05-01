@@ -18,7 +18,14 @@ warn_unused_ignores = true
 allow_untyped_globals = true
 allow_redefinition = true
 pretty = true
-
+plugins = "strawberry.ext.mypy_plugin"
+implicit_reexport = false
+warn_unused_configs = true
+check_untyped_defs = true
+ignore_errors = false
+strict_optional = true
+show_error_codes = true
+warn_redundant_casts = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"
