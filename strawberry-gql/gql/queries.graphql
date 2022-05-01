@@ -1,0 +1,57 @@
+##########################################
+# Actor queries
+##########################################
+
+query GetActors($filter_name: String) {
+  getActors(filterName: $filter_name) {
+    name
+    age
+    height
+  }
+}
+
+
+mutation createActor($name: String!, $age: Int, $height: Int) {
+  createActor(name: $name, age: $age, height: $height) {
+    __typename
+    ... on Actor {
+      name
+      age
+      height
+    }
+    ... on ValidationError {
+      detail
+    }
+  }
+}
+
+
+##########################################
+# Movie queries
+##########################################
+
+query GetMovies($filter_name: String) {
+  getMovies(filterName: $filter_name) {
+    name
+    year
+    actors {
+      name
+    }
+  }
+}
+
+mutation createMovie($name: String!, $year: Int, $actorNames: [String!]!) {
+  createMovie(name: $name, year: $year, actorNames: $actorNames) {
+    __typename
+    ... on Movie {
+      name
+      year
+      actors {
+        name
+      }
+    }
+    ... on ValidationError {
+      detail
+    }
+  }
+}
