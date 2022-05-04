@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "npx edgeql-js"
+    "postinstall": "npx edgeql-js"
   },
   "dependencies": {
     "edgedb": "^0.20.8",
