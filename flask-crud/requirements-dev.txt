@@ -50,7 +50,7 @@ platformdirs==2.5.2
     #   virtualenv
 pluggy==1.0.0
     # via pytest
-pre-commit==2.18.1
+pre-commit==2.19.0
     # via -r flask-crud/requirements-dev.in
 py==1.11.0
     # via pytest
