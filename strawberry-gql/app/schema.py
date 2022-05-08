@@ -50,7 +50,6 @@ class Query:
             """
             )
         actors = json.loads(actors_json)
-
         return [
             Actor(name, age, height)
             for (name, age, height) in (d.values() for d in actors)
@@ -80,7 +79,6 @@ class Query:
                 Actor(name) for d in movie.get("actors", []) for name in d.values()
             ]
             movies[idx] = Movie(movie.get("name"), movie.get("year"), actors)
-
         return movies
 
 
@@ -143,7 +141,6 @@ class Mutation:
             Actor(name, age, height)
             for (name, age, height) in (d.values() for d in actors)
         ]
-
         return actors
 
     @strawberry.mutation
@@ -163,7 +160,6 @@ class Mutation:
             Actor(name, age, height)
             for (name, age, height) in (d.values() for d in actors)
         ]
-
         return actors
 
     @strawberry.mutation
@@ -241,7 +237,6 @@ class Mutation:
                 for d in movie.get("actors", [])
             ]
             movies[idx] = Movie(movie.get("name"), movie.get("year"), actors)
-
         return movies
 
     @strawberry.mutation
@@ -264,7 +259,6 @@ class Mutation:
                 for d in movie.get("actors", [])
             ]
             movies[idx] = Movie(movie.get("name"), movie.get("year"), actors)
-
         return movies
 
 
