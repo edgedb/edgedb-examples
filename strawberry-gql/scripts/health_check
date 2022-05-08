@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Run the uvicorn server in the background.
 
-nohup uvicorn app.main:fast_api --port 5000 --reload >> /dev/null &
+nohup uvicorn app.main:app --port 5000 --reload >> /dev/null &
 
 # Give the server enough time to be ready before accepting requests.
 sleep 2
