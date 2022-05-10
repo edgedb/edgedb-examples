@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-
 anyio==3.5.0
     # via
     #   httpcore
@@ -30,9 +29,9 @@ colorama==0.4.4
 commonmark==0.9.1
     # via rich
 edgedb==0.23.0
-    # via -r requirements.in
-fastapi==0.75.2
-    # via -r requirements.in
+    # via -r strawberry-gql/requirements.in
+fastapi==0.77.1
+    # via -r strawberry-gql/requirements.in
 graphql-core==3.2.1
     # via strawberry-graphql
 h11==0.12.0
@@ -44,7 +43,7 @@ httpcore==0.14.7
 httptools==0.4.0
     # via uvicorn
 httpx[cli]==0.22.0
-    # via -r requirements.in
+    # via -r strawberry-gql/requirements.in
 idna==3.3
     # via
     #   anyio
@@ -77,17 +76,17 @@ sniffio==1.2.0
     #   anyio
     #   httpcore
     #   httpx
-starlette==0.17.1
+starlette==0.19.1
     # via fastapi
 strawberry-graphql==0.109.1
-    # via -r requirements.in
+    # via -r strawberry-gql/requirements.in
 typing-extensions==4.2.0
     # via
     #   edgedb
     #   pydantic
     #   strawberry-graphql
 uvicorn[standard]==0.17.6
-    # via -r requirements.in
+    # via -r strawberry-gql/requirements.in
 uvloop==0.16.0
     # via uvicorn
 watchgod==0.8.2
