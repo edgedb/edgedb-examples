@@ -1,0 +1,9 @@
+# For linting.
+black
+flake8
+isort
+mypy
+
+# For dep management.
+pip-tools
+
