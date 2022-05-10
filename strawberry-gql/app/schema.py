@@ -10,16 +10,16 @@ client = edgedb.create_async_client()
 
 @strawberry.type
 class Actor:
-    name: str
+    name: str | None
     age: int | None = None
     height: int | None = None
 
 
 @strawberry.type
 class Movie:
-    name: str
-    year: int | None
-    actors: list[Actor]
+    name: str | None
+    year: int | None = None
+    actors: list[Actor] | None = None
 
 
 @strawberry.type
@@ -31,14 +31,6 @@ ResponseActor = strawberry.union("ResponseActor", (Actor, ValidationError))
 ResponseMovie = strawberry.union("ResponseMovie", (Movie, ValidationError))
 
 
-actor = Actor(name="RDJ", age=57, height=175)
-movie = Movie(
-    name="Avengers",
-    year=2012,
-    actors=[actor],
-)
-
-
 @strawberry.type
 class Query:
     @strawberry.field
@@ -46,15 +38,15 @@ class Query:
         if filter_name:
             actors_json = await client.query_json(
                 """
-                SELECT Actor {name, age, height}
-                    FILTER .name=<str>$filter_name
+                select Actor {name, age, height}
+                  filter .name=<str>$filter_name
             """,
                 filter_name=filter_name,
             )
         else:
             actors_json = await client.query_json(
                 """
-                SELECT Actor {name, age, height}
+                select Actor {name, age, height}
             """
             )
         actors = json.loads(actors_json)
@@ -65,19 +57,19 @@ class Query:
         ]
 
     @strawberry.field
-    async def get_movies(self, filter_name: str | None) -> list[Movie]:
+    async def get_movies(self, filter_name: str | None = None) -> list[Movie]:
         if filter_name:
             movies_json = await client.query_json(
                 """
-                SELECT Movie {name, year, actors : {name}}
-                    FILTER .name=<str>$filter_name
+                select Movie {name, year, actors : {name}}
+                  filter .name=<str>$filter_name
             """,
                 filter_name=filter_name,
             )
         else:
             movies_json = await client.query_json(
                 """
-                SELECT Movie {name, year, actors : {name}}
+                select Movie {name, year, actors : {name}}
             """
             )
 
@@ -96,16 +88,16 @@ class Query:
 class Mutation:
     @strawberry.mutation
     async def create_actor(
-        self, name: str, age: int | None, height: int | None
+        self, name: str, age: int | None = None, height: int | None = None
     ) -> ResponseActor:
         actor_json = await client.query_single_json(
             """
-            SELECT (
-                INSERT Actor {
-                    name := <str>$name,
-                    age:=<optional int16>$age,
-                    height:=<optional int16>$height
-                }
+            select (
+              insert Actor {
+                name := <str>$name,
+                age:=<optional int16>$age,
+                height:=<optional int16>$height
+              }
             ){name, age, height}
         """,
             name=name,
@@ -117,32 +109,84 @@ class Mutation:
         return Actor(actor.get("name"), actor.get("age"), actor.get("height"))
 
     @strawberry.mutation
-    async def update_actor(
-        self, name: str, age: int | None, height: int | None
-    ) -> ResponseActor:
-        if name != "John":
-            return ValidationError("Things went wrong")
+    async def update_actors(
+        self,
+        filter_name: str,
+        name: str | None = None,
+        age: int | None = None,
+        height: int | None = None,
+    ) -> list[ResponseActor]:
 
-        return Actor(name, age, height)
+        actors_json = await client.query_json(
+            """
+            with
+              filter_name:=<str>$filter_name,
+              name:=<optional str>$name,
+              age:=<optional int16>$age,
+              height:=<optional int16>$height
+
+            select(
+              update Actor filter .name=filter_name
+              set {
+                  name:=name ?? .name, age:=age ?? .age,
+                  height:=height ?? .height}
+              ){name, age, height};
+            """,
+            filter_name=filter_name,
+            name=name,
+            age=age,
+            height=height,
+        )
+
+        actors = json.loads(actors_json)
+        actors: list[ResponseActor] = [
+            Actor(name, age, height)
+            for (name, age, height) in (d.values() for d in actors)
+        ]
+
+        return actors
+
+    @strawberry.mutation
+    async def delete_actors(self, filter_name: str) -> list[ResponseActor]:
+
+        actors_json = await client.query_json(
+            """
+            select (
+              delete Actor filter .name=<str>$filter_name
+            ){name, age, height};
+            """,
+            filter_name=filter_name,
+        )
+
+        actors = json.loads(actors_json)
+        actors: list[ResponseActor] = [
+            Actor(name, age, height)
+            for (name, age, height) in (d.values() for d in actors)
+        ]
+
+        return actors
 
     @strawberry.mutation
     async def create_movie(
-        self, name: str, year: int | None, actor_names: list[str]
+        self,
+        name: str,
+        year: int | None = None,
+        actor_names: list[str] | None = None,
     ) -> ResponseMovie:
         movie_json = await client.query_single_json(
             """
-            WITH name:=<str>$name,
-                year:=<optional int16>$year,
-                actor_names:=<optional array<str>>$actor_names
+            with name:=<str>$name,
+              year:=<optional int16>$year,
+              actor_names:=<optional array<str>>$actor_names
 
-            SELECT (
-                INSERT Movie {
-                    name:=name,
-                    year:=year,
-                    actors:=(
-                        SELECT DETACHED Actor
-                        FILTER .name IN array_unpack(actor_names)
-                        )
+            select (
+              insert Movie {
+                name:=name,
+                year:=year,
+                actors:=(
+                    select detached Actor
+                    filter .name in array_unpack(actor_names)
+                  )
                 }
             ){name, year, actors : {name}}
         """,
@@ -156,10 +200,72 @@ class Mutation:
         return Movie(movie.get("name"), movie.get("year"), actors)
 
     @strawberry.mutation
-    async def update_movie(
-        self, name: str, year: int | None, actor_names: list[str]
-    ) -> ResponseMovie:
-        return Movie(name, year, [Actor(name) for name in actor_names])
+    async def update_movies(
+        self,
+        filter_name: str,
+        name: str | None = None,
+        year: int | None = None,
+        actor_names: list[str] | None = None,
+    ) -> list[ResponseMovie]:
+
+        movies_json = await client.query_json(
+            """
+            with
+              filter_name:=<str>$filter_name,
+              name:=<optional str>$name,
+              year:=<optional int16>$year,
+              actor_names:=<optional array<str>>$actor_names
+
+            select (
+              update Movie filter .name=filter_name
+              set {
+                  name:=name ?? .name, year:=year ?? .year,
+                  actors:=(
+                      select detached Actor
+                        filter .name in array_unpack(actor_names)
+                    ) ?? .actors
+                  }
+              ){name, year, actors : {name, age, height}};
+            """,
+            filter_name=filter_name,
+            name=name,
+            year=year,
+            actor_names=actor_names,
+        )
+
+        movies = json.loads(movies_json)
+
+        for idx, movie in enumerate(movies):
+            actors = [
+                Actor(d.get("name"), d.get("age"), d.get("height"))
+                for d in movie.get("actors", [])
+            ]
+            movies[idx] = Movie(movie.get("name"), movie.get("year"), actors)
+
+        return movies
+
+    @strawberry.mutation
+    async def delete_movies(self, filter_name: str) -> list[ResponseMovie]:
+
+        movies_json = await client.query_json(
+            """
+            select (
+              delete Movie filter .name=<str>$filter_name
+            ){name, year, actors : {name, age, height}};
+            """,
+            filter_name=filter_name,
+        )
+
+        movies = json.loads(movies_json)
+
+        for idx, movie in enumerate(movies):
+            actors = [
+                Actor(d.get("name"), d.get("age"), d.get("height"))
+                for d in movie.get("actors", [])
+            ]
+            movies[idx] = Movie(movie.get("name"), movie.get("year"), actors)
+
+        return movies
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
