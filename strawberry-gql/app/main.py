@@ -34,4 +34,9 @@ async def graphql(request: Request):
     return await router.handle_graphql(request=request)
 
 
+@app.get("/health_check", include_in_schema=False)
+async def health_check() -> dict[str, str]:
+    return {"status": "Ok"}
+
+
 app.include_router(router, prefix="/graphql", dependencies=[Depends(auth)])

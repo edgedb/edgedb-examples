@@ -85,3 +85,9 @@ dep-sync: ## Sync venv installation with 'requirements.txt' file.
 .PHONY: dev-server
 dev-server: ## Start the development server.
 	@uvicorn app.main:app --port 5000 --reload
+
+
+.PHONY: health-check
+health-check: ## Perfrom health check on the uvicorn server.
+	@chmod +x ./scripts/health_check
+	@./scripts/health_check
