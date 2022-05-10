@@ -3,7 +3,7 @@ from __future__ import annotations
 import secrets
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from strawberry.fastapi import GraphQLRouter
 
@@ -30,7 +30,7 @@ def auth(credentials: HTTPBasicCredentials = Depends(security)) -> Literal[True]
 
 
 @router.api_route("/", methods=["GET", "POST"])
-async def graphql(request: Request):
+async def graphql(request: Request) -> Response:
     return await router.handle_graphql(request=request)
 
 
