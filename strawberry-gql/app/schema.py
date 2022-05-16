@@ -23,15 +23,6 @@ class Movie:
 
 
 @strawberry.type
-class ValidationError:
-    detail: str
-
-
-ResponseActor = strawberry.union("ResponseActor", (Actor, ValidationError))
-ResponseMovie = strawberry.union("ResponseMovie", (Movie, ValidationError))
-
-
-@strawberry.type
 class Query:
     @strawberry.field
     async def get_actors(self, filter_name: str | None = None) -> list[Actor]:
@@ -87,7 +78,7 @@ class Mutation:
     @strawberry.mutation
     async def create_actor(
         self, name: str, age: int | None = None, height: int | None = None
-    ) -> ResponseActor:
+    ) -> Actor:
         actor_json = await client.query_single_json(
             """
             select (
@@ -113,7 +104,7 @@ class Mutation:
         name: str | None = None,
         age: int | None = None,
         height: int | None = None,
-    ) -> list[ResponseActor]:
+    ) -> list[Actor]:
 
         actors_json = await client.query_json(
             """
@@ -137,14 +128,14 @@ class Mutation:
         )
 
         actors = json.loads(actors_json)
-        actors: list[ResponseActor] = [
+        actors: list[Actor] = [
             Actor(name, age, height)
             for (name, age, height) in (d.values() for d in actors)
         ]
         return actors
 
     @strawberry.mutation
-    async def delete_actors(self, filter_name: str) -> list[ResponseActor]:
+    async def delete_actors(self, filter_name: str) -> list[Actor]:
 
         actors_json = await client.query_json(
             """
@@ -156,7 +147,7 @@ class Mutation:
         )
 
         actors = json.loads(actors_json)
-        actors: list[ResponseActor] = [
+        actors: list[Actor] = [
             Actor(name, age, height)
             for (name, age, height) in (d.values() for d in actors)
         ]
@@ -168,7 +159,7 @@ class Mutation:
         name: str,
         year: int | None = None,
         actor_names: list[str] | None = None,
-    ) -> ResponseMovie:
+    ) -> Movie:
         movie_json = await client.query_single_json(
             """
             with name:=<str>$name,
@@ -202,7 +193,7 @@ class Mutation:
         name: str | None = None,
         year: int | None = None,
         actor_names: list[str] | None = None,
-    ) -> list[ResponseMovie]:
+    ) -> list[Movie]:
 
         movies_json = await client.query_json(
             """
@@ -240,7 +231,7 @@ class Mutation:
         return movies
 
     @strawberry.mutation
-    async def delete_movies(self, filter_name: str) -> list[ResponseMovie]:
+    async def delete_movies(self, filter_name: str) -> list[Movie]:
 
         movies_json = await client.query_json(
             """
