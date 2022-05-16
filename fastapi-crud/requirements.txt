@@ -12,7 +12,7 @@ click==8.1.2
     # via uvicorn
 edgedb==0.23.0
     # via -r fastapi-crud/requirements.in
-fastapi==0.77.1
+fastapi==0.78.0
     # via -r fastapi-crud/requirements.in
 h11==0.12.0
     # via uvicorn
