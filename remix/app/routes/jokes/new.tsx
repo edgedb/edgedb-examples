@@ -9,8 +9,9 @@ import {
 } from "@remix-run/react";
 
 import { JokeDisplay } from "~/components/joke";
-import { db } from "~/utils/db.server";
+import { client } from "~/utils/db.server";
 import { getUserId, requireUserId } from "~/utils/session.server";
+import e from "../../../dbschema/edgeql-js";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
@@ -67,9 +68,14 @@ export const action: ActionFunction = async ({ request }) => {
     return badRequest({ fieldErrors, fields });
   }
 
-  const joke = await db.joke.create({
-    data: { ...fields, jokesterId: userId },
-  });
+  const joke = await e
+    .insert(e.Joke, {
+      ...fields,
+      jokester: e.select(e.User, (user) => ({
+        filter: e.op(user.id, "=", e.uuid(userId)),
+      })),
+    })
+    .run(client);
   return redirect(`/jokes/${joke.id}?redirectTo=/jokes/new`);
 };
 

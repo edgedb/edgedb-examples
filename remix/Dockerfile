@@ -1,8 +1,7 @@
+FROM edgedb/edgedb as edgedb
+
 # base node image
 FROM node:16-bullseye-slim as base
-
-# Install openssl for Prisma
-RUN apt-get update && apt-get install -y openssl
 
 # set for base and all that inherit from it
 ENV NODE_ENV=production
@@ -34,8 +33,7 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules /app/node_modules
 
-ADD prisma .
-RUN npx prisma generate
+ADD dbschema .
 
 ADD . .
 RUN npm run build
@@ -49,9 +47,9 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY --from=production-deps /app/node_modules /app/node_modules
-COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
 COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
+COPY --from=edgedb /usr/bin/edgedb /usr/bin/edgedb
 ADD . .
 
 CMD ["node", "node_modules/.bin/remix-serve", "build"]
