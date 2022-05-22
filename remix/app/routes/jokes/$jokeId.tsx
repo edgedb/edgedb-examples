@@ -1,15 +1,16 @@
-import type { Joke } from "@prisma/client";
 import type {
   ActionFunction,
+  DataFunctionArgs,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useCatch, useLoaderData, useParams } from "@remix-run/react";
 
-import { db } from "~/utils/db.server";
+import { client } from "~/utils/db.server";
 import { getUserId, requireUserId } from "~/utils/session.server";
 import { JokeDisplay } from "~/components/joke";
+import e from "../../../dbschema/edgeql-js";
 
 export const meta: MetaFunction = ({
   data,
@@ -28,15 +29,25 @@ export const meta: MetaFunction = ({
   };
 };
 
-type LoaderData = { joke: Joke; isOwner: boolean };
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+async function loadData({ request, params }: DataFunctionArgs) {
   const userId = await getUserId(request);
-  const joke = await db.joke.findUnique({ where: { id: params.jokeId } });
+  const joke = await e
+    .select(e.Joke, (joke) => ({
+      ...e.Joke["*"],
+      jokesterId: joke.jokester.id,
+      filter: e.op(joke.id, "=", e.uuid(params.jokeId as string)),
+    }))
+    .run(client);
   if (!joke) {
     throw new Response("What a joke! Not found.", { status: 404 });
   }
-  const data: LoaderData = { joke, isOwner: userId === joke.jokesterId };
+  return { joke, isOwner: userId === joke.jokesterId };
+}
+
+type LoaderData = Awaited<ReturnType<typeof loadData>>;
+
+export const loader: LoaderFunction = async (args) => {
+  const data = await loadData(args);
   return json(data);
 };
 
@@ -48,9 +59,13 @@ export const action: ActionFunction = async ({ request, params }) => {
     });
   }
   const userId = await requireUserId(request);
-  const joke = await db.joke.findUnique({
-    where: { id: params.jokeId },
-  });
+  const jokeQuery = e.select(e.Joke, (joke) => ({
+    ...e.Joke["*"],
+    jokesterId: joke.jokester.id,
+    filter: e.op(joke.id, "=", e.uuid(String(params.jokeId))),
+  }));
+  const joke = await jokeQuery.run(client);
+
   if (!joke) {
     throw new Response("Can't delete what does not exist", { status: 404 });
   }
@@ -59,7 +74,8 @@ export const action: ActionFunction = async ({ request, params }) => {
       status: 401,
     });
   }
-  await db.joke.delete({ where: { id: params.jokeId } });
+  // reuse jokeQuery. composition!
+  await e.delete(jokeQuery);
   return redirect("/jokes");
 };
 

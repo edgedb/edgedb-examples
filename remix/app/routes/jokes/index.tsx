@@ -1,33 +1,37 @@
-import type { Joke } from "@prisma/client";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useCatch, useLoaderData } from "@remix-run/react";
 
-import { db } from "~/utils/db.server";
+import { client } from "~/utils/db.server";
 import { getUserId } from "~/utils/session.server";
+import e from "../../../dbschema/edgeql-js";
 
+async function getRandomJoke(userId: string) {
+  return (
+    await e
+      .select(e.Joke, (joke) => ({
+        ...e.Joke["*"],
+        order_by: e.random(),
+        limit: 1,
+        filter: e.op(joke.jokester.id, "=", e.uuid(userId)),
+      }))
+      .run(client)
+  )[0];
+}
+
+type Joke = Awaited<ReturnType<typeof getRandomJoke>>;
 type LoaderData = { randomJoke: Joke };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
-  const count = await db.joke.count();
-  const randomRowNumber = Math.floor(Math.random() * count);
 
   // in the official deployed version of the app, we don't want to deploy
   // a site with unmoderated content, so we only show users their own jokes
-  const [randomJoke] = userId
-    ? await db.joke.findMany({
-        take: 1,
-        skip: randomRowNumber,
-        where: {
-          jokesterId: userId,
-        },
-      })
-    : [];
+  const randomJoke = userId ? await getRandomJoke(userId) : null;
   if (!randomJoke) {
     throw new Response("No jokes to be found!", { status: 404 });
   }
-  const data: LoaderData = { randomJoke };
+  const data = { randomJoke };
   return json(data);
 };
 

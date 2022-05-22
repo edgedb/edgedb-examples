@@ -1,13 +1,19 @@
 import type { LoaderFunction } from "@remix-run/node";
 
-import { db } from "~/utils/db.server";
+import { client } from "~/utils/db.server";
+import e from "../../dbschema/edgeql-js";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const jokes = await db.joke.findMany({
-    take: 100,
-    orderBy: { createdAt: "desc" },
-    include: { jokester: { select: { username: true } } },
-  });
+  const jokes = await e
+    .select(e.Joke, (joke) => ({
+      ...e.Joke["*"],
+      jokester: {
+        username: true,
+      },
+      limit: 100,
+      order_by: { expression: joke.createdAt, direction: e.DESC },
+    }))
+    .run(client);
 
   const host =
     request.headers.get("X-Forwarded-Host") ?? request.headers.get("host");

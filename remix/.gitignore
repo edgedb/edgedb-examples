@@ -5,4 +5,4 @@ node_modules
 /public/build
 .env
 
-prisma/dev.db
+dbschema/edgeql-js

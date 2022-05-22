@@ -1,9 +1,11 @@
 import type { LinksFunction, LoaderFunction } from "@remix-run/node";
+
 import { json } from "@remix-run/node";
 import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 
-import { db } from "~/utils/db.server";
+import { client } from "~/utils/db.server";
 import { getUser } from "~/utils/session.server";
+import e from "../../dbschema/edgeql-js";
 import stylesUrl from "../styles/jokes.css";
 
 type LoaderData = {
@@ -17,12 +19,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   // in the official deployed version of the app, we don't want to deploy
   // a site with unmoderated content, so we only show users their own jokes
   const jokeListItems = user
-    ? await db.joke.findMany({
-        take: 5,
-        select: { id: true, name: true },
-        where: { jokesterId: user.id },
-        orderBy: { createdAt: "desc" },
-      })
+    ? await e
+        .select(e.Joke, (joke) => ({
+          limit: 5,
+          id: true,
+          name: true,
+          filter: e.op(joke.jokester.id, "=", e.uuid(user.id)),
+          order_by: { expression: joke.createdAt, direction: e.DESC },
+        }))
+        .run(client)
     : [];
 
   const data: LoaderData = {

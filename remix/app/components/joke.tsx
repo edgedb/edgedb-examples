@@ -1,5 +1,5 @@
-import type { Joke } from "@prisma/client";
 import { Form, Link } from "@remix-run/react";
+import type { Joke } from "../../dbschema/edgeql-js";
 
 export function JokeDisplay({
   joke,
@@ -9,6 +9,7 @@ export function JokeDisplay({
   joke: Pick<Joke, "content" | "name">;
   isOwner: boolean;
   canDelete?: boolean;
+  
 }) {
   return (
     <div>

@@ -7,8 +7,9 @@ import { json } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
 import { login, createUserSession, register } from "~/utils/session.server";
-import { db } from "~/utils/db.server";
+import { client } from "~/utils/db.server";
 import stylesUrl from "../styles/login.css";
+import e from "../../dbschema/edgeql-js";
 
 export const meta: MetaFunction = () => {
   return {
@@ -90,7 +91,11 @@ export const action: ActionFunction = async ({ request }) => {
       return createUserSession(user.id, redirectTo);
     }
     case "register": {
-      const userExists = await db.user.findFirst({ where: { username } });
+      const userExists = await e
+        .select(e.User, (user) => ({
+          filter: e.op(user.username, "=", username),
+        }))
+        .run(client);
       if (userExists) {
         return badRequest({
           fields,
