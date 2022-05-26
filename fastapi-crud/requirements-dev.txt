@@ -43,7 +43,7 @@ isort==5.10.1
     # via -r fastapi-crud/requirements-dev.in
 mccabe==0.6.1
     # via flake8
-mypy==0.950
+mypy==0.960
     # via -r fastapi-crud/requirements-dev.in
 mypy-extensions==0.4.3
     # via
