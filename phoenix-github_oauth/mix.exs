@@ -40,7 +40,7 @@ defmodule GitHubOAuth.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:edgedb, git: "https://github.com/nsidnev/edgedb-elixir"},
+      {:edgedb, "~> 0.3.0"},
       {:edgedb_ecto, git: "https://github.com/nsidnev/edgedb_ecto"},
       {:mint, "~> 1.0"}
     ]
