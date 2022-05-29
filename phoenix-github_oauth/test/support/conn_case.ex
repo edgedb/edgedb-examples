@@ -32,6 +32,12 @@ defmodule GitHubOAuthWeb.ConnCase do
   end
 
   setup _tags do
+    EdgeDB.Sandbox.initialize(GitHubOAuth.EdgeDB)
+
+    on_exit(fn ->
+      EdgeDB.Sandbox.clean(GitHubOAuth.EdgeDB)
+    end)
+
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end
