@@ -7,22 +7,22 @@ export class ActorController {
   constructor(private readonly appService: ActorService) {}
 
   @Get()
-  getActors(@Query('name') name: string): string {
+  async getActors(@Query('name') name: string) {
     return this.appService.getHello();
   }
 
   @Post()
-  postActor(body: CreateActorDto): string {
+  async postActor(body: CreateActorDto) {
     return this.appService.getHello();
   }
 
   @Get()
-  putActors(body: Partial<CreateActorDto>): string {
+  async putActors(body: Partial<CreateActorDto>) {
     return this.appService.getHello();
   }
 
   @Get()
-  deleteActors(@Query('name') name: string): string {
+  async deleteActors(@Query('name') name: string) {
     return this.appService.getHello();
   }
 }

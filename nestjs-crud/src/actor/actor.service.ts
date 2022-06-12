@@ -3,19 +3,19 @@ import { CreateActorDto } from './actor.dto';
 
 @Injectable()
 export class ActorService {
-  getHello(): string {
+  async getHello() {
     return 'Hello World!';
   }
 
-  postHello(body: CreateActorDto): string {
+  async postHello(body: CreateActorDto) {
     return 'Hello World!';
   }
 
-  putHello(name: string, body:Partial<CreateActorDto>): string {
+  async putHello(name: string, body:Partial<CreateActorDto>) {
     return 'Hello World!';
   }
 
-  delteHello(): string {
+  async delteHello() {
     return 'Hello World!';
   }
 }
