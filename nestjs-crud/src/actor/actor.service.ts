@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { CreateActorDto, UpdateActorDto } from './actor.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateActorDto, UpdateActorDto } from "./actor.dto";
 
 @Injectable()
 export class ActorService {
   async getActors() {
-    return 'Hello World!';
+    return "Hello World!";
   }
 
   async postActor(body: CreateActorDto) {
     return body;
   }
 
-  async putActors(name: string, body: UpdateActorDto){
+  async putActors(name: string, body: UpdateActorDto) {
     return [body];
   }
 

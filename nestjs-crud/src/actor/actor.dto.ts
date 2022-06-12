@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import { PartialType } from '@nestjs/swagger'
+import { IsNotEmpty, IsNumber } from "class-validator";
+import { PartialType } from "@nestjs/swagger";
 
 export class CreateActorDto {
   @IsNotEmpty()

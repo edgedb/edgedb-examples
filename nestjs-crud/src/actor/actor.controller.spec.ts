@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ActorController } from './actor.controller';
-import { ActorService } from './actor.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ActorController } from "./actor.controller";
+import { ActorService } from "./actor.service";
 
-describe('AppController', () => {
+describe("AppController", () => {
   let appController: ActorController;
 
   beforeEach(async () => {
@@ -15,6 +15,6 @@ describe('AppController', () => {
   });
 
   test('should return "Hello World!"', async () => {
-    expect(await appController.getActors(undefined)).toBe('Hello World!');
+    expect(await appController.getActors(undefined)).toBe("Hello World!");
   });
 });
