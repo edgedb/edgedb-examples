@@ -17,7 +17,7 @@ export class ActorController {
 
   @Get()
   async getActors(@Query("name") name: string) {
-    return this.actorService.getActors();
+    return this.actorService.getActors(name);
   }
 
   @Post()
@@ -26,10 +26,7 @@ export class ActorController {
   }
 
   @Put()
-  async putActors(
-    @Query("name") name: string,
-    @Body() body: UpdateActorDto,
-  ) {
+  async putActors(@Query("name") name: string, @Body() body: UpdateActorDto) {
     return this.actorService.putActors(name, body);
   }
 

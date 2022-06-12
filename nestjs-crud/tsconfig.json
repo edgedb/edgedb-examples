@@ -1,21 +1,26 @@
 {
-  "compilerOptions": {
-    "module": "CommonJS",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"outDir": "./dist",
+		"baseUrl": "./",
+		"declaration": true,
+		"pretty": true,
+		"removeComments": false,
+		"incremental": true,
+		"sourceMap": true,
+		"strict": true,
+		"downlevelIteration": true,
+		"allowSyntheticDefaultImports": true,
+		"skipLibCheck": true,
+		"emitDecoratorMetadata": true,
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"importHelpers": true,
+		"paths": {
+			"~/*": ["./src/*", "./generated/*"]
+		}
+	},
+	"exclude": ["**/node_modules", "**/dist"]
 }

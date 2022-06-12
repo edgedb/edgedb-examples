@@ -1,15 +1,18 @@
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber, IsBoolean } from "class-validator";
 import { PartialType } from "@nestjs/swagger";
 
 export class CreateActorDto {
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsNumber()
   age?: number;
 
   @IsNumber()
   height?: number;
+
+  @IsBoolean()
+  isDeceased?: boolean;
 }
 
 export class UpdateActorDto extends PartialType(CreateActorDto) {}
