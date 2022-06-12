@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { CreateActorDto } from './actor.dto';
+import { CreateActorDto, UpdateActorDto } from './actor.dto';
 
 @Injectable()
 export class ActorService {
-  async getHello() {
+  async getActors() {
     return 'Hello World!';
   }
 
-  async postHello(body: CreateActorDto) {
-    return 'Hello World!';
+  async postActor(body: CreateActorDto) {
+    return body;
   }
 
-  async putHello(name: string, body:Partial<CreateActorDto>) {
-    return 'Hello World!';
+  async putActors(name: string, body: UpdateActorDto){
+    return [body];
   }
 
-  async delteHello() {
-    return 'Hello World!';
+  async deleteActors(name: string) {
+    return null;
   }
 }

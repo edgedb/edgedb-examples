@@ -14,7 +14,7 @@ describe('AppController', () => {
     appController = app.get<ActorController>(ActorController);
   });
 
-    test('should return "Hello World!"', async () => {
-      expect(await appController.getActors(undefined)).toBe('Hello World!');
-    });
+  test('should return "Hello World!"', async () => {
+    expect(await appController.getActors(undefined)).toBe('Hello World!');
+  });
 });
