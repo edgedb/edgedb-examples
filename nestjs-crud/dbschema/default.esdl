@@ -17,9 +17,9 @@ module default {
       constraint min_value(0);
       constraint max_value(100);
     }
-    property height -> float32 {
-      constraint min_value(0.0);
-      constraint max_value(3.0);
+    property height -> int16 {
+      constraint min_value(0);
+      constraint max_value(300);
     }
     property is_deceased -> bool {
       default := false

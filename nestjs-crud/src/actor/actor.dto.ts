@@ -1,18 +1,24 @@
-import { IsNotEmpty, IsNumber, IsBoolean } from "class-validator";
-import { PartialType } from "@nestjs/swagger";
+import { IsNotEmpty, IsBoolean, IsInt } from "class-validator";
+import { PartialType, OmitType } from "@nestjs/swagger";
 
 export class CreateActorDto {
   @IsNotEmpty()
   name!: string;
 
-  @IsNumber()
+  @IsInt()
   age?: number;
 
-  @IsNumber()
+  @IsInt()
   height?: number;
 
   @IsBoolean()
   isDeceased?: boolean;
 }
 
-export class UpdateActorDto extends PartialType(CreateActorDto) {}
+// We want to make the mandatory 'name' type optional during PUT request.
+// So, we'll remove it from the 'CreateActorDto' class and redefine it.
+class _UpdateActorDto extends OmitType(CreateActorDto, ["name"]) {
+  name?: string;
+}
+
+export class UpdateActorDto extends PartialType(_UpdateActorDto) {}
