@@ -17,8 +17,6 @@ certifi==2021.10.8
     # via
     #   httpcore
     #   httpx
-charset-normalizer==2.0.12
-    # via httpx
 click==8.1.3
     # via
     #   httpx
@@ -38,11 +36,11 @@ h11==0.12.0
     # via
     #   httpcore
     #   uvicorn
-httpcore==0.14.7
+httpcore==0.15.0
     # via httpx
 httptools==0.4.0
     # via uvicorn
-httpx[cli]==0.22.0
+httpx[cli]==0.23.0
     # via -r strawberry-gql/requirements.in
 idna==3.3
     # via
@@ -78,7 +76,7 @@ sniffio==1.2.0
     #   httpx
 starlette==0.19.1
     # via fastapi
-strawberry-graphql==0.112.0
+strawberry-graphql==0.114.1
     # via -r strawberry-gql/requirements.in
 typing-extensions==4.2.0
     # via
