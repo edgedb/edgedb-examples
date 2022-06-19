@@ -6,7 +6,7 @@ set -euo pipefail
 nohup npm run start:dev >> /dev/null &
 
 # Give the server enough time to be ready before accepting requests.
-sleep 4
+sleep 5
 
 # Run the healthcheck.
 if [[ $(curl -I http://localhost:3000/health-check 2>&1) =~ "200 OK" ]]; then
