@@ -68,5 +68,6 @@ jobs:
         run: npm run lint-check
 
       - name: Healthcheck
-        run: npm run start:dev
-        # chmod +x ./scripts/health_check && ./scripts/health_check
+        run:
+          - chmod +x ./scripts/health_check
+          - ./scripts/health_check
