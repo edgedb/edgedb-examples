@@ -3,10 +3,15 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values.
     directory: "/" # Location of package manifests.
     schedule:
-      interval: "daily"
+      interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values.
+    directory: "/nestjs-crud" # Location of package manifests.
+    schedule:
+      interval: "weekly"
 
   # Maintain dependencies for GitHub Actions.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
