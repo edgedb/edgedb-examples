@@ -3,10 +3,11 @@
 set -euo pipefail
 
 # Run the nestjs server in the background.
-nohup npm run start:dev >> /dev/null &
+npm run start:dev >> /dev/null &
 
 # Give the server enough time to be ready before accepting requests.
-sleep 5
+# Dev server startup is slow!!!
+sleep 10
 
 # Run the healthcheck.
 if [[ $(curl -I http://localhost:3000/health-check 2>&1) =~ "200 OK" ]]; then
