@@ -36,9 +36,7 @@ jobs:
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
-        - os: macos-latest
-          path: ~/Library/Caches/pip
-
+        
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
