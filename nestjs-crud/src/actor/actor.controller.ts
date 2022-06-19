@@ -35,3 +35,12 @@ export class ActorController {
     return this.actorService.deleteActors(name);
   }
 }
+
+// Healthcheck.
+@Controller("health-check")
+export class HealthController {
+  @Get()
+  async getHealth() {
+    return { ok: true };
+  }
+}

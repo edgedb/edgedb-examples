@@ -1,0 +1,74 @@
+name: NestJS CRUD
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  schedule:
+    # Every week at 00 UTC.
+    - cron: "0 0 * * 0"
+
+# If you trigger a new workflow while the previous one is running,
+# this will cancel the previous one.
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+
+defaults:
+ run:
+  working-directory: ./nest-crud
+
+
+jobs:
+  run-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Use matrix strategy to run the tests on multiple Py versions on multiple OSs.
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node-version: [16.x]
+
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit == 'false' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm build
+
+      - name: Lint check
+        run: npm run lint-check
+
+      - name: Healthcheck
+        run: chmod +x ./scripts/health_check && ./scripts/health_check
