@@ -3,21 +3,21 @@
 set -euo pipefail
 
 # Run the nestjs server in the background.
-npm run start:debug >> /dev/null &
+npm run start:dev >> /dev/null &
 
-# # Give the server enough time to be ready before accepting requests.
-# # Dev server startup is slow!!!
+# Give the server enough time to be ready before accepting requests.
+# Dev server startup is slow!!!
 
-while true
-c=1
+c=20
+while [[ $c != 0 ]]
 do
     # Run the healthcheck.
     if [[ $(curl -I http://localhost:3000/health-check 2>&1) =~ "200 OK" ]]; then
-    echo "Health check passed!"
+        echo "Health check passed!"
+        exit 0
     fi
-    exit 0
-    ((c++)) && ((c==20)) && break
-    curl -I http://localhost:3000/health-check
+    ((c--))
+    echo "retrying"
     sleep 1
 done
 
