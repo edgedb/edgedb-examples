@@ -31,7 +31,7 @@ jobs:
     strategy:
       # Use matrix strategy to run the tests on multiple Py versions on multiple OSs.
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         python-version: ["3.10"]
         include:
         - os: ubuntu-latest
