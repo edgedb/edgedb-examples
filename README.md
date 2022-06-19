@@ -7,6 +7,7 @@ This repo contains starter projects that demonstrate usage of EdgeDB with differ
 | Framework | Link                                                                                 |
 | --------- | ------------------------------------------------------------------------------------ |
 | Next.js   | [nextjs-todomvc](https://github.com/edgedb/edgedb-examples/tree/main/nextjs-todomvc) |
+| Nest.js   | [nextjs-crud](https://github.com/edgedb/edgedb-examples/tree/main/nextjs-crud) |
 
 ## Python
 
