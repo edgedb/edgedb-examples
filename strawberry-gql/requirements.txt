@@ -8,9 +8,7 @@ anyio==3.5.0
     # via
     #   httpcore
     #   starlette
-    #   watchgod
-asgiref==3.5.0
-    # via uvicorn
+    #   watchfiles
 backports-cached-property==1.0.1
     # via strawberry-graphql
 certifi==2021.10.8
@@ -83,11 +81,11 @@ typing-extensions==4.2.0
     #   edgedb
     #   pydantic
     #   strawberry-graphql
-uvicorn[standard]==0.17.6
+uvicorn[standard]==0.18.2
     # via -r strawberry-gql/requirements.in
 uvloop==0.16.0
     # via uvicorn
-watchgod==0.8.2
+watchfiles==0.15.0
     # via uvicorn
 websockets==10.3
     # via uvicorn
