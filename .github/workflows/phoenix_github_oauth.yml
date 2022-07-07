@@ -5,13 +5,13 @@ on:
     branches:
       - "main"
     paths:
-      - 'phoenix-github_oauth/**'
+      - 'phoenix_github_oauth/**'
 
   pull_request:
     branches:
       - "main"
     paths:
-      - 'phoenix-github_oauth/**'
+      - 'phoenix_github_oauth/**'
 
   schedule:
     # Every week at 00 UTC.
