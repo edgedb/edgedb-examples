@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'flask-crud/**'
 
   pull_request:
     branches:
       - main
+    paths:
+      - 'flask-crud/**'
 
   schedule:
     # Every week at 00 UTC.

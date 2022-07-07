@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
-
+    paths:
+      - 'strawbetter_gql/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'strawbetter_gql/**'
 
   schedule:
     # Every week at 00 UTC.

@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - "main"
+    paths:
+      - 'phoenix-github_oauth/**'
 
   pull_request:
     branches:
       - "main"
+    paths:
+      - 'phoenix-github_oauth/**'
 
   schedule:
     # Every week at 00 UTC.
