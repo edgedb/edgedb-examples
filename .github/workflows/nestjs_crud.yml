@@ -4,10 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'nestjs-crud/**'
 
   pull_request:
     branches:
       - main
+    paths:
+      - 'nestjs-crud/**'
 
   schedule:
     # Every week at 00 UTC.

@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'flask_crud/**'
+      - 'flask-crud/**'
 
   pull_request:
     branches:
       - main
     paths:
-      - 'flask_crud/**'
+      - 'flask-crud/**'
 
   schedule:
     # Every week at 00 UTC.

@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'strawbetter_gql/**'
+      - 'strawberry-gql/**'
   pull_request:
     branches:
       - main
     paths:
-      - 'strawbetter_gql/**'
+      - 'strawberry-gql/**'
 
   schedule:
     # Every week at 00 UTC.

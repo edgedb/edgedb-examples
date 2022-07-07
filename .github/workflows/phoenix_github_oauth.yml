@@ -5,13 +5,13 @@ on:
     branches:
       - "main"
     paths:
-      - 'phoenix_github_oauth/**'
+      - 'phoenix-github-oauth/**'
 
   pull_request:
     branches:
       - "main"
     paths:
-      - 'phoenix_github_oauth/**'
+      - 'phoenix-github-oauth/**'
 
   schedule:
     # Every week at 00 UTC.
@@ -28,7 +28,7 @@ env:
 
 defaults:
   run:
-    working-directory: ./phoenix-github_oauth
+    working-directory: ./phoenix-github-oauth
 
 jobs:
   tests:
@@ -55,9 +55,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ./phoenix-github_oauth/deps
-            ./phoenix-github_oauth/_build
-          key: phoenix-github-oauth-${{ runner.os }}-${{ hashFiles('mix.lock') }}
+            ./phoenix_github_oauth/deps
+            ./phoenix_github_oauth/_build
+          key: phoenix_github_oauth-${{ runner.os }}-${{ hashFiles('mix.lock') }}
           restore-keys: |
             phoenix-github-oauth-${{ runner.os }}-
 

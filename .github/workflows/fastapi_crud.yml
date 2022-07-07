@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'fastapi_crud/**'
+      - 'fastapi-crud/**'
 
   pull_request:
     branches:
       - main
     paths:
-      - 'fastapi_crud/**'
+      - 'fastapi-crud/**'
 
   schedule:
     # Every week at 00 UTC.
