@@ -6,8 +6,6 @@
 #
 anyio==3.5.0
     # via starlette
-asgiref==3.5.0
-    # via uvicorn
 click==8.1.2
     # via uvicorn
 edgedb==0.23.0
@@ -28,5 +26,5 @@ typing-extensions==4.1.1
     # via
     #   edgedb
     #   pydantic
-uvicorn==0.17.6
+uvicorn==0.18.2
     # via -r fastapi-crud/requirements.in
