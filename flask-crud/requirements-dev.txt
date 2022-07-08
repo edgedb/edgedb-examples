@@ -8,6 +8,8 @@ attrs==21.4.0
     # via pytest
 black==22.3.0
     # via -r flask-crud/requirements-dev.in
+build==0.8.0
+    # via pip-tools
 cfgv==3.3.1
     # via pre-commit
 click==8.1.2
@@ -37,12 +39,14 @@ mypy-extensions==0.4.3
 nodeenv==1.6.0
     # via pre-commit
 packaging==21.3
-    # via pytest
+    # via
+    #   build
+    #   pytest
 pathspec==0.9.0
     # via black
 pep517==0.12.0
-    # via pip-tools
-pip-tools==6.6.2
+    # via build
+pip-tools==6.8.0
     # via -r flask-crud/requirements-dev.in
 platformdirs==2.5.2
     # via
@@ -71,8 +75,8 @@ toml==0.10.2
 tomli==2.0.1
     # via
     #   black
+    #   build
     #   mypy
-    #   pep517
     #   pytest
 typing-extensions==4.2.0
     # via mypy
