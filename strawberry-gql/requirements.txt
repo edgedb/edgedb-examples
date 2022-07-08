@@ -74,7 +74,7 @@ sniffio==1.2.0
     #   httpx
 starlette==0.19.1
     # via fastapi
-strawberry-graphql==0.114.2
+strawberry-graphql==0.117.1
     # via -r strawberry-gql/requirements.in
 typing-extensions==4.2.0
     # via
