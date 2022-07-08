@@ -1,6 +1,6 @@
 # EdgeDB + Fresh
 
-![fresh logo](/logo.svg)
+![fresh logo](static/logo.svg)
 
 This is a demo project showcasing how to use EdgeDB in a Deno Fresh project. It renders a single route (implemented in `routes/index.tsx`) that displays a counter. The value of this counter can be incremented/decremented and is persisted in EdgeDB.
 
