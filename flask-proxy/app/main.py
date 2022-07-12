@@ -1,33 +1,6 @@
-"""Demo authorization and HTTP query proxy server.
+"""Demo authentication and HTTP query proxy server.
 
-With some care it is possible to use ACLs to craft a database schema
-where it is safe for untrusted client code to query the database,
-provided that appropriate global variables are set that correspond to
-the permissions granted to the client.
-
-While EdgeDB ACLs can handle the question of *authorization*, EdgeDB
-does not (yet!) have a way to interface with the application's
-*authentication* logic.
-
-One approach to solving this is:
- 1. Run an authentication service that authenticates users and then signs
-    tokens containing appropriate EdgeDB global variables for that user's
-    login session.
- 2. Run a proxy service that accepts EdgeDB HTTP requests (for EdgeQL,
-    GraphQL or both) and forwards them to the EdgeDB server. If a global
-    variable token is provided, it is authenticated and the globals
-    included in the query. (Alternately, if it is not provided, the query
-    could fail.)
-
-These services could be separate or combined.
-
-In this demo, the services are combined. Authentication is done via
-GitHub OAuth, and that username is provided as a global variable.
-
-There is an accompanying example schema for this in dbschema that
-uses access policies to control access to user todo lists, but
-the details are not really relevant to the proxy, apart from that it
-has a global called cur_username.
+See README.md for details.
 """
 
 from __future__ import annotations
