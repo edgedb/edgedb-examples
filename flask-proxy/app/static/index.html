@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>EdgeDB proxy</title>
+  </head>
+
+  <body>
+    <a href="login/github">Login with GitHub</a>
+    <script>
+      const cookie = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('token='));
+	  // Obviously it is wildly insecure to pull something out of a
+	  // JWT without validating it, but this is just debug output in a
+	  // demo app.
+      if (cookie) {
+          cookieValue = cookie.split('=')[1];
+          chunk = JSON.parse(atob(cookieValue.split('.')[1]))
+          document.write("Logged in as " + chunk["default::cur_username"]);
+      }
+    </script>
+
+    <form action="query" method="post">
+      <textarea id="query" name="query" cols=100 rows=40></textarea>
+
+      <fieldset>
+        <div>
+          <input type="radio" id="edgeql" name="lang" value="edgeql" checked>
+          <label for="edgeql">EdgeQL</label>
+        </div>
+
+        <div>
+          <input type="radio" id="graphql" name="lang" value="graphql">
+          <label for="graphql">GraphQL</label>
+        </div>
+      </fieldset>
+
+      <p><input type="submit" value="Run query" />
+  </body>
+</html>
