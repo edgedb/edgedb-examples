@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a sample project demonstrating how to use [EdgeDB](https://www.edgedb.com) inside a Next.js project.
+
+For the step-by-step tutorial associated with this project, refer to [edgedb.com/docs/guides/tutorials/nextjs](https://www.edgedb.com/docs/guides/tutorials/nextjs)
 
 ## Getting Started
 
