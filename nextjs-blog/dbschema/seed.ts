@@ -3,18 +3,18 @@ import {client, e} from '../client';
 const userData = [
   {
     name: 'Alice',
-    email: 'alice@edgedb.io',
+    email: 'alice@edgedb.com',
     posts: [
       {
-        title: 'Join the EdgeDB Slack',
-        content: 'https://slack.edgedb.io',
+        title: 'Join the EdgeDB Discord',
+        content: 'https://discord.gg/edgedb',
         published: true,
       },
     ],
   },
   {
     name: 'Nilu',
-    email: 'nilu@edgedb.io',
+    email: 'nilu@edgedb.com',
     posts: [
       {
         title: 'Follow EdgeDB on Twitter',
@@ -24,8 +24,8 @@ const userData = [
     ],
   },
   {
-    name: 'Mahmoud',
-    email: 'mahmoud@edgedb.io',
+    name: 'Colin',
+    email: 'colin@edgedb.com',
     posts: [
       {
         title: 'Ask a question about EdgeDB on GitHub',
@@ -34,7 +34,7 @@ const userData = [
       },
       {
         title: 'EdgeDB on YouTube',
-        content: 'https://pris.ly/youtube',
+        content: 'https://www.youtube.com/c/EdgeDB',
         published: false,
       },
     ],
