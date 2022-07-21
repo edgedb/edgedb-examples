@@ -1,6 +1,6 @@
-# EdgeDB + Clerk + Next.js Starter
+# Object-level security with Clerk + Next.js Starter
 
-This example demonstrates how to use EdgeDB's new object-level security features. To simplify the authorization part, we've modified an example project using [Clerk](https://www.clerk.dev) and [Next.js](https://nextjs.org).
+This example demonstrates how to use EdgeDB's new [object-level security](https://www.edgedb.com/docs/datamodel/ols) features. To simplify the authorization part, we've modified an example project using [Clerk](https://www.clerk.dev) for user management.
 
 ## Get started
 
