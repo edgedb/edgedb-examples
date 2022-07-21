@@ -7,8 +7,8 @@ This example demonstrates how to use EdgeDB's new [object-level security](https:
 Download the source code of this sample project with [`degit`](https://github.com/Rich-Harris/degit).
 
 ```sh
-$ npx degit edgedb/edgedb-examples/clerk-ols
-$ cd clerk-ols
+$ npx degit edgedb/edgedb-examples/ols-clerk
+$ cd ols-clerk
 ```
 
 Install the dependencies
