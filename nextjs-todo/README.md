@@ -7,7 +7,7 @@ This project implements the standard [TodoMVC](https://todomvc.com/) project wit
 - TypeScript
 - React
 - Next.js
-- [EdgeDB](https://edgedb.com/) (1-beta.2)
+- [EdgeDB](https://edgedb.com/) (2.0)
 - The `edgedb` NPM module ([docs](https://www.edgedb.com/docs/clients/01_js/index/))
 - [react-query](https://github.com/tannerlinsley/react-query) for fetching
 - [Axios](https://github.com/axios/axios) for HTTP
