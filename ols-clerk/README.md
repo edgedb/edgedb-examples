@@ -26,7 +26,7 @@ $ edgedb project init
 Generate the [EdgeDB query builder](https://www.edgedb.com/docs/clients/01_js/querybuilder).
 
 ```sh
-npx edgeql-js
+$ npx edgeql-js
 ```
 
 Start the server
