@@ -10,7 +10,7 @@ asgiref==3.5.0
     # via uvicorn
 click==8.1.2
     # via uvicorn
-edgedb==0.23.0
+edgedb==0.24.0
     # via -r fastapi-crud/requirements.in
 fastapi==0.78.0
     # via -r fastapi-crud/requirements.in
