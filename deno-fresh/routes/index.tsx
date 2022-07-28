@@ -1,15 +1,14 @@
 /** @jsx h */
 import {h} from 'preact';
 import {PageProps, HandlerContext} from '$fresh/server.ts';
-import * as edgedb from 'edgedb';
+import {createClient} from 'edgedb';
 import Counter from '../islands/Counter.tsx';
 
-const client = edgedb.createClient();
+const client = createClient();
 
 export const handler = async (req: Request, ctx: HandlerContext) => {
   const url = new URL(req.url);
   const data = url.searchParams;
-  const query = url.searchParams.get('q') || '';
   const random = await client.querySingle<number>(`select random()`);
 
   // either delete or insert a Count object

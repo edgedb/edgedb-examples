@@ -31,16 +31,16 @@ cp .env.example .env    # copy env vars to .env
 npm run seed            # seed the database
 ```
 
-After seeding, you can sign in with the following credentials, or create a new account:
-
-- username: `joker`
-- password: `remixrulz`
-
 Then start the development server. Your app will hot reload as you update your files.
 
 ```sh
 npm run dev             # start dev server
 ```
+
+You can sign in with the following credentials, or create a new account:
+
+- username: `joker`
+- password: `remixrulz`
 
 ## Deployment
 

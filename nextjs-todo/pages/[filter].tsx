@@ -1,6 +1,7 @@
 import 'todomvc-app-css/index.css';
 import 'todomvc-common/base.css';
 
+import {useMutation, useQuery} from '@tanstack/react-query';
 import axios from 'axios';
 import clsx from 'clsx';
 import {
@@ -10,10 +11,8 @@ import {
 } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useMutation, useQuery } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
 
-import { ListItem } from '../components/ListItem';
+import {ListItem} from '../components/ListItem';
 
 export type Task = {
   id: string;
@@ -25,30 +24,30 @@ export type Task = {
 export default function TodosPage({
   filter,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const allTasks = useQuery<Task[]>('todos', () =>
+  const allTasks = useQuery<Task[]>(['todos'], () =>
     axios.get('/api/todo').then((res) => res.data)
   );
   const refetchTasks = allTasks.refetch as () => void;
 
   const addTask = useMutation(
-    (text: string) => axios.post('/api/todo', { text }),
-    { onSuccess: refetchTasks }
+    (text: string) => axios.post('/api/todo', {text}),
+    {onSuccess: refetchTasks}
   );
 
   const editTask = useMutation(
-    (arg: { id: string; data: { text: string; completed: boolean } }) =>
+    (arg: {id: string; data: {text: string; completed: boolean}}) =>
       axios.patch(`/api/todo/${arg.id}`, arg.data),
-    { onSuccess: refetchTasks }
+    {onSuccess: refetchTasks}
   );
 
   const deleteTask = useMutation(
     (id: string) => axios.delete(`/api/todo/${id}`),
-    { onSuccess: refetchTasks }
+    {onSuccess: refetchTasks}
   );
 
   const clearCompleted = useMutation(
     () => axios.post('/api/todo/clearCompleted').then((res) => res.data),
-    { onSuccess: refetchTasks }
+    {onSuccess: refetchTasks}
   );
 
   return (
@@ -169,7 +168,6 @@ export default function TodosPage({
           Part of <a href="http://todomvc.com">TodoMVC</a>
         </p>
       </footer>
-      <ReactQueryDevtools initialIsOpen={false} />
     </>
   );
 }
@@ -177,7 +175,7 @@ export default function TodosPage({
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: ['active', 'completed', 'all'].map((filter) => ({
-      params: { filter },
+      params: {filter},
     })),
 
     fallback: false,
@@ -185,7 +183,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps = async (
-  context: GetStaticPropsContext<{ filter: string }>
+  context: GetStaticPropsContext<{filter: string}>
 ) => {
   return {
     props: {
