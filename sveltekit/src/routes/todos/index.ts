@@ -1,39 +1,41 @@
-import { api } from './_api';
 import type { RequestHandler } from './__types';
+import { getFormData } from 'remix-params-helper';
+import { z } from 'zod';
+import e from '$db';
+import { client } from '$lib/edgedb';
 
 export const GET: RequestHandler = async ({ locals }) => {
-	// locals.userid comes from src/hooks.js
-	const response = await api('GET', `todos/${locals.userid}`);
-
-	if (response.status === 404) {
-		// user hasn't created a todo list.
-		// start with an empty array
-		return {
-			body: {
-				todos: []
-			}
-		};
-	}
-
-	if (response.status === 200) {
-		return {
-			body: {
-				todos: await response.json()
-			}
-		};
-	}
+	// locals.userid comes from src/hooks.ts
+	const todos = await e
+		.select(e.Todo, (todo) => ({
+			id: true,
+			text: true,
+			done: true,
+			filter: e.op(todo.created_by, '=', e.uuid(locals.userid))
+		}))
+		.run(client);
 
 	return {
-		status: response.status
+		body: { todos }
 	};
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const form = await request.formData();
-
-	await api('POST', `todos/${locals.userid}`, {
-		text: form.get('text')
+	const schema = z.object({
+		text: z.string()
 	});
+	const { data, errors, success } = await getFormData(request, schema);
+
+	if (!success) {
+		return { body: errors, status: 400 };
+	}
+
+	await e
+		.insert(e.Todo, {
+			text: data.text,
+			created_by: locals.userid
+		})
+		.run(client);
 
 	return {};
 };
@@ -47,21 +49,44 @@ const redirect = {
 	}
 };
 
-export const PATCH: RequestHandler = async ({ request, locals }) => {
-	const form = await request.formData();
-
-	await api('PATCH', `todos/${locals.userid}/${form.get('uid')}`, {
-		text: form.has('text') ? form.get('text') : undefined,
-		done: form.has('done') ? !!form.get('done') : undefined
+export const PATCH: RequestHandler = async ({ request }) => {
+	const schema = z.object({
+		id: z.string().uuid(),
+		text: z.string().optional(),
+		done: z.boolean().optional()
 	});
+	const { data, errors, success } = await getFormData(request, schema);
+
+	if (!success) {
+		return { body: errors, status: 400 };
+	}
+
+	const { id, text, done } = data;
+	await e
+		.update(e.Todo, (todo) => ({
+			filter: e.op(todo.id, '=', e.uuid(id)),
+			set: { text, done }
+		}))
+		.run(client);
 
 	return redirect;
 };
 
-export const DELETE: RequestHandler = async ({ request, locals }) => {
-	const form = await request.formData();
+export const DELETE: RequestHandler = async ({ request }) => {
+	const schema = z.object({
+		id: z.string().uuid()
+	});
+	const { data, errors, success } = await getFormData(request, schema);
 
-	await api('DELETE', `todos/${locals.userid}/${form.get('uid')}`);
+	if (!success) {
+		return { body: errors, status: 400 };
+	}
+
+	await e
+		.delete(e.Todo, (todo) => ({
+			filter: e.op(todo.id, '=', e.uuid(data.id))
+		}))
+		.run(client);
 
 	return redirect;
 };

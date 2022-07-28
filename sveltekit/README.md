@@ -1,22 +1,23 @@
-# create-svelte
+# SvelteKit with EdgeDB
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This project is based on the SvelteKit default template (via [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte)) and has been modified to use EdgeDB instead of the Svelte API.
 
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm init svelte
-
-# create a new project in my-app
-npm init svelte my-app
-```
+- [SvelteKit Docs](https://kit.svelte.dev/docs)
+- [EdgeDB Docs](https://www.edgedb.com/docs)
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+[Install](https://www.edgedb.com/install) the `edgedb` CLI if you haven't already.
+
+Then from your terminal:
+
+```bash
+npm install             # install dependencies
+edgedb project init     # initialize EdgeDB
+npx edgeql-js           # generate query builder
+```
+
+Then start the development server:
 
 ```bash
 npm run dev
