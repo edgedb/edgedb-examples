@@ -12,7 +12,7 @@ module default {
     required link author -> User;
     access policy insert_posts allow insert;
     access policy own_posts allow select, delete, update using (
-      .author ?= (select User filter .clerk_id ?= global current_user)
+      .author ?= (select User filter .clerk_id = global current_user)
     );
   }
 }

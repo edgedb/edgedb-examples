@@ -10,7 +10,7 @@ export const getServerSideProps = withServerSideAuth(
   async ({ req }) => {
     const { userId } = req.auth;
     if (!userId) {
-      return { redirect: { destination: "/sign-up?redirect_url=" + resolvedUrl } };
+      return { redirect: { destination: "/sign-up" } };
     }
 
     // set global variables with .withGlobals
