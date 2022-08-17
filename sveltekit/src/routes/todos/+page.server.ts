@@ -1,10 +1,10 @@
-import type { RequestHandler } from './__types';
+import type { PageServerLoad, Action } from './$types';
 import { getFormData } from 'remix-params-helper';
 import { z } from 'zod';
 import e from '$db';
 import { client } from '$lib/edgedb';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }) => {
 	// locals.userid comes from src/hooks.ts
 	const todos = await e
 		.select(e.Todo, (todo) => ({
@@ -15,18 +15,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}))
 		.run(client);
 
-	return {
-		body: { todos }
-	};
+	return { todos };
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: Action = async ({ request, locals }) => {
 	const schema = z.object({
 		text: z.string()
 	});
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
 		return { body: errors, status: 400 };
 	}
 
@@ -37,6 +36,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		})
 		.run(client);
 
+	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
 	return {};
 };
 
@@ -49,7 +49,7 @@ const redirect = {
 	}
 };
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: Action = async ({ request }) => {
 	const schema = z.object({
 		id: z.string().uuid(),
 		text: z.string().optional(),
@@ -58,6 +58,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
 		return { body: errors, status: 400 };
 	}
 
@@ -69,16 +70,18 @@ export const PATCH: RequestHandler = async ({ request }) => {
 		}))
 		.run(client);
 
+	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
 	return redirect;
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: Action = async ({ request }) => {
 	const schema = z.object({
 		id: z.string().uuid()
 	});
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
+		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
 		return { body: errors, status: 400 };
 	}
 
@@ -88,5 +91,6 @@ export const DELETE: RequestHandler = async ({ request }) => {
 		}))
 		.run(client);
 
+	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
 	return redirect;
 };
