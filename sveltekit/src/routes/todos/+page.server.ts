@@ -1,3 +1,4 @@
+import { redirect as kitRedirect } from '@sveltejs/kit';
 import type { PageServerLoad, Action } from './$types';
 import { getFormData } from 'remix-params-helper';
 import { z } from 'zod';
@@ -25,8 +26,7 @@ export const POST: Action = async ({ request, locals }) => {
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
-		return { body: errors, status: 400 };
+		return { errors };
 	}
 
 	await e
@@ -35,19 +35,11 @@ export const POST: Action = async ({ request, locals }) => {
 			created_by: locals.userid
 		})
 		.run(client);
-
-	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
-	return {};
 };
 
 // If the user has JavaScript disabled, the URL will change to
 // include the method override unless we redirect back to /todos
-const redirect = {
-	status: 303,
-	headers: {
-		location: '/todos'
-	}
-};
+const redirect = kitRedirect(303, '/todos');
 
 export const PATCH: Action = async ({ request }) => {
 	const schema = z.object({
@@ -58,8 +50,7 @@ export const PATCH: Action = async ({ request }) => {
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
-		return { body: errors, status: 400 };
+		return { errors };
 	}
 
 	const { id, text, done } = data;
@@ -70,8 +61,7 @@ export const PATCH: Action = async ({ request }) => {
 		}))
 		.run(client);
 
-	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
-	return redirect;
+	throw redirect;
 };
 
 export const DELETE: Action = async ({ request }) => {
@@ -81,8 +71,7 @@ export const DELETE: Action = async ({ request }) => {
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
-		throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
-		return { body: errors, status: 400 };
+		return { errors };
 	}
 
 	await e
@@ -91,6 +80,5 @@ export const DELETE: Action = async ({ request }) => {
 		}))
 		.run(client);
 
-	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292699)");
-	return redirect;
+	throw redirect;
 };

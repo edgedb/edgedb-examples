@@ -1,12 +1,11 @@
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-
-	import type { Todo } from '$db';
 	import { enhance } from '$lib/form';
 	import { scale } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
+	import type { PageData } from './$types';
 
-	export let todos: Todo[];
+	export let data: PageData;
+	let isPendingDeletion = false;
 </script>
 
 <svelte:head>
@@ -30,7 +29,7 @@
 		<input name="text" aria-label="Add todo" placeholder="+ tap to add a todo" />
 	</form>
 
-	{#each todos as todo (todo.id)}
+	{#each data.todos as todo (todo.id)}
 		<div
 			class="todo"
 			class:done={todo.done}
@@ -47,7 +46,7 @@
 				}}
 			>
 				<input type="hidden" name="id" value={todo.id} />
-				<input type="hidden" name="done" value={todo.done ? '' : 'true'} />
+				<input type="hidden" name="done" value={todo.done ? false : true} />
 				<button class="toggle" aria-label="Mark todo as {todo.done ? 'not done' : 'done'}" />
 			</form>
 
@@ -61,11 +60,11 @@
 				action="/todos?_method=DELETE"
 				method="post"
 				use:enhance={{
-					pending: () => (todo.pending_delete = true)
+					pending: () => (isPendingDeletion = true)
 				}}
 			>
 				<input type="hidden" name="id" value={todo.id} />
-				<button class="delete" aria-label="Delete todo" disabled={todo.pending_delete} />
+				<button class="delete" aria-label="Delete todo" disabled={isPendingDeletion} />
 			</form>
 		</div>
 	{/each}
