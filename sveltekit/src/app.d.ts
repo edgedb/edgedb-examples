@@ -10,7 +10,7 @@ declare namespace App {
 
 	// interface Platform {}
 
-	// interface Session {}
+	// interface PrivateEnv {}
 
-	// interface Stuff {}
+	// interface PublicEnv {}
 }

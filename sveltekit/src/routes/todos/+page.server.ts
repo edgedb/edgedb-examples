@@ -1,10 +1,11 @@
-import type { RequestHandler } from './__types';
+import { redirect as kitRedirect } from '@sveltejs/kit';
+import type { PageServerLoad, Action } from './$types';
 import { getFormData } from 'remix-params-helper';
 import { z } from 'zod';
 import e from '$db';
 import { client } from '$lib/edgedb';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }) => {
 	// locals.userid comes from src/hooks.ts
 	const todos = await e
 		.select(e.Todo, (todo) => ({
@@ -15,19 +16,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}))
 		.run(client);
 
-	return {
-		body: { todos }
-	};
+	return { todos };
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: Action = async ({ request, locals }) => {
 	const schema = z.object({
 		text: z.string()
 	});
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
-		return { body: errors, status: 400 };
+		return { errors };
 	}
 
 	await e
@@ -36,20 +35,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			created_by: locals.userid
 		})
 		.run(client);
-
-	return {};
 };
 
 // If the user has JavaScript disabled, the URL will change to
 // include the method override unless we redirect back to /todos
-const redirect = {
-	status: 303,
-	headers: {
-		location: '/todos'
-	}
-};
+const redirect = kitRedirect(303, '/todos');
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: Action = async ({ request }) => {
 	const schema = z.object({
 		id: z.string().uuid(),
 		text: z.string().optional(),
@@ -58,7 +50,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
-		return { body: errors, status: 400 };
+		return { errors };
 	}
 
 	const { id, text, done } = data;
@@ -69,17 +61,17 @@ export const PATCH: RequestHandler = async ({ request }) => {
 		}))
 		.run(client);
 
-	return redirect;
+	throw redirect;
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: Action = async ({ request }) => {
 	const schema = z.object({
 		id: z.string().uuid()
 	});
 	const { data, errors, success } = await getFormData(request, schema);
 
 	if (!success) {
-		return { body: errors, status: 400 };
+		return { errors };
 	}
 
 	await e
@@ -88,5 +80,5 @@ export const DELETE: RequestHandler = async ({ request }) => {
 		}))
 		.run(client);
 
-	return redirect;
+	throw redirect;
 };
