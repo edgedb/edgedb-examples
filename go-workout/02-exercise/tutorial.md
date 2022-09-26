@@ -1,7 +1,7 @@
 # Part 2
 
 This section assumes that you have finished
-[part 1](https://github.com/edgedb/edgedb-examples/tree/main/go-workout/blob/master/01-workouts/tutorial.md).
+[part 1](https://github.com/edgedb/edgedb-examples/go-workout/blob/master/01-workouts/tutorial.md).
 
 So far the app only has workouts, but no way to record sets of exercises. We'll
 add exercises to our data model now and then in the next section we'll tie
@@ -129,5 +129,5 @@ And we'll add a simple navbar.
 Don't forget to restart your go server if you're managing that manually. Then
 checkout the new [exercises page](http://localhost:5000/exercises).
 
-The final section [part 3](https://github.com/edgedb/edgedb-examples/tree/main/go-workout/blob/master/03-sets/tutorial.md)
+The final section [part 3](https://github.com/edgedb/edgedb-examples/go-workout/blob/master/03-sets/tutorial.md)
 is next.

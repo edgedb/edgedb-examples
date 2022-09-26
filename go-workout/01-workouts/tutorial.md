@@ -227,4 +227,4 @@ If you have both the frontend and backend servers running you'll find the UI at 
 Help is available: If you get stuck, you can reach out to the community on
 [GitHub Discussions](https://github.com/edgedb/edgedb/discussions).
 
-When you're ready you can move on to [part 2](https://github.com/edgedb/edgedb-examples/tree/main/go-workout/blob/master/02-exercise/tutorial.md).
+When you're ready you can move on to [part 2](https://github.com/edgedb/edgedb-examples/go-workout/blob/master/02-exercise/tutorial.md).
