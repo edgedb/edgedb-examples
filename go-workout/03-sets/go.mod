@@ -1,4 +1,4 @@
-module github.com/edgedb/edgedb-examples/go-workout
+module github.com/edgedb/workout-tutorial
 
 go 1.16
 
