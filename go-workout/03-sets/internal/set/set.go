@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/edgedb/workout-tutorial/internal/db"
-	"github.com/edgedb/workout-tutorial/internal/workout"
+	"github.com/edgedb/edgedb-examples/go-workout/internal/db"
+	"github.com/edgedb/edgedb-examples/go-workout/internal/workout"
 	"github.com/gin-gonic/gin"
 )
 

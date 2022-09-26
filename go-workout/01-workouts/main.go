@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/edgedb/workout-tutorial/internal/workout"
+	"github.com/edgedb/edgedb-examples/go-workout/internal/workout"
 	"github.com/gin-gonic/gin"
 )
 

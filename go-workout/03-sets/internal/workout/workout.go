@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/edgedb/edgedb-examples/go-workout/internal/db"
+	"github.com/edgedb/edgedb-examples/go-workout/internal/exercise"
 	"github.com/edgedb/edgedb-go"
-	"github.com/edgedb/workout-tutorial/internal/db"
-	"github.com/edgedb/workout-tutorial/internal/exercise"
 	"github.com/gin-gonic/gin"
 )
 
