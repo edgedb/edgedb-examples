@@ -1,7 +1,7 @@
 # Part 3
 
 Part 3 picks up where
-[part 2](https://github.com/edgedb/edgedb-examples/go-workout/blob/master/02-exercise/tutorial.md)
+[part 2](https://github.com/edgedb/edgedb-examples/tree/main/go-workout/blob/master/02-exercise/tutorial.md)
 left off.
 
 This is the final step in this tutorial. We'll add sets (a weight and rep count).
