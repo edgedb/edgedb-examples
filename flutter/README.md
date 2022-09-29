@@ -18,7 +18,19 @@ To try out this example:
 
 3. Finally, run `flutter run`.
 
-For more details on EdgeDB or the Dart `edgedb` package, check out our docs: <https://www.edgedb.com/docs>.
+> **Note**: Currently there are a few caveats that come
+> with using `edgedb` on the client side (as opposed to on the server):
+>
+> - You will need to explicitly provide connection details to
+>   `createClient()`. Normally it relies relies on the app being run from your
+>   project directory (or with enviroment variables in production) which won't
+>   be available in the compiled client app.
+> - You'll also likely want to limit the data a user of the app can
+>   access. For this we recommend using
+>   [access policies](https://www.edgedb.com/docs/datamodel/access_policies).
+
+For more details on EdgeDB or the Dart `edgedb` package, check out our docs:
+<https://www.edgedb.com/docs>.
 
 A few resources to get you started if this is your first Flutter project:
 
