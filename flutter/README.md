@@ -1,10 +1,24 @@
-# flutter_example
+# Flutter + EdgeDB example
 
-A new Flutter project.
+An example Flutter project using EdgeDB.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is the default starting point for a Flutter application
+as created by `flutter create`, with a few changes to demonstrate how to
+get started with using EdgeDB.
+
+To try out this example:
+
+1. First run `edgedb project init`, follow the prompts to
+   create a new development database instance.
+
+2. Run `flutter pub run build_runner build` to generate typed query methods
+   for the `.edgeql` query files.
+
+3. Finally, run `flutter run`.
+
+For more details on EdgeDB or the Dart `edgedb` package, check out our docs: <https://www.edgedb.com/docs>.
 
 A few resources to get you started if this is your first Flutter project:
 

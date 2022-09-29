@@ -1,4 +1,17 @@
+import 'dart:math';
+
+import 'package:edgedb/edgedb.dart';
 import 'package:flutter/material.dart';
+
+import './getNRandomMovies.edgeql.dart';
+
+// Note: While running your app in development mode, 'createClient()' will
+// automatically connect to your development database instance.
+// However, when it comes time to build and release your app, you'll need to
+// explicitly provide connection details to 'createClient()'.
+final client = createClient(
+  concurrency: 1,
+);
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter + EdgeDB Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -24,7 +37,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter + EdgeDB Demo'),
     );
   }
 }
@@ -48,17 +61,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _movieCount = 5;
+  String _movies = '';
 
-  void _incrementCounter() {
+  void _incrementCount() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _movieCount++;
     });
+  }
+
+  void _decrementCount() {
+    setState(() {
+      _movieCount = max(1, _movieCount - 1);
+    });
+  }
+
+  void _fetchMessage() async {
+    final movies = await client.getNRandomMovies(n: _movieCount);
+    setState(() => _movies = movies.map((movie) => movie.title).join('\n'));
   }
 
   @override
@@ -95,20 +115,44 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: _decrementCount,
+                  child: const Text(
+                    '-',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
+                Text(
+                  _movieCount.toString(),
+                  style: const TextStyle(fontSize: 24),
+                ),
+                TextButton(
+                  onPressed: _incrementCount,
+                  child: const Text(
+                    '+',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 24,
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              _movies,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 28),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _fetchMessage,
+        label: const Text('Get Random Movies'),
+        icon: const Icon(Icons.arrow_forward_rounded),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
