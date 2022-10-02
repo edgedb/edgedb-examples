@@ -9,14 +9,8 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-
 		alias: {
 			$db: 'dbschema/edgeql-js'
-		},
-
-		// Override http methods in the Todo forms
-		methodOverride: {
-			allowed: ['PATCH', 'DELETE']
 		}
 	}
 };
