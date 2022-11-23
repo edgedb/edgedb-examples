@@ -89,7 +89,8 @@ async def post_event(event: RequestData) -> ResponseData:
             status_code=HTTPStatus.BAD_REQUEST,
             detail={
                 "error": "Invalid datetime format. "
-                "Datetime string must look like this: '2010-12-27T23:59:59-07:00'",
+                "Datetime string must look like this: "
+                "'2010-12-27T23:59:59-07:00'",
             },
         )
 
