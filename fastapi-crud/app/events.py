@@ -56,7 +56,7 @@ async def get_events(
         event = await db_queries.get_event_by_name(client, name=name)
         if not event:
             raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND, 
+                status_code=HTTPStatus.NOT_FOUND,
                 detail={"error": f"Event '{name}' does not exist."},
             )
         response = ResponseData(
@@ -151,7 +151,7 @@ async def put_event(event: RequestData, current_name: str) -> ResponseData:
     else:
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            detail={"error": f"Update event '{event.name}' failed."}
+            detail={"error": f"Update event '{event.name}' failed."},
         )
 
 
@@ -166,15 +166,14 @@ async def delete_event(name: str) -> ResponseData:
 
     if deleted_event:
         response = ResponseData(
-                name=deleted_event.name,
-                address=deleted_event.address,
-                schedule=deleted_event.schedule,
-                host=Host(name=deleted_event.host.name) if deleted_event.host else None,
-            )
+            name=deleted_event.name,
+            address=deleted_event.address,
+            schedule=deleted_event.schedule,
+            host=Host(name=deleted_event.host.name) if deleted_event.host else None,
+        )
         return response
     else:
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-            detail={"error": f"Delete event '{name}' failed."}
+            detail={"error": f"Delete event '{name}' failed."},
         )
-

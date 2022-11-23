@@ -29,7 +29,9 @@ class ResponseData(BaseModel):
 
 
 @router.get("/users")
-async def get_users(name: str = Query(None, max_length=50)) -> Iterable[ResponseData] | ResponseData:
+async def get_users(
+    name: str = Query(None, max_length=50)
+) -> Iterable[ResponseData] | ResponseData:
 
     if not name:
         users = await db_queries.get_users(client)
@@ -40,13 +42,10 @@ async def get_users(name: str = Query(None, max_length=50)) -> Iterable[Response
         user = await db_queries.get_user_by_name(client, name=name)
         if not user:
             raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND, 
+                status_code=HTTPStatus.NOT_FOUND,
                 detail={"error": f"Username '{name}' does not exist."},
             )
-        response = ResponseData(
-            name=user.name,
-            created_at=user.created_at
-        )
+        response = ResponseData(name=user.name, created_at=user.created_at)
     return response
 
 
@@ -78,7 +77,7 @@ async def post_user(user: RequestData) -> ResponseData:
 async def put_user(user: RequestData, current_name: str) -> ResponseData:
     try:
         updated_user = await db_queries.update_user(
-            client, 
+            client,
             new_name=user.name,
             current_name=current_name,
         )
@@ -89,8 +88,9 @@ async def put_user(user: RequestData, current_name: str) -> ResponseData:
         )
 
     if updated_user:
-        response = \
-            ResponseData(name=updated_user.name, created_at=updated_user.created_at)
+        response = ResponseData(
+            name=updated_user.name, created_at=updated_user.created_at
+        )
         return response
     else:
         raise HTTPException(
@@ -118,8 +118,9 @@ async def delete_user(name: str) -> ResponseData:
         )
 
     if deleted_user:
-        response = \
-            ResponseData(name=deleted_user.name, created_at=deleted_user.created_at)
+        response = ResponseData(
+            name=deleted_user.name, created_at=deleted_user.created_at
+        )
         return response
     else:
         raise HTTPException(
