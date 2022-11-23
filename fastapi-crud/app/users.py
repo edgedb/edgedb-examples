@@ -8,6 +8,8 @@ import edgedb
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
+import generated_async_edgeql as db_queries
+
 router = APIRouter()
 client = edgedb.create_async_client()
 
@@ -27,18 +29,24 @@ class ResponseData(BaseModel):
 
 
 @router.get("/users")
-async def get_users(name: str = Query(None, max_length=50)) -> Iterable[ResponseData]:
+async def get_users(name: str = Query(None, max_length=50)) -> Iterable[ResponseData] | ResponseData:
 
     if not name:
-        users = await client.query("SELECT User {name, created_at};")
-    else:
-        users = await client.query(
-            """SELECT User {name, created_at} FILTER User.name=<str>$name""",
-            name=name,
+        users = await db_queries.get_users(client)
+        response = (
+            ResponseData(name=user.name, created_at=user.created_at) for user in users
         )
-    response = (
-        ResponseData(name=user.name, created_at=user.created_at) for user in users
-    )
+    else:
+        user = await db_queries.get_user_by_name(client, name=name)
+        if not user:
+            raise HTTPException(
+                status_code=HTTPStatus.NOT_FOUND, 
+                detail={"error": f"Username '{name}' does not exist."},
+            )
+        response = ResponseData(
+            name=user.name,
+            created_at=user.created_at
+        )
     return response
 
 
@@ -51,10 +59,7 @@ async def get_users(name: str = Query(None, max_length=50)) -> Iterable[Response
 async def post_user(user: RequestData) -> ResponseData:
 
     try:
-        (created_user,) = await client.query(
-            """SELECT (INSERT User {name:=<str>$name}) {name, created_at};""",
-            name=user.name,
-        )
+        created_user = await db_queries.insert_user(client, name=user.name)
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -70,29 +75,28 @@ async def post_user(user: RequestData) -> ResponseData:
 
 
 @router.put("/users")
-async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData]:
+async def put_user(user: RequestData, current_name: str) -> ResponseData:
     try:
-        updated_users = await client.query(
-            """
-            SELECT (
-                UPDATE User FILTER .name=<str>$filter_name
-                SET {name:=<str>$name}
-            ) {name, created_at};
-            """,
-            name=user.name,
-            filter_name=filter_name,
+        updated_user = await db_queries.update_user(
+            client, 
+            new_name=user.name,
+            current_name=current_name,
         )
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail={"error": f"Username '{filter_name}' already exists."},
+            detail={"error": f"Username '{user.name}' already exists."},
         )
 
-    response = (
-        ResponseData(name=user.name, created_at=user.created_at)
-        for user in updated_users
-    )
-    return response
+    if updated_user:
+        response = \
+            ResponseData(name=updated_user.name, created_at=updated_user.created_at)
+        return response
+    else:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail={"error": f"User '{user.name}' was not found."},
+        )
 
 
 ################################
@@ -101,13 +105,10 @@ async def put_user(user: RequestData, filter_name: str) -> Iterable[ResponseData
 
 
 @router.delete("/users")
-async def delete_user(name: str) -> Iterable[ResponseData]:
+async def delete_user(name: str) -> ResponseData:
     try:
-        deleted_users = await client.query(
-            """SELECT (
-                DELETE User FILTER .name=<str>$name
-            ) {name, created_at};
-            """,
+        deleted_user = await db_queries.delete_users(
+            client,
             name=name,
         )
     except edgedb.errors.ConstraintViolationError:
@@ -116,9 +117,12 @@ async def delete_user(name: str) -> Iterable[ResponseData]:
             detail={"error": "User attached to an event. Cannot delete."},
         )
 
-    response = (
-        ResponseData(name=deleted_user.name, created_at=deleted_user.created_at)
-        for deleted_user in deleted_users
-    )
-
-    return response
+    if deleted_user:
+        response = \
+            ResponseData(name=deleted_user.name, created_at=deleted_user.created_at)
+        return response
+    else:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail={"error": f"User '{name}' was not found."},
+        )
