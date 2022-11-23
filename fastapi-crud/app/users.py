@@ -59,7 +59,7 @@ async def get_users(name: str = Query(None, max_length=50)) -> Iterable[Response
 async def post_user(user: RequestData) -> ResponseData:
 
     try:
-        created_user = await db_queries.insert_user(client, name=user.name)
+        created_user = await db_queries.create_user(client, name=user.name)
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -107,7 +107,7 @@ async def put_user(user: RequestData, current_name: str) -> ResponseData:
 @router.delete("/users")
 async def delete_user(name: str) -> ResponseData:
     try:
-        deleted_user = await db_queries.delete_users(
+        deleted_user = await db_queries.delete_user(
             client,
             name=name,
         )
