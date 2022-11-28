@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import datetime
 from http import HTTPStatus
-from typing import Iterable, Optional
+from typing import Iterable
 
 import edgedb
 from fastapi import APIRouter, HTTPException, Query
@@ -13,23 +12,14 @@ import generated_async_edgeql as db_queries
 router = APIRouter()
 client = edgedb.create_async_client()
 
+EventResult = db_queries.CreateEventResult
+
 
 class RequestData(BaseModel):
     name: str
     address: str
     schedule: str
     host_name: str
-
-
-class Host(BaseModel):
-    name: Optional[str]
-
-
-class ResponseData(BaseModel):
-    name: str
-    address: Optional[str]
-    schedule: Optional[datetime.datetime]
-    host: Optional[Host]
 
 
 ################################
@@ -40,18 +30,10 @@ class ResponseData(BaseModel):
 @router.get("/events")
 async def get_events(
     name: str = Query(None, max_length=50)
-) -> Iterable[ResponseData] | ResponseData:
+) -> Iterable[EventResult] | EventResult:
     if not name:
         events = await db_queries.get_events(client)
-        response = (
-            ResponseData(
-                name=event.name,
-                address=event.address,
-                schedule=event.schedule,
-                host=Host(name=event.host.name if event.host else None),
-            )
-            for event in events
-        )
+        return events
     else:
         event = await db_queries.get_event_by_name(client, name=name)
         if not event:
@@ -59,13 +41,7 @@ async def get_events(
                 status_code=HTTPStatus.NOT_FOUND,
                 detail={"error": f"Event '{name}' does not exist."},
             )
-        response = ResponseData(
-            name=event.name,
-            address=event.address,
-            schedule=event.schedule,
-            host=Host(name=event.host.name if event.host else None),
-        )
-    return response
+        return event
 
 
 # ################################
@@ -74,7 +50,7 @@ async def get_events(
 
 
 @router.post("/events", status_code=HTTPStatus.CREATED)
-async def post_event(event: RequestData) -> ResponseData:
+async def post_event(event: RequestData) -> EventResult:
     try:
         created_event = await db_queries.create_event(
             client,
@@ -100,12 +76,7 @@ async def post_event(event: RequestData) -> ResponseData:
             detail=f"Event name '{event.name}' already exists,",
         )
 
-    return ResponseData(
-        name=created_event.name,
-        address=created_event.address,
-        schedule=created_event.schedule,
-        host=Host(name=created_event.host.name) if created_event.host else None,
-    )
+    return created_event
 
 
 # ################################
@@ -114,7 +85,7 @@ async def post_event(event: RequestData) -> ResponseData:
 
 
 @router.put("/events")
-async def put_event(event: RequestData, current_name: str) -> ResponseData:
+async def put_event(event: RequestData, current_name: str) -> EventResult:
 
     try:
         updated_event = await db_queries.update_event(
@@ -141,19 +112,13 @@ async def put_event(event: RequestData, current_name: str) -> ResponseData:
             detail={"error": f"Event name '{event.name}' already exists."},
         )
 
-    if updated_event:
-        response = ResponseData(
-            name=updated_event.name,
-            address=updated_event.address,
-            schedule=updated_event.schedule,
-            host=Host(name=updated_event.host.name) if updated_event.host else None,
-        )
-        return response
-    else:
+    if not updated_event:
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             detail={"error": f"Update event '{event.name}' failed."},
         )
+
+    return updated_event
 
 
 # ################################
@@ -162,19 +127,13 @@ async def put_event(event: RequestData, current_name: str) -> ResponseData:
 
 
 @router.delete("/events")
-async def delete_event(name: str) -> ResponseData:
+async def delete_event(name: str) -> EventResult:
     deleted_event = await db_queries.delete_event(client, name=name)
 
-    if deleted_event:
-        response = ResponseData(
-            name=deleted_event.name,
-            address=deleted_event.address,
-            schedule=deleted_event.schedule,
-            host=Host(name=deleted_event.host.name) if deleted_event.host else None,
-        )
-        return response
-    else:
+    if not deleted_event:
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
             detail={"error": f"Delete event '{name}' failed."},
         )
+
+    return deleted_event

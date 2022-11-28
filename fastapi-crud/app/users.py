@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from http import HTTPStatus
 from typing import Iterable
 
@@ -13,14 +12,11 @@ import generated_async_edgeql as db_queries
 router = APIRouter()
 client = edgedb.create_async_client()
 
+UserResult = db_queries.CreateUserResult
+
 
 class RequestData(BaseModel):
     name: str
-
-
-class ResponseData(BaseModel):
-    name: str
-    created_at: datetime.datetime
 
 
 ################################
@@ -31,13 +27,11 @@ class ResponseData(BaseModel):
 @router.get("/users")
 async def get_users(
     name: str = Query(None, max_length=50)
-) -> Iterable[ResponseData] | ResponseData:
+) -> Iterable[UserResult] | UserResult:
 
     if not name:
         users = await db_queries.get_users(client)
-        response = (
-            ResponseData(name=user.name, created_at=user.created_at) for user in users
-        )
+        return users
     else:
         user = await db_queries.get_user_by_name(client, name=name)
         if not user:
@@ -45,8 +39,7 @@ async def get_users(
                 status_code=HTTPStatus.NOT_FOUND,
                 detail={"error": f"Username '{name}' does not exist."},
             )
-        response = ResponseData(name=user.name, created_at=user.created_at)
-    return response
+        return user
 
 
 ################################
@@ -55,7 +48,7 @@ async def get_users(
 
 
 @router.post("/users", status_code=HTTPStatus.CREATED)
-async def post_user(user: RequestData) -> ResponseData:
+async def post_user(user: RequestData) -> UserResult:
 
     try:
         created_user = await db_queries.create_user(client, name=user.name)
@@ -64,8 +57,7 @@ async def post_user(user: RequestData) -> ResponseData:
             status_code=HTTPStatus.BAD_REQUEST,
             detail={"error": f"Username '{user.name}' already exists."},
         )
-    response = ResponseData(name=created_user.name, created_at=created_user.created_at)
-    return response
+    return created_user
 
 
 ################################
@@ -74,7 +66,7 @@ async def post_user(user: RequestData) -> ResponseData:
 
 
 @router.put("/users")
-async def put_user(user: RequestData, current_name: str) -> ResponseData:
+async def put_user(user: RequestData, current_name: str) -> UserResult:
     try:
         updated_user = await db_queries.update_user(
             client,
@@ -87,16 +79,12 @@ async def put_user(user: RequestData, current_name: str) -> ResponseData:
             detail={"error": f"Username '{user.name}' already exists."},
         )
 
-    if updated_user:
-        response = ResponseData(
-            name=updated_user.name, created_at=updated_user.created_at
-        )
-        return response
-    else:
+    if not updated_user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail={"error": f"User '{user.name}' was not found."},
+            detail={"error": f"User '{current_name}' was not found."},
         )
+    return updated_user
 
 
 ################################
@@ -105,7 +93,7 @@ async def put_user(user: RequestData, current_name: str) -> ResponseData:
 
 
 @router.delete("/users")
-async def delete_user(name: str) -> ResponseData:
+async def delete_user(name: str) -> UserResult:
     try:
         deleted_user = await db_queries.delete_user(
             client,
@@ -117,13 +105,9 @@ async def delete_user(name: str) -> ResponseData:
             detail={"error": "User attached to an event. Cannot delete."},
         )
 
-    if deleted_user:
-        response = ResponseData(
-            name=deleted_user.name, created_at=deleted_user.created_at
-        )
-        return response
-    else:
+    if not deleted_user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
             detail={"error": f"User '{name}' was not found."},
         )
+    return deleted_user

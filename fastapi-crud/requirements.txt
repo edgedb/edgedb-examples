@@ -4,29 +4,25 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-anyio==3.5.0
+anyio==3.6.2
     # via starlette
-asgiref==3.5.0
+click==8.1.3
     # via uvicorn
-click==8.1.2
+edgedb==1.2.0
+    # via -r requirements.in
+fastapi==0.88.0
+    # via -r requirements.in
+h11==0.14.0
     # via uvicorn
-edgedb==0.24.0
-    # via -r fastapi-crud/requirements.in
-fastapi==0.78.0
-    # via -r fastapi-crud/requirements.in
-h11==0.12.0
-    # via uvicorn
-idna==3.3
+idna==3.4
     # via anyio
-pydantic==1.9.0
+pydantic==1.10.2
     # via fastapi
-sniffio==1.2.0
+sniffio==1.3.0
     # via anyio
-starlette==0.19.1
+starlette==0.22.0
     # via fastapi
-typing-extensions==4.1.1
-    # via
-    #   edgedb
-    #   pydantic
-uvicorn==0.17.6
-    # via -r fastapi-crud/requirements.in
+typing-extensions==4.4.0
+    # via pydantic
+uvicorn==0.20.0
+    # via -r requirements.in
