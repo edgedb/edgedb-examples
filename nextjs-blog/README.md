@@ -19,7 +19,7 @@ edgedb project init
 Generate query builder
 
 ```bash
-npx edgeql-js
+npx @edgedb/generate edgeql-js
 ```
 
 Seed the database

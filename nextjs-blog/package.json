@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prebuild": "npx edgeql-js",
+    "prebuild": "npx @edgedb/generate edgeql-js",
     "seed": "tsx seed.ts"
   },
   "dependencies": {
