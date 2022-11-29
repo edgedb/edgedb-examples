@@ -11,7 +11,7 @@
     "seed": "tsx seed.ts"
   },
   "dependencies": {
-    "edgedb": "^0.21.0",
+    "edgedb": "^1.0.0",
     "next": "^12.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
