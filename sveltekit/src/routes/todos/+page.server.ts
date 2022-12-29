@@ -1,4 +1,4 @@
-import { invalid } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { getFormData } from 'remix-params-helper';
 import { z } from 'zod';
@@ -27,7 +27,7 @@ export const actions: Actions = {
 		const { data, errors, success } = await getFormData(request, schema);
 
 		if (!success) {
-			return invalid(400, errors);
+			return fail(400, errors);
 		}
 
 		await e
@@ -46,7 +46,7 @@ export const actions: Actions = {
 		const { data, errors, success } = await getFormData(request, schema);
 
 		if (!success) {
-			return invalid(400, errors);
+			return fail(400, errors);
 		}
 
 		const { id, text, done } = data;
@@ -64,7 +64,7 @@ export const actions: Actions = {
 		const { data, errors, success } = await getFormData(request, schema);
 
 		if (!success) {
-			return invalid(400, errors);
+			return fail(400, errors);
 		}
 
 		await e

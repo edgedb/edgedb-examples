@@ -17,13 +17,13 @@
 		</svg>
 		<ul>
 			<li class:active={$page.url.pathname === '/'}>
-				<a data-sveltekit-prefetch href="/">Home</a>
+				<a href="/">Home</a>
 			</li>
 			<li class:active={$page.url.pathname === '/about'}>
-				<a data-sveltekit-prefetch href="/about">About</a>
+				<a href="/about">About</a>
 			</li>
 			<li class:active={$page.url.pathname === '/todos'}>
-				<a data-sveltekit-prefetch href="/todos">Todos</a>
+				<a href="/todos">Todos</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
