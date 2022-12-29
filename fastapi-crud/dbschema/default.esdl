@@ -1,7 +1,7 @@
 module default {
   abstract type Auditable {
-    annotation description := "Add 'create_at' and 'update_at' properties to all types.";
-    property created_at -> datetime {
+    annotation description := "Add 'created_at' property to all types.";
+    required property created_at -> datetime {
       readonly := true;
       default := datetime_current();
     }
