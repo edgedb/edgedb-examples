@@ -51,8 +51,8 @@ export const actions: Actions = {
 
 		const { id, text, done } = data;
 		await e
-			.update(e.Todo, (todo) => ({
-				filter: e.op(todo.id, '=', e.uuid(id)),
+			.update(e.Todo, () => ({
+				filter_single: { id },
 				set: { text, done }
 			}))
 			.run(client);
@@ -68,8 +68,8 @@ export const actions: Actions = {
 		}
 
 		await e
-			.delete(e.Todo, (todo) => ({
-				filter: e.op(todo.id, '=', e.uuid(data.id))
+			.delete(e.Todo, () => ({
+				filter_single: { id: data.id }
 			}))
 			.run(client);
 	}
