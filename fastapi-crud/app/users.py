@@ -1,18 +1,22 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import Iterable
+from typing import List
 
 import edgedb
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-import generated_async_edgeql as db_queries
+from .queries import (
+    create_user_async_edgeql,
+    delete_user_async_edgeql,
+    get_user_by_name_async_edgeql,
+    get_users_async_edgeql,
+    update_user_async_edgeql,
+)
 
 router = APIRouter()
 client = edgedb.create_async_client()
-
-UserResult = db_queries.CreateUserResult
 
 
 class RequestData(BaseModel):
@@ -27,13 +31,15 @@ class RequestData(BaseModel):
 @router.get("/users")
 async def get_users(
     name: str = Query(None, max_length=50)
-) -> Iterable[UserResult] | UserResult:
+) -> List[
+    get_users_async_edgeql.GetUsersResult
+] | get_user_by_name_async_edgeql.GetUserByNameResult:
 
     if not name:
-        users = await db_queries.get_users(client)
+        users = await get_users_async_edgeql.get_users(client)
         return users
     else:
-        user = await db_queries.get_user_by_name(client, name=name)
+        user = await get_user_by_name_async_edgeql.get_user_by_name(client, name=name)
         if not user:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
@@ -48,10 +54,12 @@ async def get_users(
 
 
 @router.post("/users", status_code=HTTPStatus.CREATED)
-async def post_user(user: RequestData) -> UserResult:
+async def post_user(user: RequestData) -> create_user_async_edgeql.CreateUserResult:
 
     try:
-        created_user = await db_queries.create_user(client, name=user.name)
+        created_user = await create_user_async_edgeql.create_user(
+            client, name=user.name
+        )
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -66,9 +74,11 @@ async def post_user(user: RequestData) -> UserResult:
 
 
 @router.put("/users")
-async def put_user(user: RequestData, current_name: str) -> UserResult:
+async def put_user(
+    user: RequestData, current_name: str
+) -> update_user_async_edgeql.UpdateUserResult:
     try:
-        updated_user = await db_queries.update_user(
+        updated_user = await update_user_async_edgeql.update_user(
             client,
             new_name=user.name,
             current_name=current_name,
@@ -93,9 +103,9 @@ async def put_user(user: RequestData, current_name: str) -> UserResult:
 
 
 @router.delete("/users")
-async def delete_user(name: str) -> UserResult:
+async def delete_user(name: str) -> delete_user_async_edgeql.DeleteUserResult:
     try:
-        deleted_user = await db_queries.delete_user(
+        deleted_user = await delete_user_async_edgeql.delete_user(
             client,
             name=name,
         )
