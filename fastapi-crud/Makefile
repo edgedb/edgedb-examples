@@ -2,10 +2,9 @@ path := ./
 
 define Comment
 	- Run `make help` to see all the available options.
+	- Run `make setup` to run first-time project setup.
 	- Run `make lint` to run the linter.
 	- Run `make lint-check` to check linter conformity.
-	- Run `dep-lock` to lock the deps in 'requirements.txt' and 'requirements-dev.txt'.
-	- Run `dep-sync` to sync current environment up to date with the locked deps.
 endef
 
 
@@ -18,10 +17,10 @@ lint-check:  ## Check whether the codebase satisfies the linter rules.
 	@echo "Checking linter rules..."
 	@echo "========================"
 	@echo
-	@black --fast --check $(path)
-	@isort --check $(path)
-	@flake8 $(path)
-	@echo 'y' | mypy $(path) --install-types
+	@. ./myvenv/bin/activate && black --fast --check $(path)
+	@. ./myvenv/bin/activate && isort --check $(path)
+	@. ./myvenv/bin/activate && flake8 $(path)
+	@. ./myvenv/bin/activate && (echo 'y' | mypy $(path) --install-types)
 
 
 .PHONY: black
@@ -30,7 +29,7 @@ black: ## Apply black.
 	@echo "Applying black..."
 	@echo "================="
 	@echo
-	@black --fast $(path)
+	@. ./myvenv/bin/activate && black --fast $(path)
 	@echo
 
 
@@ -39,7 +38,7 @@ isort: ## Apply isort.
 	@echo "Applying isort..."
 	@echo "================="
 	@echo
-	@isort $(path)
+	@. ./myvenv/bin/activate && isort $(path)
 
 
 .PHONY: flake
@@ -48,7 +47,7 @@ flake: ## Apply flake8.
 	@echo "Applying flake8..."
 	@echo "================="
 	@echo
-	@flake8 $(path)
+	@. ./myvenv/bin/activate && flake8 $(path)
 
 
 .PHONY: mypy
@@ -57,7 +56,7 @@ mypy: ## Apply mypy.
 	@echo "Applying mypy..."
 	@echo "================="
 	@echo
-	@mypy $(path)
+	@. ./myvenv/bin/activate && mypy $(path)
 
 
 .PHONY: help
@@ -67,26 +66,71 @@ help: ## Show this help message.
 
 .PHONY: test
 test: ## Run the tests against the current version of Python.
-	pytest
+	@. ./myvenv/bin/activate && pytest
 
 
-.PHONY: dep-lock
-dep-lock: ## Freeze deps in 'requirements.txt' file.
-	@pip-compile requirements.in -o requirements.txt
-	@pip-compile requirements-dev.in -o requirements-dev.txt
+.PHONY: dep-install
+dep-install: ## Install latest versions of prod dependencies
+	@echo
+	@echo "Installing dependencies..."
+	@echo "=========================="
+	@. ./myvenv/bin/activate && pip install edgedb fastapi uvicorn
 
 
-.PHONY: dep-sync
-dep-sync: ## Sync venv installation with 'requirements.txt' file.
-	@pip-sync
+.PHONY: dep-install-dev
+dep-install-dev: ## Install latest versions of dev dependencies
+	@echo
+	@echo "Installing dev dependencies..."
+	@echo "=============================="
+	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-asyncio
+
+.PHONY: install-edgedb
+install-edgedb: ## Install the EdgeDB CLI
+	@echo
+	@echo "Installing EdgeDB..."
+	@echo "===================="
+	@which edgedb > /dev/null 2>&1 || (curl --proto '=https' --tlsv1.2 -sSf https://sh.edgedb.com | sh -s -- -y)
+
+
+.PHONY: init-project
+init-project: ## Install the EdgeDB CLI
+	@echo
+	@echo "Initializing EdgeDB project..."
+	@echo "=============================="
+	@edgedb project init --non-interactive
 
 
 .PHONY: dev-server
 dev-server: ## Spin up local dev server.
-	@uvicorn app.main:fast_api --port 5000 --reload
+	@. ./myvenv/bin/activate && uvicorn app.main:fast_api --port 5001 --reload
 
 
 .PHONY: health-check
 health-check: ## Perfrom health check on the uvicorn server.
 	@chmod +x ./scripts/health_check
 	@./scripts/health_check
+
+
+.PHONY: generate
+generate: ## Generate code from .edgeql files
+	@echo
+	@echo "Generating code..."
+	@echo "=================="
+	@. ./myvenv/bin/activate && edgedb-py
+
+
+.PHONY: create-venv
+create-venv: ## Create a virtual environment for the project
+	@echo "Creating virtual environment..."
+	@python -m venv myvenv
+
+
+.PHONY: activate-venv
+activate-venv: ## Activate the project's virtual environment
+	@echo "This cannot be done from Make. Run \`source myvenv/bin/activate\` in your shell to activate."
+
+
+.PHONY: setup
+setup: create-venv dep-install dep-install-dev install-edgedb init-project generate ## Run first-time setup
+	@echo
+	@echo "${Green}All set!${NC} Run \`make dev-server\` to start a uvicorn dev server on port 5001."
