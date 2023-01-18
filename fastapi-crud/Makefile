@@ -84,6 +84,21 @@ dep-install-dev: ## Install latest versions of dev dependencies
 	@echo "=============================="
 	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-asyncio
 
+.PHONY: install-edgedb
+install-edgedb: ## Install the EdgeDB CLI
+	@echo
+	@echo "Installing EdgeDB..."
+	@echo "===================="
+	@which edgedb > /dev/null 2>&1 || (curl --proto '=https' --tlsv1.2 -sSf https://sh.edgedb.com | sh)
+
+
+.PHONY: init-project
+init-project: ## Install the EdgeDB CLI
+	@echo
+	@echo "Initializing EdgeDB project..."
+	@echo "=============================="
+	@edgedb project init
+
 
 .PHONY: dev-server
 dev-server: ## Spin up local dev server.
@@ -116,6 +131,6 @@ activate-venv: ## Activate the project's virtual environment
 
 
 .PHONY: setup
-setup: create-venv dep-install dep-install-dev generate ## Run first-time setup
+setup: create-venv dep-install dep-install-dev install-edgedb init-project generate ## Run first-time setup
 	@echo
 	@echo "${Green}All set!${NC} Run \`make dev-server\` to start a uvicorn dev server on port 5001."
