@@ -17,8 +17,8 @@ lint-check:  ## Check whether the codebase satisfies the linter rules.
 	@echo "Checking linter rules..."
 	@echo "========================"
 	@echo
-	@black --fast --check $(path)
-	@isort --check $(path)
+	@. ./myvenv/bin/activate && black --fast --check $(path)
+	@. ./myvenv/bin/activate && isort --check $(path)
 	@. ./myvenv/bin/activate && flake8 $(path)
 	@echo 'y' | mypy $(path) --install-types
 
@@ -71,6 +71,7 @@ test: ## Run the tests against the current version of Python.
 
 .PHONY: dep-install
 dep-install: ## Install latest versions of prod dependencies
+	@echo
 	@echo "Installing dependencies..."
 	@echo "=========================="
 	@. ./myvenv/bin/activate && pip install edgedb fastapi uvicorn
@@ -78,6 +79,7 @@ dep-install: ## Install latest versions of prod dependencies
 
 .PHONY: dep-install-dev
 dep-install-dev: ## Install latest versions of dev dependencies
+	@echo
 	@echo "Installing dev dependencies..."
 	@echo "=============================="
 	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-asyncio
@@ -96,6 +98,7 @@ health-check: ## Perfrom health check on the uvicorn server.
 
 .PHONY: generate
 generate: ## Generate code from .edgeql files
+	@echo
 	@echo "Generating code..."
 	@echo "=================="
 	@. ./myvenv/bin/activate && edgedb-py
