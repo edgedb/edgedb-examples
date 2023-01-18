@@ -2,12 +2,13 @@
 [tool.isort]
 profile = "black"
 atomic = true
-extend_skip_glob = "migrations,scripts"
+extend_skip_glob = "migrations,scripts,app/queries,myvenv"
 line_length = 88
 
 
 [tool.black]
 extend-exclude = "migrations,scripts"
+force-exclude = "app/queries/.*"
 
 
 [tool.mypy]
@@ -18,6 +19,7 @@ warn_unused_ignores = true
 allow_untyped_globals = true
 allow_redefinition = true
 pretty = true
+exclude = "myvenv"
 
 
 [[tool.mypy.overrides]]
