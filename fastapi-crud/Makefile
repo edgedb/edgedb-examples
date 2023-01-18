@@ -20,7 +20,7 @@ lint-check:  ## Check whether the codebase satisfies the linter rules.
 	@. ./myvenv/bin/activate && black --fast --check $(path)
 	@. ./myvenv/bin/activate && isort --check $(path)
 	@. ./myvenv/bin/activate && flake8 $(path)
-	@echo 'y' | mypy $(path) --install-types
+	@. ./myvenv/bin/activate && (echo 'y' | mypy $(path) --install-types)
 
 
 .PHONY: black
