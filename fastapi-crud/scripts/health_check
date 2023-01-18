@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+source myvenv/bin/activate
 # Run the uvicorn server in the background.
 
 nohup uvicorn app.main:fast_api --port 5000 --reload >> /dev/null &
