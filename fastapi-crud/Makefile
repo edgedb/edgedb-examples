@@ -89,7 +89,7 @@ install-edgedb: ## Install the EdgeDB CLI
 	@echo
 	@echo "Installing EdgeDB..."
 	@echo "===================="
-	@which edgedb > /dev/null 2>&1 || (curl --proto '=https' --tlsv1.2 -sSf https://sh.edgedb.com | sh)
+	@which edgedb > /dev/null 2>&1 || (curl --proto '=https' --tlsv1.2 -sSf https://sh.edgedb.com | sh -s -- -y)
 
 
 .PHONY: init-project
@@ -97,7 +97,7 @@ init-project: ## Install the EdgeDB CLI
 	@echo
 	@echo "Initializing EdgeDB project..."
 	@echo "=============================="
-	@edgedb project init
+	@edgedb project init --non-interactive
 
 
 .PHONY: dev-server
