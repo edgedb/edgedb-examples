@@ -7,13 +7,11 @@ import edgedb
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
-from .queries import (
-    create_user_async_edgeql,
-    delete_user_async_edgeql,
-    get_user_by_name_async_edgeql,
-    get_users_async_edgeql,
-    update_user_async_edgeql,
-)
+from .queries import create_user_async_edgeql as create_user_qry
+from .queries import delete_user_async_edgeql as delete_user_qry
+from .queries import get_user_by_name_async_edgeql as get_user_by_name_qry
+from .queries import get_users_async_edgeql as get_users_qry
+from .queries import update_user_async_edgeql as update_user_qry
 
 router = APIRouter()
 client = edgedb.create_async_client()
@@ -31,15 +29,13 @@ class RequestData(BaseModel):
 @router.get("/users")
 async def get_users(
     name: str = Query(None, max_length=50)
-) -> List[
-    get_users_async_edgeql.GetUsersResult
-] | get_user_by_name_async_edgeql.GetUserByNameResult:
+) -> List[get_users_qry.GetUsersResult] | get_user_by_name_qry.GetUserByNameResult:
 
     if not name:
-        users = await get_users_async_edgeql.get_users(client)
+        users = await get_users_qry.get_users(client)
         return users
     else:
-        user = await get_user_by_name_async_edgeql.get_user_by_name(client, name=name)
+        user = await get_user_by_name_qry.get_user_by_name(client, name=name)
         if not user:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
@@ -54,12 +50,10 @@ async def get_users(
 
 
 @router.post("/users", status_code=HTTPStatus.CREATED)
-async def post_user(user: RequestData) -> create_user_async_edgeql.CreateUserResult:
+async def post_user(user: RequestData) -> create_user_qry.CreateUserResult:
 
     try:
-        created_user = await create_user_async_edgeql.create_user(
-            client, name=user.name
-        )
+        created_user = await create_user_qry.create_user(client, name=user.name)
     except edgedb.errors.ConstraintViolationError:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -76,9 +70,9 @@ async def post_user(user: RequestData) -> create_user_async_edgeql.CreateUserRes
 @router.put("/users")
 async def put_user(
     user: RequestData, current_name: str
-) -> update_user_async_edgeql.UpdateUserResult:
+) -> update_user_qry.UpdateUserResult:
     try:
-        updated_user = await update_user_async_edgeql.update_user(
+        updated_user = await update_user_qry.update_user(
             client,
             new_name=user.name,
             current_name=current_name,
@@ -103,9 +97,9 @@ async def put_user(
 
 
 @router.delete("/users")
-async def delete_user(name: str) -> delete_user_async_edgeql.DeleteUserResult:
+async def delete_user(name: str) -> delete_user_qry.DeleteUserResult:
     try:
-        deleted_user = await delete_user_async_edgeql.delete_user(
+        deleted_user = await delete_user_qry.delete_user(
             client,
             name=name,
         )
