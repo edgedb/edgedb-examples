@@ -90,7 +90,6 @@ async def post_event(event: RequestData) -> create_event_qry.CreateEventResult:
 async def put_event(
     event: RequestData, current_name: str
 ) -> update_event_qry.UpdateEventResult:
-
     try:
         updated_event = await update_event_qry.update_event(
             client,

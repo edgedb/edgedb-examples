@@ -30,7 +30,6 @@ class RequestData(BaseModel):
 async def get_users(
     name: str = Query(None, max_length=50)
 ) -> List[get_users_qry.GetUsersResult] | get_user_by_name_qry.GetUserByNameResult:
-
     if not name:
         users = await get_users_qry.get_users(client)
         return users
@@ -51,7 +50,6 @@ async def get_users(
 
 @router.post("/users", status_code=HTTPStatus.CREATED)
 async def post_user(user: RequestData) -> create_user_qry.CreateUserResult:
-
     try:
         created_user = await create_user_qry.create_user(client, name=user.name)
     except edgedb.errors.ConstraintViolationError:
