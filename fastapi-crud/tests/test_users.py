@@ -12,7 +12,7 @@ from httpx import AsyncClient
 
 from app.main import fast_api
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:5001"
 
 
 @pytest.mark.anyio
