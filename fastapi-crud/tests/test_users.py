@@ -15,7 +15,6 @@ from app.main import fast_api
 BASE_URL = "http://localhost:5001"
 
 
-@pytest.mark.anyio
 async def test_get_users():
     async with AsyncClient(app=fast_api, base_url=BASE_URL) as client:
         response = await client.get("/users")
@@ -24,7 +23,6 @@ async def test_get_users():
 
 # Post test doesn't work for some weird bug, most likely an edgedb client bug.
 
-# @pytest.mark.anyio
 # async def test_post_user():
 #     async with AsyncClient(app=fast_api, base_url=BASE_URL) as client:
 #         response = await client.post(
