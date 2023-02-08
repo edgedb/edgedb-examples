@@ -7,14 +7,12 @@ separate database.
 
 from http import HTTPStatus
 
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 
 from app.main import fast_api
 
-BASE_URL = "http://localhost:5001"
 
-
-async def test_get_events():
-    async with AsyncClient(app=fast_api, base_url=BASE_URL) as client:
-        response = await client.get("/events")
+def test_get_events():
+    with TestClient(fast_api) as client:
+        response = client.get("/events")
     assert response.status_code == HTTPStatus.OK

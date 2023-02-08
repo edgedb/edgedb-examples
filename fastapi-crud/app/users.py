@@ -4,9 +4,10 @@ from http import HTTPStatus
 from typing import List
 
 import edgedb
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
+from . import get_edgedb_client
 from .queries import create_user_async_edgeql as create_user_qry
 from .queries import delete_user_async_edgeql as delete_user_qry
 from .queries import get_user_by_name_async_edgeql as get_user_by_name_qry
@@ -14,7 +15,6 @@ from .queries import get_users_async_edgeql as get_users_qry
 from .queries import update_user_async_edgeql as update_user_qry
 
 router = APIRouter()
-client = edgedb.create_async_client()
 
 
 class RequestData(BaseModel):
@@ -28,7 +28,8 @@ class RequestData(BaseModel):
 
 @router.get("/users")
 async def get_users(
-    name: str = Query(None, max_length=50)
+    name: str = Query(None, max_length=50),
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
 ) -> List[get_users_qry.GetUsersResult] | get_user_by_name_qry.GetUserByNameResult:
     if not name:
         users = await get_users_qry.get_users(client)
@@ -49,7 +50,10 @@ async def get_users(
 
 
 @router.post("/users", status_code=HTTPStatus.CREATED)
-async def post_user(user: RequestData) -> create_user_qry.CreateUserResult:
+async def post_user(
+    user: RequestData,
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
+) -> create_user_qry.CreateUserResult:
     try:
         created_user = await create_user_qry.create_user(client, name=user.name)
     except edgedb.errors.ConstraintViolationError:
@@ -67,7 +71,9 @@ async def post_user(user: RequestData) -> create_user_qry.CreateUserResult:
 
 @router.put("/users")
 async def put_user(
-    user: RequestData, current_name: str
+    user: RequestData,
+    current_name: str,
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
 ) -> update_user_qry.UpdateUserResult:
     try:
         updated_user = await update_user_qry.update_user(
@@ -95,7 +101,10 @@ async def put_user(
 
 
 @router.delete("/users")
-async def delete_user(name: str) -> delete_user_qry.DeleteUserResult:
+async def delete_user(
+    name: str,
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
+) -> delete_user_qry.DeleteUserResult:
     try:
         deleted_user = await delete_user_qry.delete_user(
             client,

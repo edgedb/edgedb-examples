@@ -7,26 +7,21 @@ separate database.
 
 from http import HTTPStatus
 
-import pytest
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 
 from app.main import fast_api
 
-BASE_URL = "http://localhost:5001"
 
-
-async def test_get_users():
-    async with AsyncClient(app=fast_api, base_url=BASE_URL) as client:
-        response = await client.get("/users")
+def test_get_users():
+    with TestClient(fast_api) as client:
+        response = client.get("/users")
     assert response.status_code == HTTPStatus.OK
 
 
-# Post test doesn't work for some weird bug, most likely an edgedb client bug.
-
-# async def test_post_user():
-#     async with AsyncClient(app=fast_api, base_url=BASE_URL) as client:
-#         response = await client.post(
-#             "/users", json={"name": "test"}
-#         )
-#     assert response.status_code == HTTPStatus.CREATED
-#     assert response.json()["name"] == "test"
+def test_post_user():
+    with TestClient(fast_api) as client:
+        response = client.post(
+            "/users", json={"name": "test"}
+        )
+    assert response.status_code == HTTPStatus.CREATED
+    assert response.json()["name"] == "test"

@@ -82,7 +82,7 @@ dep-install-dev: ## Install latest versions of dev dependencies
 	@echo
 	@echo "Installing dev dependencies..."
 	@echo "=============================="
-	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-asyncio
+	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest
 
 .PHONY: install-edgedb
 install-edgedb: ## Install the EdgeDB CLI
