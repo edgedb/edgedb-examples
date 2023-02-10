@@ -9,18 +9,14 @@ from http import HTTPStatus
 import uuid
 import datetime
 
-from fastapi.testclient import TestClient
-
-from app.main import fast_api
 from app.queries import get_events_async_edgeql as get_events_qry
 
 
-def test_get_events():
-    with TestClient(fast_api) as client:
-        response = client.get("/events")
+def test_get_events(test_client):
+    response = test_client.get("/events")
     assert response.status_code == HTTPStatus.OK
 
-def test_get_events_with_single_event(mocker):
+def test_get_events_with_single_event(mocker, test_client):
     event_name = "Test"
     event_address = "Address"
     event_host = "Test Host"
@@ -36,12 +32,11 @@ def test_get_events_with_single_event(mocker):
             )
         ]
     )
-    with TestClient(fast_api) as client:
-        response = client.get("/events")
+    response = test_client.get("/events")
     assert response.status_code == HTTPStatus.OK
     assert response.json()[0]["name"] == event_name
 
-def test_get_events_with_multiple_events(mocker):
+def test_get_events_with_multiple_events(mocker, test_client):
     event_1_name = "Test 1"
     event_2_name = "Test 2"
     event_1_address = "Address"
@@ -67,22 +62,20 @@ def test_get_events_with_multiple_events(mocker):
             )
         ]
     )
-    with TestClient(fast_api) as client:
-        response = client.get("/events")
+    response = test_client.get("/events")
     assert response.status_code == HTTPStatus.OK
     assert response.json()[0]["name"] == event_1_name
     assert response.json()[1]["name"] == event_2_name
 
-def test_post_event():
-    with TestClient(fast_api) as client:
-        response = client.post(
-            "/events",
-            json={
-                "name": "test",
-                "address": "test address",
-                "host_name": "Test",
-                "schedule": "2010-12-27T23:59:59-07:00"
-            }
-        )
+def test_post_event(tx_test_client):
+    response = tx_test_client.post(
+        "/events",
+        json={
+            "name": "test",
+            "address": "test address",
+            "host_name": "Test",
+            "schedule": "2010-12-27T23:59:59-07:00"
+        }
+    )
     assert response.status_code == HTTPStatus.CREATED
     assert response.json()["name"] == "test"

@@ -64,14 +64,11 @@ help: ## Show this help message.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 
-.PHONY: wipe-db
-wipe-db: ## Run the tests against the current version of Python.
-	@echo "Resetting database..."
-	@edgedb query "create database tmp" > /dev/null 2>&1 && edgedb -d tmp query "drop database edgedb" "create database edgedb" > /dev/null 2>&1 && edgedb query "drop database tmp" > /dev/null 2>&1 && edgedb migrate > /dev/null 2>&1
-
 .PHONY: test
-test: wipe-db ## Run the tests against the current version of Python.
-	@. ./myvenv/bin/activate && pytest
+test: ## Run the tests against the current version of Python.
+	@echo "Resetting test database..."
+	@edgedb query "drop database edgedb_test" > /dev/null 2>&1 || true && edgedb query "create database edgedb_test" > /dev/null 2>&1 && edgedb migrate -d edgedb_test && edgedb query -d edgedb_test -f tests/fixture.edgeql
+	@. ./myvenv/bin/activate && EDGEDB_DATABASE=edgedb_test pytest
 
 
 .PHONY: dep-install
@@ -87,7 +84,7 @@ dep-install-dev: ## Install latest versions of dev dependencies
 	@echo
 	@echo "Installing dev dependencies..."
 	@echo "=============================="
-	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest
+	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-mock
 
 .PHONY: install-edgedb
 install-edgedb: ## Install the EdgeDB CLI
