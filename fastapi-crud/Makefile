@@ -64,8 +64,13 @@ help: ## Show this help message.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 
+.PHONY: wipe-db
+wipe-db: ## Run the tests against the current version of Python.
+	@echo "Resetting database..."
+	@edgedb query "create database tmp" > /dev/null 2>&1 && edgedb -d tmp query "drop database edgedb" "create database edgedb" > /dev/null 2>&1 && edgedb query "drop database tmp" > /dev/null 2>&1 && edgedb migrate > /dev/null 2>&1
+
 .PHONY: test
-test: ## Run the tests against the current version of Python.
+test: wipe-db ## Run the tests against the current version of Python.
 	@. ./myvenv/bin/activate && pytest
 
 
