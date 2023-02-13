@@ -29,7 +29,6 @@ def make_app():
     async def health_check() -> dict[str, str]:
         return {"status": "Ok"}
 
-
     # Set all CORS enabled origins
     app.add_middleware(
         CORSMiddleware,
@@ -38,7 +37,6 @@ def make_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
 
     app.include_router(events.router)
     app.include_router(users.router)
