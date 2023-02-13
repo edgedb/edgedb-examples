@@ -68,3 +68,8 @@ jobs:
         run: |
           echo "Running healthcheck..."
           make health-check
+
+      - name: Test
+        run: |
+          echo "Running automated tests..."
+          make test
