@@ -66,7 +66,9 @@ help: ## Show this help message.
 
 .PHONY: test
 test: ## Run the tests against the current version of Python.
-	@. ./myvenv/bin/activate && pytest
+	@echo "Resetting test database..."
+	@edgedb query "drop database edgedb_test" > /dev/null 2>&1 || true && edgedb query "create database edgedb_test" > /dev/null 2>&1 && edgedb migrate -d edgedb_test && edgedb query -d edgedb_test -f tests/fixture.edgeql
+	@. ./myvenv/bin/activate && EDGEDB_DATABASE=edgedb_test pytest
 
 
 .PHONY: dep-install
@@ -82,7 +84,7 @@ dep-install-dev: ## Install latest versions of dev dependencies
 	@echo
 	@echo "Installing dev dependencies..."
 	@echo "=============================="
-	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-asyncio
+	@. ./myvenv/bin/activate && pip install 'httpx[cli]' black flake8 isort mypy pytest pytest-mock
 
 .PHONY: install-edgedb
 install-edgedb: ## Install the EdgeDB CLI

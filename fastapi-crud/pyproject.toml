@@ -2,13 +2,13 @@
 [tool.isort]
 profile = "black"
 atomic = true
-extend_skip_glob = "migrations,scripts,app/queries,myvenv"
+extend_skip_glob = "migrations,scripts,app/queries,myvenv,tests"
 line_length = 88
 
 
 [tool.black]
 extend-exclude = "migrations,scripts"
-force-exclude = "app/queries/.*"
+force-exclude = "app/queries/.*|tests"
 
 
 [tool.mypy]

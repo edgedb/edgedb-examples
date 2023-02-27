@@ -4,19 +4,17 @@ from http import HTTPStatus
 from typing import List
 
 import edgedb
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
-from .queries import (
-    create_event_async_edgeql,
-    delete_event_async_edgeql,
-    get_event_by_name_async_edgeql,
-    get_events_async_edgeql,
-    update_event_async_edgeql,
-)
+from . import get_edgedb_client
+from .queries import create_event_async_edgeql as create_event_qry
+from .queries import delete_event_async_edgeql as delete_event_qry
+from .queries import get_event_by_name_async_edgeql as get_event_by_name_qry
+from .queries import get_events_async_edgeql as get_events_qry
+from .queries import update_event_async_edgeql as update_event_qry
 
 router = APIRouter()
-client = edgedb.create_async_client()
 
 
 class RequestData(BaseModel):
@@ -33,17 +31,14 @@ class RequestData(BaseModel):
 
 @router.get("/events")
 async def get_events(
-    name: str = Query(None, max_length=50)
-) -> List[
-    get_events_async_edgeql.GetEventsResult
-] | get_event_by_name_async_edgeql.GetEventByNameResult:
+    name: str = Query(None, max_length=50),
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
+) -> List[get_events_qry.GetEventsResult] | get_event_by_name_qry.GetEventByNameResult:
     if not name:
-        events = await get_events_async_edgeql.get_events(client)
+        events = await get_events_qry.get_events(client)
         return events
     else:
-        event = await get_event_by_name_async_edgeql.get_event_by_name(
-            client, name=name
-        )
+        event = await get_event_by_name_qry.get_event_by_name(client, name=name)
         if not event:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND,
@@ -58,9 +53,12 @@ async def get_events(
 
 
 @router.post("/events", status_code=HTTPStatus.CREATED)
-async def post_event(event: RequestData) -> create_event_async_edgeql.CreateEventResult:
+async def post_event(
+    event: RequestData,
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
+) -> create_event_qry.CreateEventResult:
     try:
-        created_event = await create_event_async_edgeql.create_event(
+        created_event = await create_event_qry.create_event(
             client,
             name=event.name,
             address=event.address,
@@ -94,11 +92,12 @@ async def post_event(event: RequestData) -> create_event_async_edgeql.CreateEven
 
 @router.put("/events")
 async def put_event(
-    event: RequestData, current_name: str
-) -> update_event_async_edgeql.UpdateEventResult:
-
+    event: RequestData,
+    current_name: str,
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
+) -> update_event_qry.UpdateEventResult:
     try:
-        updated_event = await update_event_async_edgeql.update_event(
+        updated_event = await update_event_qry.update_event(
             client,
             current_name=current_name,
             name=event.name,
@@ -137,8 +136,11 @@ async def put_event(
 
 
 @router.delete("/events")
-async def delete_event(name: str) -> delete_event_async_edgeql.DeleteEventResult:
-    deleted_event = await delete_event_async_edgeql.delete_event(client, name=name)
+async def delete_event(
+    name: str,
+    client: edgedb.AsyncIOClient = Depends(get_edgedb_client),
+) -> delete_event_qry.DeleteEventResult:
+    deleted_event = await delete_event_qry.delete_event(client, name=name)
 
     if not deleted_event:
         raise HTTPException(
