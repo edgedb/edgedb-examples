@@ -5,9 +5,6 @@
         ext::pgvector::vector<1536>;
 
       type Section {
-        required path: str {
-          constraint exclusive;
-        }
         required content: str;
         required tokens: int16;
         required embedding: OpenAIEmbedding;

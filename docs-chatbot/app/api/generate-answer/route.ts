@@ -1,44 +1,35 @@
 import { codeBlock, oneLineTrim } from "common-tags";
 import * as edgedb from "edgedb";
 import e from "dbschema/edgeql-js";
+import { errors } from "../../constants";
+import { initOpenAIClient } from "@/utils";
 
-export const config = {
-  runtime: "edge",
-};
+export const config = { runtime: "edge" };
 
-const openAIApiKey = process.env.OPENAI_API_KEY;
+const openai = initOpenAIClient();
 
 const client = edgedb.createHttpClient({
   tlsSecurity: process.env.TLS_SECURITY,
 });
 
-export const errors = {
-  flagged: `OpenAI has declined to answer your question due to their
-        [usage-policies](https://openai.com/policies/usage-policies). Please try
-        another question.`,
-  default: "There was an error processing your request. Please try again.",
-};
-
 export async function POST(req: Request) {
   try {
-    if (!openAIApiKey)
-      throw new Error("Missing environment variable OPENAI_API_KEY");
-
     const { query } = await req.json();
     const sanitizedQuery = query.trim();
 
-    const moderatedQuery = await moderateQuery(sanitizedQuery, openAIApiKey);
-    if (moderatedQuery.flagged) throw new Error(errors.flagged);
+    const flagged = await isQueryFlagged(query);
 
-    const embedding = await getEmbedding(query, openAIApiKey);
+    if (flagged) throw new Error(errors.flagged);
+
+    const embedding = await getEmbedding(query);
 
     const context = await getContext(embedding);
 
     const prompt = createFullPrompt(sanitizedQuery, context);
 
-    const answer = await getOpenAiAnswer(prompt, openAIApiKey);
+    const answer = await getOpenAiAnswer(prompt);
 
-    return new Response(answer, {
+    return new Response(answer.body, {
       headers: {
         "Content-Type": "text/event-stream",
       },
@@ -55,48 +46,23 @@ export async function POST(req: Request) {
   }
 }
 
-async function moderateQuery(query: string, apiKey: string) {
-  const moderationResponse = await fetch(
-    "https://api.openai.com/v1/moderations",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        input: query,
-      }),
-    }
-  ).then((res) => res.json());
+async function isQueryFlagged(query: string) {
+  const moderation = await openai.moderations.create({
+    input: query,
+  });
 
-  const [results] = moderationResponse.results;
-  return results;
+  const [{ flagged }] = moderation.results;
+
+  return flagged;
 }
 
-async function getEmbedding(query: string, apiKey: string) {
-  const embeddingResponse = await fetch(
-    "https://api.openai.com/v1/embeddings",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "text-embedding-ada-002",
-        input: query.replaceAll("\n", " "),
-      }),
-    }
-  );
+async function getEmbedding(query: string) {
+  const embeddingResponse = await openai.embeddings.create({
+    model: "text-embedding-ada-002",
+    input: query.replaceAll("\n", " "),
+  });
 
-  if (embeddingResponse.status !== 200) {
-    throw new Error(embeddingResponse.statusText);
-  }
-
-  const {
-    data: [{ embedding }],
-  } = await embeddingResponse.json();
+  const [{ embedding }] = embeddingResponse.data;
 
   return embedding;
 }
@@ -180,23 +146,16 @@ function createFullPrompt(query: string, context: string) {
         """`;
 }
 
-async function getOpenAiAnswer(prompt: string, secretKey: string) {
-  const completionRequestObject = {
-    model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content: prompt }],
-    max_tokens: 1024,
-    temperature: 0.1,
-    stream: true,
-  };
+async function getOpenAiAnswer(prompt: string) {
+  const completion = await openai.chat.completions
+    .create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1024,
+      temperature: 0.1,
+      stream: true,
+    })
+    .asResponse();
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(completionRequestObject),
-  });
-
-  return response.body;
+  return completion;
 }

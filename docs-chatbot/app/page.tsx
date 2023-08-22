@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { SSE } from "sse.js";
-import { errors } from "./api/generate-answer/route";
+import { errors } from "./constants";
 
 export default function Home() {
   const eventSourceRef = useRef<SSE>();

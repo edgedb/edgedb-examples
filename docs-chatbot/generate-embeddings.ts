@@ -1,12 +1,15 @@
-import dotenv from "dotenv";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import { promises as fs } from "fs";
 import { join } from "path";
+import dotenv from "dotenv";
 import { encode } from "gpt-tokenizer";
 import * as edgedb from "edgedb";
 import e from "dbschema/edgeql-js";
+import { initOpenAIClient } from "./utils";
 
 dotenv.config({ path: ".env.local" });
+
+const openai = initOpenAIClient();
 
 interface Section {
   id?: string;
@@ -37,10 +40,7 @@ async function walk(dir: string): Promise<string[]> {
   return flattenedFiles.sort((a, b) => a.localeCompare(b));
 }
 
-async function prepareSectionsData(
-  sectionPaths: string[],
-  openai: OpenAIApi
-): Promise<Section[]> {
+async function prepareSectionsData(sectionPaths: string[]): Promise<Section[]> {
   const contents: string[] = [];
   const sections: Section[] = [];
 
@@ -52,72 +52,54 @@ async function prepareSectionsData(
     sections.push({
       path,
       content,
-      tokens: 0,
+      tokens: encode(content).length,
       embedding: [],
     });
   }
 
-  const embeddingResponse = await openai.createEmbedding({
+  const embeddingResponse = await openai.embeddings.create({
     model: "text-embedding-ada-002",
     input: contents,
   });
 
-  if (embeddingResponse.status !== 200) {
-    throw new Error(embeddingResponse.statusText);
-  }
-
-  embeddingResponse.data.data.forEach((item, i) => {
+  embeddingResponse.data.forEach((item, i) => {
     sections[i].embedding = item.embedding;
-    sections[i].tokens = encode(contents[i]).length;
   });
 
   return sections;
 }
 
-async function storeEmbeddings() {
-  if (!process.env.OPENAI_API_KEY) {
-    return console.log(
-      "Environment variable OPENAI_API_KEY is required: skipping embeddings generation."
-    );
-  }
+async function generateEmbeddings() {
+  const client = edgedb.createClient();
 
-  try {
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(configuration);
+  const sectionPaths = await walk("docs");
 
-    const client = edgedb.createClient();
+  console.log(`Discovered ${sectionPaths.length} sections`);
 
-    const sectionPaths = await walk("docs");
+  const sections = await prepareSectionsData(sectionPaths);
 
-    console.log(`Discovered ${sectionPaths.length} sections`);
+  // Delete old data from the DB.
+  await e.delete(e.Section).run(client);
 
-    const sections = await prepareSectionsData(sectionPaths, openai);
-
-    // Delete old data from the DB.
-    await e.delete(e.Section).run(client);
-
-    // Bulk-insert all data into EdgeDB database.
-    const query = e.params({ sections: e.json }, ({ sections }) => {
-      return e.for(e.json_array_unpack(sections), (section) => {
-        return e.insert(e.Section, {
-          path: e.cast(e.str, section.path),
-          content: e.cast(e.str, section.content),
-          tokens: e.cast(e.int16, section.tokens),
-          embedding: e.cast(e.OpenAIEmbedding, section.embedding),
-        });
+  // Bulk-insert all data into EdgeDB database.
+  const query = e.params({ sections: e.json }, ({ sections }) => {
+    return e.for(e.json_array_unpack(sections), (section) => {
+      return e.insert(e.Section, {
+        content: e.cast(e.str, section.content),
+        tokens: e.cast(e.int16, section.tokens),
+        embedding: e.cast(e.OpenAIEmbedding, section.embedding),
       });
     });
+  });
 
-    await query.run(client, { sections });
-  } catch (err) {
-    console.error("Error while trying to regenerate all embeddings.", err);
-  }
-
+  await query.run(client, { sections });
   console.log("Embedding generation complete");
 }
 
 (async function main() {
-  await storeEmbeddings();
+  try {
+    await generateEmbeddings();
+  } catch (err) {
+    console.error("Error while trying to regenerate all embeddings.", err);
+  }
 })();

@@ -2,6 +2,10 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 It serves as an example app that uses EdgeDB and OpenAI APIs to create chatbot for your documentation.
 
+## Prerequisites
+
+You should have both [Node](https://nodejs.org/en) and [EdgeDB](https://www.edgedb.com/install) installed for this project.
+
 ## Getting Started
 
 You need to provide two environment variables:
@@ -33,5 +37,7 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+Note: The install script will automatically generate the query builder and embeddings for you to get started. If you change the schema, you will need to regenerate the query builder with `npm run generateQb`. If you make changes to the documentation, you will need to regenerate the embeddings with `npm run embeddings`.
 
 To learn how to build this app yourself, check out our guide.
