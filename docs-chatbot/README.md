@@ -13,8 +13,10 @@ You need to provide two environment variables:
 - `OPENAI_API_KEY`: should be set to the API KEY that you created in your
   OpenAI profile,
 
-- `TLS_SECURITY`: should be set to "insecure" (and used only in development,
+- `EDGEDB_CLIENT_TLS_SECURITY`: should be set to "insecure" (and used only in development,
   not in prod).
+
+- `EDGEDB_DSN`: this you can get by running `edgedb instance credentials --insecure-dsn` in the terminal.
 
 After setting the environment variables, install the dependencies with:
 

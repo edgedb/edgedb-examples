@@ -1,4 +1,3 @@
-import OpenAI from "openai";
 import { promises as fs } from "fs";
 import { join } from "path";
 import dotenv from "dotenv";

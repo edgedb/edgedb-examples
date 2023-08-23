@@ -4,13 +4,11 @@ import e from "dbschema/edgeql-js";
 import { errors } from "../../constants";
 import { initOpenAIClient } from "@/utils";
 
-export const config = { runtime: "edge" };
+export const runtime = "edge";
 
 const openai = initOpenAIClient();
 
-const client = edgedb.createHttpClient({
-  tlsSecurity: process.env.TLS_SECURITY,
-});
+const client = edgedb.createHttpClient();
 
 export async function POST(req: Request) {
   try {
@@ -129,7 +127,7 @@ async function getContext(embedding: number[]) {
 function createFullPrompt(query: string, context: string) {
   const systemMessage = `
         As an enthusiastic EdgeDB expert keen to assist, respond to questions in
-        markdown, referencing the given EdgeDB sections.
+        Markdown, referencing the given EdgeDB sections.
 
         If unable to help based on documentation, respond with:
         "Sorry, I don't know how to help with that."`;
