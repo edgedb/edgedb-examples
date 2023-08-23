@@ -100,5 +100,6 @@ async function generateEmbeddings() {
     await generateEmbeddings();
   } catch (err) {
     console.error("Error while trying to regenerate all embeddings.", err);
+    process.exit(1);
   }
 })();
