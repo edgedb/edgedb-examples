@@ -126,8 +126,8 @@ async function getContext(embedding: number[]) {
 
 function createFullPrompt(query: string, context: string) {
   const systemMessage = `
-        As an enthusiastic EdgeDB expert keen to assist, respond to questions in
-        Markdown, referencing the given EdgeDB sections.
+        As an enthusiastic EdgeDB expert keen to assist, respond to questions 
+        referencing the given EdgeDB sections.
 
         If unable to help based on documentation, respond with:
         "Sorry, I don't know how to help with that."`;

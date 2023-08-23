@@ -68,7 +68,7 @@ async function prepareSectionsData(sectionPaths: string[]): Promise<Section[]> {
   return sections;
 }
 
-async function generateEmbeddings() {
+async function storeEmbeddings() {
   const client = edgedb.createClient();
 
   const sectionPaths = await walk("docs");
@@ -96,10 +96,5 @@ async function generateEmbeddings() {
 }
 
 (async function main() {
-  try {
-    await generateEmbeddings();
-  } catch (err) {
-    console.error("Error while trying to regenerate all embeddings.", err);
-    process.exit(1);
-  }
+  await storeEmbeddings();
 })();
