@@ -20,9 +20,9 @@ pnpm run initProject
 
 You need to provide three environment variables:
 
-- `OPENAI_API_KEY`: should be set to the API KEY that you created in your OpenAI profile,
-- `EDGEDB_CLIENT_TLS_SECURITY`: should be set to "insecure" (and used only in development, not in prod).
 - `EDGEDB_DSN`: you can get this by running `edgedb instance credentials --insecure-dsn` in the terminal.
+- `EDGEDB_CLIENT_TLS_SECURITY`: should be set to "insecure" (and used only in development, not in prod).
+- `OPENAI_API_KEY`: should be set to the API KEY that you created in your OpenAI profile,
 
 After setting the environment variables, install the dependencies with:
 
