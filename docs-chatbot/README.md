@@ -46,6 +46,6 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Note: The install script will automatically generate the query builder and embeddings for you to get started. If you change the schema, you will need to regenerate the query builder with `npm run generateQb`. If you make changes to the documentation, you will need to regenerate the embeddings with `npm run embeddings`.
+Note: The install script will automatically run migrations and generate the query builder and embeddings for you to get started. If you change the schema, you will need to create and run migrations with `edgedb migration create` followed by `edgedb migrate` and regenerate the query builder with `npm run generateQb`. If you make changes to the documentation, you will need to regenerate the embeddings with `npm run embeddings`.
 
 To learn how to build this app yourself, check out our guide.
