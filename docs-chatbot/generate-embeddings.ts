@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { encode } from "gpt-tokenizer";
 import * as edgedb from "edgedb";
 import e from "dbschema/edgeql-js";
-import { initOpenAIClient } from "./utils";
+import { initOpenAIClient } from "@/utils";
 
 dotenv.config({ path: ".env.local" });
 
@@ -12,7 +12,6 @@ const openai = initOpenAIClient();
 
 interface Section {
   id?: string;
-  path: string;
   tokens: number;
   content: string;
   embedding: number[];
@@ -43,7 +42,6 @@ async function prepareSectionsData(sectionPaths: string[]): Promise<Section[]> {
     const contentTrimmed = content.replace(/\n/g, " ");
     contents.push(contentTrimmed);
     sections.push({
-      path,
       content,
       tokens: encode(content).length,
       embedding: [],
