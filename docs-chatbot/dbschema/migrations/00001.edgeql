@@ -1,4 +1,4 @@
-CREATE MIGRATION m1yyvsjcusq5fnhgr7lx64omtbhs7uhow2y35wpo4gi5ajfiynjs4a
+CREATE MIGRATION m1ueqdkvzirjtgvsh5rbliyurew275popvhnvf3jlyxampzvbna4yq
     ONTO initial
 {
   CREATE EXTENSION pgvector VERSION '0.4';
