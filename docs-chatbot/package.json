@@ -11,7 +11,7 @@
     "initProject": "edgedb project info > /dev/null 2>&1 || edgedb project init --non-interactive",
     "migrate": "edgedb migrate",
     "generateQb": "npx @edgedb/generate@latest edgeql-js",
-    "postinstall": "npm run initProject && npm run migrate && npm run generateQb && npm run embeddings"
+    "postinstall": "npm run migrate && npm run generateQb && npm run embeddings"
   },
   "dependencies": {
     "common-tags": "^1.8.2",

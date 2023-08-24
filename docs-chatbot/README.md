@@ -8,15 +8,21 @@ You should have both [Node](https://nodejs.org/en) and [EdgeDB](https://www.edge
 
 ## Getting Started
 
-You need to provide two environment variables:
+Start by initializing the EdgeDB project:
 
-- `OPENAI_API_KEY`: should be set to the API KEY that you created in your
-  OpenAI profile,
+```bash
+npm run initProject
+# or
+yarn run initProject
+# or
+pnpm run initProject
+```
 
-- `EDGEDB_CLIENT_TLS_SECURITY`: should be set to "insecure" (and used only in development,
-  not in prod).
+You need to provide three environment variables:
 
-- `EDGEDB_DSN`: this you can get by running `edgedb instance credentials --insecure-dsn` in the terminal.
+- `OPENAI_API_KEY`: should be set to the API KEY that you created in your OpenAI profile,
+- `EDGEDB_CLIENT_TLS_SECURITY`: should be set to "insecure" (and used only in development, not in prod).
+- `EDGEDB_DSN`: you can get this by running `edgedb instance credentials --insecure-dsn` in the terminal.
 
 After setting the environment variables, install the dependencies with:
 
