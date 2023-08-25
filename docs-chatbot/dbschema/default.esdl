@@ -9,7 +9,7 @@
         required tokens: int16;
         required embedding: OpenAIEmbedding;
 
-        index ext::pgvector::ivfflat_cosine(lists := 3)
+        index ext::pgvector::ivfflat_cosine(lists := 1)
           on (.embedding);
       }
     }
