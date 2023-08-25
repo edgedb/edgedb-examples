@@ -1,4 +1,4 @@
-import { codeBlock, oneLineTrim } from "common-tags";
+import { stripIndents, oneLineTrim } from "common-tags";
 import * as edgedb from "edgedb";
 import e from "dbschema/edgeql-js";
 import { errors } from "../../constants";
@@ -132,7 +132,7 @@ function createFullPrompt(query: string, context: string) {
         If unable to help based on documentation, respond with:
         "Sorry, I don't know how to help with that."`;
 
-  return codeBlock`
+  return stripIndents`
         ${oneLineTrim`${systemMessage}`}
 
         EdgeDB sections: """
