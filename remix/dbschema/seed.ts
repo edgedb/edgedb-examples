@@ -37,24 +37,36 @@ const JOKES = [
 
 async function seed() {
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
-  const newUser = await e
-    .insert(e.User, {
+  await e
+    .params(
+      {
+        username: e.str,
+        passwordHash: e.str,
+        jokes: e.array(e.tuple({ name: e.str, content: e.str })),
+      },
+      ($) => {
+        const newUser = e.insert(e.User, {
+          username: $.username,
+          passwordHash: $.passwordHash,
+        });
+
+        return e.with(
+          [newUser],
+          e.for(e.array_unpack($.jokes), (joke) => {
+            return e.insert(e.Joke, {
+              name: joke.name,
+              content: joke.content,
+              jokester: newUser,
+            });
+          }),
+        );
+      },
+    )
+    .run(client, {
       username: USERNAME,
       passwordHash,
-    })
-    .run(client);
-
-  const jokes = await e
-    .for(e.json_array_unpack(e.json(JOKES)), (joke) => {
-      return e.insert(e.Joke, {
-        name: e.cast(e.str, joke.name),
-        content: e.cast(e.str, joke.content),
-        jokester: e.select(e.User, (user) => ({
-          filter: e.op(user.id, "=", e.uuid(newUser.id)),
-        })),
-      });
-    })
-    .run(client);
+      jokes: JOKES,
+    });
 
   console.log(`Database has been seeded. 🌱`);
 }
