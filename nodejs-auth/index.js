@@ -104,7 +104,7 @@ const handleUiSignIn = async (req, res) => {
   const redirectUrl = new URL("ui/signin", EDGEDB_AUTH_BASE_URL);
   redirectUrl.searchParams.set("challenge", pkce.challenge);
 
-  res.writeHead(301, {
+  res.writeHead(302, {
     "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     Location: redirectUrl.href,
   });
@@ -124,7 +124,7 @@ const handleUiSignUp = async (req, res) => {
   const redirectUrl = new URL("ui/signup", EDGEDB_AUTH_BASE_URL);
   redirectUrl.searchParams.set("challenge", pkce.challenge);
 
-  res.writeHead(301, {
+  res.writeHead(302, {
     "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     Location: redirectUrl.href,
   });
@@ -155,10 +155,10 @@ const handleAuthorize = async (req, res) => {
   redirectUrl.searchParams.set("challenge", pkce.challenge);
   redirectUrl.searchParams.set(
     "redirect_to",
-    `http://localhost:${SERVER_PORT}/auth/callack`,
+    `http://localhost:${SERVER_PORT}/auth/callback`,
   );
 
-  res.writeHead(301, {
+  res.writeHead(302, {
     "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     Location: redirectUrl.href,
   });
