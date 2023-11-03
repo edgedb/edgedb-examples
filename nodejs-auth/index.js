@@ -105,7 +105,7 @@ const handleUiSignIn = async (req, res) => {
   redirectUrl.searchParams.set("challenge", pkce.challenge);
 
   res.writeHead(301, {
-    "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; Path=/; HttpOnly`,
+    "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     Location: redirectUrl.href,
   });
   res.end();
@@ -125,7 +125,7 @@ const handleUiSignUp = async (req, res) => {
   redirectUrl.searchParams.set("challenge", pkce.challenge);
 
   res.writeHead(301, {
-    "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; Path=/; HttpOnly`,
+    "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     Location: redirectUrl.href,
   });
   res.end();
@@ -155,11 +155,11 @@ const handleAuthorize = async (req, res) => {
   redirectUrl.searchParams.set("challenge", pkce.challenge);
   redirectUrl.searchParams.set(
     "redirect_to",
-    `http://localhost:{PORT}/auth/callack`,
+    `http://localhost:${SERVER_PORT}/auth/callack`,
   );
 
   res.writeHead(301, {
-    "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; Path=/; HttpOnly`,
+    "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     Location: redirectUrl.href,
   });
   res.end();
@@ -187,7 +187,7 @@ const handleCallback = async (req, res) => {
 
   const cookies = req.headers.cookie?.split("; ");
   const verifier = cookies
-    .find((cookie) => cookie.startsWith("edgedb-pkce-verifier="))
+    ?.find((cookie) => cookie.startsWith("edgedb-pkce-verifier="))
     ?.split("=")[1];
   if (!verifier) {
     res.status = 400;
@@ -213,7 +213,7 @@ const handleCallback = async (req, res) => {
 
   const { auth_token } = await codeExchangeResponse.json();
   res.writeHead(204, {
-    "Set-Cookie": `edgedb-auth-token=${auth_token}; Path=/; HttpOnly`,
+    "Set-Cookie": `edgedb-auth-token=${auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
   });
   res.end();
 };
@@ -263,7 +263,7 @@ const handleSignUp = async (req, res) => {
     }
 
     res.writeHead(204, {
-      "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; Path=/; HttpOnly`,
+      "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     });
     res.end();
   });
@@ -329,7 +329,7 @@ const handleSignIn = async (req, res) => {
 
     const { auth_token } = await tokenResponse.json();
     res.writeHead(204, {
-      "Set-Cookie": `edgedb-auth-token=${auth_token}; Path=/; HttpOnly`,
+      "Set-Cookie": `edgedb-auth-token=${auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
     });
     res.end();
   });
@@ -354,7 +354,7 @@ const handleVerify = async (req, res) => {
 
   const cookies = req.headers.cookie?.split("; ");
   const verifier = cookies
-    .find((cookie) => cookie.startsWith("edgedb-pkce-verifier="))
+    ?.find((cookie) => cookie.startsWith("edgedb-pkce-verifier="))
     ?.split("=")[1];
   if (!verifier) {
     res.status = 400;
@@ -394,7 +394,7 @@ const handleVerify = async (req, res) => {
   });
 
   if (!tokenResponse.ok) {
-    const text = await authenticateResponse.text();
+    const text = await tokenResponse.text();
     res.status = 400;
     res.end(`Error from the auth server: ${text}`);
     return;
@@ -402,7 +402,7 @@ const handleVerify = async (req, res) => {
 
   const { auth_token } = await tokenResponse.json();
   res.writeHead(204, {
-    "Set-Cookie": `edgedb-auth-token=${auth_token}; Path=/; HttpOnly`,
+    "Set-Cookie": `edgedb-auth-token=${auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
   });
   res.end();
 };
