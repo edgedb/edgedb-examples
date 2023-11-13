@@ -58,6 +58,11 @@ const server = http.createServer(async (req, res) => {
       break;
     }
 
+    case "/auth/ui/reset-password": {
+      await handleUiResetPassword(req, res);
+      break;
+    }
+
     case "/auth/authorize": {
       await handleAuthorize(req, res);
       break;
@@ -80,6 +85,16 @@ const server = http.createServer(async (req, res) => {
 
     case "/auth/verify": {
       await handleVerify(req, res);
+      break;
+    }
+
+    case "/auth/send-password-reset-email": {
+      await handleSendPasswordResetEmail(req, res);
+      break;
+    }
+
+    case "/auth/reset-password": {
+      await handleResetPassword(req, res);
       break;
     }
 
@@ -155,7 +170,7 @@ const handleAuthorize = async (req, res) => {
   redirectUrl.searchParams.set("challenge", pkce.challenge);
   redirectUrl.searchParams.set(
     "redirect_to",
-    `http://localhost:${SERVER_PORT}/auth/callback`,
+    `http://localhost:${SERVER_PORT}/auth/callback`
   );
 
   res.writeHead(302, {
@@ -180,7 +195,7 @@ const handleCallback = async (req, res) => {
     const error = requestUrl.searchParams.get("error");
     res.status = 400;
     res.end(
-      `OAuth callback is missing 'code'. OAuth provider responded with error: ${error}`,
+      `OAuth callback is missing 'code'. OAuth provider responded with error: ${error}`
     );
     return;
   }
@@ -192,7 +207,7 @@ const handleCallback = async (req, res) => {
   if (!verifier) {
     res.status = 400;
     res.end(
-      `Could not find 'verifier' in the cookie store. Is this the same user agent/browser that started the authorization flow?`,
+      `Could not find 'verifier' in the cookie store. Is this the same user agent/browser that started the authorization flow?`
     );
     return;
   }
@@ -235,7 +250,7 @@ const handleSignUp = async (req, res) => {
     if (!email || !password || !provider) {
       res.status = 400;
       res.end(
-        `Request body malformed. Expected JSON body with 'email', 'password', and 'provider' keys, but got: ${body}`,
+        `Request body malformed. Expected JSON body with 'email', 'password', and 'provider' keys, but got: ${body}`
       );
       return;
     }
@@ -285,7 +300,7 @@ const handleSignIn = async (req, res) => {
     if (!email || !password || !provider) {
       res.status = 400;
       res.end(
-        `Request body malformed. Expected JSON body with 'email', 'password', and 'provider' keys, but got: ${body}`,
+        `Request body malformed. Expected JSON body with 'email', 'password', and 'provider' keys, but got: ${body}`
       );
       return;
     }
@@ -347,7 +362,7 @@ const handleVerify = async (req, res) => {
   if (!verification_token) {
     res.status = 400;
     res.end(
-      `Verify request is missing 'verification_token' search param. The verification email is malformed.`,
+      `Verify request is missing 'verification_token' search param. The verification email is malformed.`
     );
     return;
   }
@@ -359,7 +374,7 @@ const handleVerify = async (req, res) => {
   if (!verifier) {
     res.status = 400;
     res.end(
-      `Could not find 'verifier' in the cookie store. Is this the same user agent/browser that started the authorization flow?`,
+      `Could not find 'verifier' in the cookie store. Is this the same user agent/browser that started the authorization flow?`
     );
     return;
   }
@@ -405,6 +420,150 @@ const handleVerify = async (req, res) => {
     "Set-Cookie": `edgedb-auth-token=${auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
   });
   res.end();
+};
+
+/**
+ * Request a password reset for an email.
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+const handleSendPasswordResetEmail = async (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+  req.on("end", async () => {
+    const { email } = JSON.parse(body);
+    const reset_url = `http://localhost:${SERVER_PORT}/auth/ui/reset-password`;
+    const provider = "builtin::local_emailpassword";
+    const pkce = generatePKCE();
+
+    const sendResetUrl = new URL("send-reset-email", EDGEDB_AUTH_BASE_URL);
+    const sendResetResponse = await fetch(sendResetUrl.href, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        provider,
+        reset_url,
+        challenge: pkce.challenge,
+      }),
+    });
+
+    if (!sendResetResponse.ok) {
+      const text = await sendResetResponse.text();
+      res.status = 400;
+      res.end(`Error from auth server: ${text}`);
+      return;
+    }
+
+    const { email_sent } = await sendResetResponse.json();
+
+    res.writeHead(200, {
+      "Set-Cookie": `edgedb-pkce-verifier=${pkce.verifier}; HttpOnly; Path=/; Secure; SameSite=Strict`,
+    });
+    res.end(`Reset email sent to '${email_sent}'`);
+  });
+};
+
+/**
+ * Render a simple reset password UI
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+const handleUiResetPassword = async (req, res) => {
+  const url = new URL(req.url);
+  const reset_token = url.searchParams.get("reset_token");
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.end(`
+    <html>
+      <body>
+        <form method="POST" action="http://localhost:${SERVER_PORT}/auth/reset-password">
+          <input type="hidden" name="reset_token" value="${reset_token}">
+          <label>
+            New password: 
+            <input type="password" name="password" required>
+          </label>
+          <button type="submit">Reset Password</button>
+        </form>
+      </body>
+    </html>
+  `);
+};
+
+/**
+ * Send new password with reset token to EdgeDB Auth.
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+const handleResetPassword = async (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+  req.on("end", async () => {
+    const { reset_token, password } = JSON.parse(body);
+    if (!reset_token || !password) {
+      res.status = 400;
+      res.end(
+        `Request body malformed. Expected JSON body with 'reset_token' and 'password' keys, but got: ${body}`
+      );
+      return;
+    }
+    const provider = "builtin::local_emailpassword";
+    const cookies = req.headers.cookie.split("; ");
+    const verifier = cookies
+      .find((cookie) => cookie.startsWith("edgedb-pkce-verifier="))
+      .split("=")[1];
+    if (!verifier) {
+      res.status = 400;
+      res.end(
+        `Could not find 'verifier' in the cookie store. Is this the same user agent/browser that started the authorization flow?`
+      );
+      return;
+    }
+    const resetUrl = new URL("reset-password", EDGEDB_AUTH_BASE_URL);
+    const resetResponse = await fetch(resetUrl.href, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reset_token,
+        provider,
+        password,
+      }),
+    });
+    if (!resetResponse.ok) {
+      const text = await resetResponse.text();
+      res.status = 400;
+      res.end(`Error from the auth server: ${text}`);
+      return;
+    }
+    const { code } = await resetResponse.json();
+    const tokenUrl = new URL("token", EDGEDB_AUTH_BASE_URL);
+    tokenUrl.searchParams.set("code", code);
+    tokenUrl.searchParams.set("verifier", verifier);
+    const tokenResponse = await fetch(tokenUrl.href, {
+      method: "get",
+    });
+    if (!tokenResponse.ok) {
+      const text = await tokenResponse.text();
+      res.status = 400;
+      res.end(`Error from the auth server: ${text}`);
+      return;
+    }
+    const { auth_token } = await tokenResponse.json();
+    res.writeHead(204, {
+      "Set-Cookie": `edgedb-auth-token=${auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
+    });
+    res.end();
+  });
 };
 
 server.listen(SERVER_PORT, () => {
