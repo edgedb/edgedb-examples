@@ -3,7 +3,12 @@ import cookieParser from "cookie-parser";
 import { AuthRequest } from "@edgedb/auth-express/src";
 
 import { styles } from "./styles";
-import { auth, requireAuth, configuredEmailPasswordRouter } from "./auth";
+import {
+  auth,
+  requireAuth,
+  configuredEmailPasswordRouter,
+  logoutRoute,
+} from "./auth";
 
 const app = express();
 
@@ -13,6 +18,7 @@ app.use(cookieParser());
 app.use(auth.createSessionMiddleware());
 
 app.use(configuredEmailPasswordRouter);
+app.use("/auth/logout", logoutRoute);
 
 const pageTemplate = (body: string) => `
 <html>

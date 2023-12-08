@@ -26,8 +26,17 @@ export const requireAuth = async (
   }
 };
 
-export const configuredEmailPasswordRouter = auth
-  .createEmailPasswordRouter("/auth", {
+export const logoutRoute = Router().get(
+  "/",
+  auth.signout,
+  async (_: AuthRequest, res: Response, __: NextFunction) => {
+    res.redirect("/");
+  }
+);
+
+export const configuredEmailPasswordRouter = auth.createEmailPasswordRouter(
+  "/auth",
+  {
     signIn: [
       async (_: AuthRequest, res: Response, __: NextFunction) => {
         res.redirect("/");
@@ -94,14 +103,8 @@ export const configuredEmailPasswordRouter = auth
         res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
       },
     ],
-  })
-  .get(
-    "/signout",
-    auth.signout,
-    async (_: AuthRequest, res: Response, __: NextFunction) => {
-      res.redirect("/");
-    }
-  );
+  }
+);
 
 export const authEmailPasswordRouter = Router()
   .post(
@@ -182,12 +185,5 @@ export const authEmailPasswordRouter = Router()
     async (err: any, req: Request, res: Response, next: NextFunction) => {
       console.error("/resent-verification-email error: ", err);
       res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
-    }
-  )
-  .get(
-    "/signout",
-    auth.signout,
-    async (_: AuthRequest, res: Response, __: NextFunction) => {
-      res.redirect("/");
     }
   );
