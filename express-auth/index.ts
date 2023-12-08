@@ -3,16 +3,16 @@ import cookieParser from "cookie-parser";
 import { AuthRequest } from "@edgedb/auth-express/src";
 
 import { styles } from "./styles";
-import { auth, requireAuth, authEmailPasswordRouter } from "./auth";
+import { auth, requireAuth, configuredEmailPasswordRouter } from "./auth";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(auth.createSessionMiddleware());
 
-app.use("/auth", authEmailPasswordRouter);
+app.use("/auth", configuredEmailPasswordRouter);
 
 const pageTemplate = (body: string) => `
 <html>
@@ -103,12 +103,8 @@ app.get("/forgot-password", (req, res) => {
   );
 });
 
-app.get("/", async (req: AuthRequest, res) => {
-  if (await req.session?.isLoggedIn()) {
-    res.redirect("/dashboard");
-  } else {
-    res.redirect("/signin");
-  }
+app.get("/", requireAuth, async (req: AuthRequest, res) => {
+  res.redirect("/dashboard");
 });
 
 app.listen(3333, () => {
