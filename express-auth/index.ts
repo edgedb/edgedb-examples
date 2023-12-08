@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(auth.createSessionMiddleware());
 
-app.use("/auth", configuredEmailPasswordRouter);
+app.use(configuredEmailPasswordRouter);
 
 const pageTemplate = (body: string) => `
 <html>
