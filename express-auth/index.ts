@@ -1,13 +1,14 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import { AuthRequest } from "@edgedb/auth-express/src";
+import { AuthRequest } from "@edgedb/auth-express";
 
 import { styles } from "./styles";
 import {
   auth,
   requireAuth,
-  configuredEmailPasswordRouter,
-  logoutRoute,
+  factoriedEmailPasswordRouter,
+  signoutRoute,
+  oAuthRouter,
 } from "./auth";
 
 const app = express();
@@ -17,8 +18,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(auth.createSessionMiddleware());
 
-app.use(configuredEmailPasswordRouter);
-app.use("/auth/logout", logoutRoute);
+app.use(factoriedEmailPasswordRouter);
+app.use("/auth/oauth", oAuthRouter);
+app.use("/auth/signout", signoutRoute);
 
 const pageTemplate = (body: string) => `
 <html>
@@ -61,16 +63,26 @@ app.get("/verify", (req, res) => {
   );
 });
 
-app.get("/signin", (req, res) => {
+app.get("/signin", async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const errors = url.searchParams.getAll("error");
   const errorMessages = errors.map((error) => `<p class="error">${error}</p>`);
+  const providers = await auth.getProvidersInfo();
+  const oAuthProviderButtons = providers.oauth.map(
+    (provider) => `\
+<a href="/auth/oauth?provider_name=${provider.name}">
+  Sign in with ${provider.display_name}
+</a>`
+  );
 
   res.send(
     pageTemplate(`
     <h1>Welcome!</h1>
     <div class="errors">
       ${errorMessages.join("")}
+    </div>
+    <div>
+      ${oAuthProviderButtons.join("")}
     </div>
     <form method="POST" action="/auth/signin">
       <div class="form-control">

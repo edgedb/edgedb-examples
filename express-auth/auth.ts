@@ -6,6 +6,7 @@ import {
 } from "express";
 import createExpressAuth, {
   AuthRequest,
+  CallbackRequest,
   ExpressAuthSession,
 } from "@edgedb/auth-express";
 import { client } from "./db";
@@ -26,94 +27,91 @@ export const requireAuth = async (
   }
 };
 
-export const logoutRoute = Router().get(
+export const signoutRoute = Router().get(
   "/",
   auth.signout,
-  async (_: AuthRequest, res: Response, __: NextFunction) => {
+  async (_: AuthRequest, res: Response) => {
     res.redirect("/");
   }
 );
 
-export const configuredEmailPasswordRouter = auth.createEmailPasswordRouter(
-  "/auth",
-  {
-    signIn: [
-      async (_: AuthRequest, res: Response, __: NextFunction) => {
-        res.redirect("/");
-      },
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error("/signin error: ", err);
-        res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
-      },
-    ],
-    signUp: [
-      async (req: AuthRequest, res: Response, __: NextFunction) => {
-        if (!req.tokenData?.identity_id) {
-          throw new Error("Not logged in");
-        }
+export const factoriedEmailPasswordRouter = auth.createEmailPasswordRouter("/auth", {
+  signIn: [
+    async (_: AuthRequest, res: Response) => {
+      res.redirect("/");
+    },
+    (err: any, _: Request, res: Response) => {
+      console.error("/signin error: ", err);
+      res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
+    },
+  ],
+  signUp: [
+    async (req: AuthRequest, res: Response) => {
+      if (!req.tokenData?.identity_id) {
+        throw new Error("Not logged in");
+      }
 
-        await client.query(
-          `insert User {
+      await client.query(
+        `insert User {
           identity := assert_exists(assert_single(
             (select ext::auth::Identity filter .id = <uuid>$identity_id)
           ))
         }`,
-          { identity_id: req.tokenData.identity_id }
-        );
-        res.redirect("/onboarding");
-      },
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error("/signup error: ", err);
-        res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
-      },
-    ],
-    verify: [
-      async (_: AuthRequest, res: Response, __: NextFunction) => {
-        res.redirect("/onboarding");
-      },
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error("/verify error: ", err);
-        res.redirect(`/verify?error=${encodeURIComponent(err.message)}`);
-      },
-    ],
-    resendVerificationEmail: [
-      async (_: AuthRequest, res: Response, __: NextFunction) => {
-        res.redirect("/signin");
-      },
-      async (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error("/resent-verification-email error: ", err);
-        res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
-      },
-    ],
-    resetPassword: [
-      async (_: AuthRequest, res: Response, __: NextFunction) => {
-        res.redirect("/");
-      },
-      async (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error("/reset-password error: ", err);
-        res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
-      },
-    ],
-    sendPasswordResetEmail: [
-      async (_: AuthRequest, res: Response, __: NextFunction) => {
-        res.redirect("/signin");
-      },
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        console.error("/send-password-reset-email error: ", err);
-        res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
-      },
-    ],
-  }
-);
+        { identity_id: req.tokenData.identity_id }
+      );
+      res.redirect("/onboarding");
+    },
+    (err: any, _: Request, res: Response) => {
+      console.error("/signup error: ", err);
+      res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
+    },
+  ],
+  verify: [
+    async (_: AuthRequest, res: Response) => {
+      res.redirect("/onboarding");
+    },
+    (err: any, _: Request, res: Response) => {
+      console.error("/verify error: ", err);
+      res.redirect(`/verify?error=${encodeURIComponent(err.message)}`);
+    },
+  ],
+  resendVerificationEmail: [
+    async (_: AuthRequest, res: Response) => {
+      res.redirect("/signin");
+    },
+    async (err: any, _: Request, res: Response) => {
+      console.error("/resent-verification-email error: ", err);
+      res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
+    },
+  ],
+  resetPassword: [
+    async (_: AuthRequest, res: Response) => {
+      res.redirect("/");
+    },
+    async (err: any, _: Request, res: Response) => {
+      console.error("/reset-password error: ", err);
+      res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
+    },
+  ],
+  sendPasswordResetEmail: [
+    async (_: AuthRequest, res: Response) => {
+      res.redirect("/signin");
+    },
+    (err: any, _: Request, res: Response) => {
+      console.error("/send-password-reset-email error: ", err);
+      res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
+    },
+  ],
+});
 
-export const authEmailPasswordRouter = Router()
+export const emailPasswordRouter = Router()
   .post(
     "/signin",
     auth.emailPassword.signIn,
     async (_: AuthRequest, res: Response, __: NextFunction) => {
       res.redirect("/");
     },
-    (err: any, req: Request, res: Response, next: NextFunction) => {
+    (err: any, _: Request, res: Response) => {
       console.error("/signin error: ", err);
       res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
     }
@@ -136,7 +134,7 @@ export const authEmailPasswordRouter = Router()
       );
       res.redirect("/onboarding");
     },
-    (err: any, req: Request, res: Response, next: NextFunction) => {
+    (err: any, _: Request, res: Response) => {
       console.error("/signup error: ", err);
       res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
     }
@@ -147,7 +145,7 @@ export const authEmailPasswordRouter = Router()
     async (_: AuthRequest, res: Response, __: NextFunction) => {
       res.redirect("/onboarding");
     },
-    (err: any, req: Request, res: Response, next: NextFunction) => {
+    (err: any, _: Request, res: Response) => {
       console.error("/verify error: ", err);
       res.redirect(`/verify?error=${encodeURIComponent(err.message)}`);
     }
@@ -157,10 +155,10 @@ export const authEmailPasswordRouter = Router()
     auth.emailPassword.sendPasswordResetEmail(
       "http://localhost:3333/auth/reset-password"
     ),
-    async (_: AuthRequest, res: Response, __: NextFunction) => {
+    async (_: AuthRequest, res: Response) => {
       res.redirect("/signin");
     },
-    (err: any, req: Request, res: Response, next: NextFunction) => {
+    (err: any, _: Request, res: Response) => {
       console.error("/send-password-reset-email error: ", err);
       res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
     }
@@ -168,10 +166,10 @@ export const authEmailPasswordRouter = Router()
   .post(
     "/reset-password",
     auth.emailPassword.resetPassword,
-    async (_: AuthRequest, res: Response, __: NextFunction) => {
+    async (_: AuthRequest, res: Response) => {
       res.redirect("/");
     },
-    async (err: any, req: Request, res: Response, next: NextFunction) => {
+    async (err: any, _: Request, res: Response) => {
       console.error("/reset-password error: ", err);
       res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
     }
@@ -179,11 +177,30 @@ export const authEmailPasswordRouter = Router()
   .post(
     "/resend-verification-email",
     auth.emailPassword.resendVerificationEmail,
-    async (_: AuthRequest, res: Response, __: NextFunction) => {
+    async (_: AuthRequest, res: Response) => {
       res.redirect("/signin");
     },
-    async (err: any, req: Request, res: Response, next: NextFunction) => {
+    async (err: any, _: Request, res: Response) => {
       console.error("/resent-verification-email error: ", err);
       res.redirect(`/signin?error=${encodeURIComponent(err.message)}`);
     }
   );
+
+const oAuthCallback = (req: CallbackRequest, res: Response) => {
+  if (req.isSignUp) {
+    return res.redirect("/onboarding");
+  }
+
+  res.redirect("/");
+};
+
+export const factoriedOAuthRouter = auth.createOAuthRouter("/auth/oauth", {
+  callback: [oAuthCallback],
+});
+
+export const oAuthRouter = Router();
+oAuthRouter.get(
+  "/",
+  auth.oAuth.redirect("http://localhost:3333/auth/oauth/callback")
+);
+oAuthRouter.get("/callback", auth.oAuth.callback, oAuthCallback);
