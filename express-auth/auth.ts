@@ -35,6 +35,18 @@ export const signoutRoute = Router().get(
   }
 );
 
+export const factoriedBuiltinUIRouter = auth.createBuiltinRouter({
+  callback: [
+    async (req: CallbackRequest, res: Response) => {
+      if (req.isSignUp) {
+        return res.redirect("/onboarding");
+      }
+
+      res.redirect("/");
+    },
+  ],
+});
+
 export const factoriedEmailPasswordRouter = auth.createEmailPasswordRouter("/auth", {
   signIn: [
     async (_: AuthRequest, res: Response) => {
