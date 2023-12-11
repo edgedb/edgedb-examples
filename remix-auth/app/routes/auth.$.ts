@@ -2,6 +2,19 @@ import { redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 
 export const { loader } = auth.createAuthRouteHandlers({
+  async onOAuthCallback({ error, tokenData, provider, isSignUp, headers }) {
+    if (error) {
+      return redirect(
+        `/signin?oauth_error=${encodeURIComponent(
+          `OAuth sign in failed: ${error.message}`
+        )}`
+      );
+    }
+    if (isSignUp) {
+      await auth.createUser(tokenData, provider);
+    }
+    return redirect("/", { headers });
+  },
   async onBuiltinUICallback({ error, provider, tokenData, isSignUp, headers }) {
     if (error) {
       return redirect(
