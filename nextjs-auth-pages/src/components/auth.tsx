@@ -35,7 +35,7 @@ export function SignInForm() {
         setPending(true);
         setError(null);
         try {
-          await auth.emailPasswordSignIn(router, new FormData(e.currentTarget));
+          await auth.emailPasswordSignIn(new FormData(e.currentTarget));
           router.push("/");
         } catch (e) {
           let err: any = e instanceof Error ? e.message : String(e);
@@ -101,8 +101,6 @@ export function SignInForm() {
 }
 
 export function SignUpForm() {
-  const router = useRouter();
-
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -117,7 +115,6 @@ export function SignUpForm() {
         setMessage(null);
         try {
           const message = await auth.emailPasswordSignUp(
-            router,
             new FormData(e.currentTarget)
           );
           if (message) {
@@ -183,8 +180,6 @@ export function SignUpForm() {
 }
 
 export function SendResetEmailForm() {
-  const router = useRouter();
-
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -199,7 +194,7 @@ export function SendResetEmailForm() {
         setMessage(null);
         try {
           const email = new FormData(e.currentTarget).get("email")!.toString();
-          await auth.emailPasswordSendPasswordResetEmail(router, { email });
+          await auth.emailPasswordSendPasswordResetEmail({ email });
           setMessage(`Password reset email has been sent to '${email}'`);
         } catch (e) {
           let err: any = e instanceof Error ? e.message : String(e);
@@ -263,7 +258,7 @@ export function ResetPasswordForm({ resetToken }: { resetToken: string }) {
         setPending(true);
         setError(null);
         try {
-          await auth.emailPasswordResetPassword(router, {
+          await auth.emailPasswordResetPassword({
             reset_token: resetToken,
             password: new FormData(e.currentTarget).get("password")!.toString(),
           });
@@ -314,8 +309,6 @@ export function ResendVerificationEmail({
 }: {
   verificationToken: string;
 }) {
-  const router = useRouter();
-
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -328,7 +321,7 @@ export function ResendVerificationEmail({
       type="button"
       onClick={async () => {
         setSending(true);
-        await auth.emailPasswordResendVerificationEmail(router, {
+        await auth.emailPasswordResendVerificationEmail({
           verification_token: verificationToken,
         });
         setSending(false);
