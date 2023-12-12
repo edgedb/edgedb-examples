@@ -8,7 +8,7 @@ import {
 } from "@edgedb/auth-nextjs/pages/server";
 import { auth, client } from "@/edgedb";
 
-export async function createUser(
+async function createUser(
   tokenData: TokenData,
   provider?: BuiltinProviderNames
 ) {
