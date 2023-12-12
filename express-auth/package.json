@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "DEBUG=* EDGEDB_CLIENT_SECURITY=insecure_dev_mode tsx watch --clear-screen=false index.ts"
   },
   "keywords": [],
   "author": "",
