@@ -16,19 +16,14 @@ export const loader = async () => {
   });
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  try {
-    const { headers } = await auth.emailPasswordSignIn(request);
-    return redirect("/", { headers });
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return json({
-      error: `Error signing in: ${err?.error?.message ?? JSON.stringify(err)}`,
-    });
-  }
+export const action = ({ request }: ActionFunctionArgs) => {
+  return auth.emailPasswordSignIn(request, ({ error }) => {
+    if (error) {
+      return json({ error });
+    } else {
+      return redirect("/");
+    }
+  });
 };
 
 export default function SignInPage() {
