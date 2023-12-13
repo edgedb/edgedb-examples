@@ -135,6 +135,7 @@ const emailPassword = {
 
 export const factoriedEmailPasswordRouter = auth.createEmailPasswordRouter(
   "/auth",
+  "/reset-password",
   emailPassword
 );
 
