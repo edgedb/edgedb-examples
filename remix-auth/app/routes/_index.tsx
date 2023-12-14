@@ -150,16 +150,13 @@ export async function action({ request }: ActionFunctionArgs) {
   const data = await request.formData();
 
   if (request.method === "POST") {
-    await session.client
-      //workaround for this bug: https://github.com/edgedb/edgedb/issues/6340
-      .withConfig({ apply_access_policies: false })
-      .query(
-        `
+    await session.client.query(
+      `
         insert Todo {
           content := <str>$content
         }`,
-        { content: data.get("newTodo")?.toString() }
-      );
+      { content: data.get("newTodo")?.toString() }
+    );
   }
 
   if (request.method === "PUT") {

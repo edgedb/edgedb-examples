@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { auth } from "~/services/auth.server";
 
-export function ResendVerificationEmail({
+export default function ResendVerificationEmail({
   verificationToken,
 }: {
   verificationToken: string;
