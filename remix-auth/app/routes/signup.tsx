@@ -16,34 +16,37 @@ export const loader = async () => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  try {
-    const { tokenData, headers } = await auth.signupWithEmailPassword(request);
+  return auth.emailPasswordSignUp(request, async ({ error, tokenData }) => {
+    if (error) {
+      return json({ error });
+    } else {
+      try {
+        if (!tokenData) {
+          return json({
+            error: null,
+            message:
+              `Email verification required: ` +
+              `Follow the link in the verification email to finish registration`,
+          });
+        }
 
-    if (!tokenData) {
-      return json(
-        {
-          error: null,
-          message:
-            `Email verification required: ` +
-            `Follow the link in the verification email to finish registration`,
-        },
-        { headers }
-      );
+        await auth.createUser(tokenData);
+
+        return redirect("/");
+      } catch (e) {
+        let err: any = e instanceof Error ? e.message : String(e);
+        try {
+          err = JSON.parse(err);
+        } catch {}
+        return json({
+          error: `Error signing up: ${
+            err?.error?.message ?? JSON.stringify(err)
+          }`,
+          message: null,
+        });
+      }
     }
-
-    await auth.createUser(tokenData);
-
-    return redirect("/", { headers });
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return json({
-      error: `Error signing up: ${err?.error?.message ?? JSON.stringify(err)}`,
-      message: null,
-    });
-  }
+  });
 };
 
 export default function SignUpPage() {

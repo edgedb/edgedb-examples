@@ -27,20 +27,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  try {
-    const { headers } = await auth.emailPasswordResetPassword(request.clone());
-    return redirect("/", { headers });
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return json({
-      error: `Error resetting password: ${
-        err?.error?.message ?? JSON.stringify(err)
-      }`,
-    });
-  }
+  return auth.emailPasswordResetPassword(request.clone(), ({ error }) => {
+    if (error) {
+      return json({ error });
+    } else {
+      return redirect("/");
+    }
+  });
 };
 
 export default function ResetPasswordPage() {

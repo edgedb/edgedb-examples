@@ -11,33 +11,21 @@ export const loader = async () => {
 };
 
 export async function action({ request }: ActionFunctionArgs) {
-  try {
-    const { headers } = await auth.emailPasswordSendPasswordResetEmail(
-      request.clone()
-    );
+  return auth.emailPasswordSendPasswordResetEmail(
+    request.clone(),
+    async ({ error }) => {
+      if (error) {
+        return json({ error });
+      } else {
+        const email = (await request.formData()).get("email")!.toString();
 
-    const formData = await request.formData();
-    const email = formData.get("email")!.toString();
-
-    return json(
-      {
-        error: null,
-        message: `Password reset email has been sent to '${email}'`,
-      },
-      { headers }
-    );
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return json({
-      error: `Error sending password reset: ${
-        err?.error?.message ?? JSON.stringify(err)
-      }`,
-      message: null,
-    });
-  }
+        return json({
+          error: null,
+          message: `Password reset email has been sent to '${email}'`,
+        });
+      }
+    }
+  );
 }
 
 export default function ForgotPasswordPage() {
