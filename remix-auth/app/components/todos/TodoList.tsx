@@ -2,7 +2,7 @@ import { SendIcon } from "~/icons";
 import { Form } from "@remix-run/react";
 import { type Todo, TodoCard } from "./TodoCard";
 
-export function TodosList({ todos }: { todos: Todo[] }) {
+export function TodoList({ todos }: { todos: Todo[] }) {
   return (
     <div className="flex flex-col gap-3 mt-4">
       <Form
