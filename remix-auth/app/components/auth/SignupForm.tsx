@@ -6,7 +6,7 @@ interface SignupFormProps {
   message?: string | null;
 }
 
-export default function SignUpForm({ error, message }: SignupFormProps) {
+export default function SignupForm({ error, message }: SignupFormProps) {
   return (
     <Form className="flex flex-col w-[22rem]" method="post">
       {error || message ? (

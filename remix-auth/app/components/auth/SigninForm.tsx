@@ -5,7 +5,7 @@ interface SigninFormProps {
   error?: string | null;
 }
 
-export default function SignInForm({ error }: SigninFormProps) {
+export default function SigninForm({ error }: SigninFormProps) {
   return (
     <Form className="flex flex-col w-[22rem]" method="post">
       {error ? (
