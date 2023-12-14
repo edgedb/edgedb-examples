@@ -7,7 +7,7 @@ import {
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 import { BackIcon, OAuthIcons } from "../icons";
-import SignInForm from "../components/auth/SignInForm";
+import SigninForm from "../components/auth/SigninForm";
 import { transformSearchParams } from "~/utils";
 
 export const loader = async () => {
@@ -72,7 +72,7 @@ export default function SignInPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-semibold">Email+Password</h2>
             {providers.emailPassword ? (
-              <SignInForm error={data?.error.message} />
+              <SigninForm error={data?.error.message} />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled

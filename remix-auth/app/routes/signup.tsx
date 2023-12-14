@@ -7,7 +7,7 @@ import {
 import { json, redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 import { BackIcon } from "../icons";
-import SignUpForm from "../components/auth/SignUpForm";
+import SignupForm from "../components/auth/SignupForm";
 import { type ActionFunctionArgs } from "@remix-run/node";
 import { transformSearchParams } from "~/utils";
 import ResendVerificationEmail from "~/components/auth/ResendVerificationEmail";
@@ -59,7 +59,7 @@ export default function SignUpPage() {
             ) : null}
 
             {providerInfo.emailPassword ? (
-              <SignUpForm error={data?.error} message={data?.message} />
+              <SignupForm error={data?.error} message={data?.message} />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled

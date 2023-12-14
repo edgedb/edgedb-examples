@@ -1,31 +1,32 @@
-import SubmitButton from "./SubmitButton";
+import { useState } from "react";
+import { auth } from "~/services/auth.server";
 
-interface ResetPasswordFormProps {
-  error?: string | null;
-}
+export function ResendVerificationEmail({
+  verificationToken,
+}: {
+  verificationToken: string;
+}) {
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
 
-export default function ResetPasswordForm({ error }: ResetPasswordFormProps) {
-  return (
-    <form method="post" className="flex flex-col w-[22rem]">
-      {error ? (
-        <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3">
-          {error}
-        </div>
-      ) : (
-        <>
-          <label htmlFor="password" className="font-medium text-sm mb-1 ml-2">
-            New password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            required
-            className="bg-slate-50 border border-slate-200 rounded-lg mb-4 px-4 py-3 outline-sky-500 outline-2 focus:outline focus:bg-white"
-          />
-          <SubmitButton label="Set new password" />
-        </>
-      )}
-    </form>
+  return sent || sending ? (
+    <div className="text-slate-600 mt-2">
+      {sent ? "Verification email sent!" : "Sending verification email..."}
+    </div>
+  ) : (
+    <button
+      type="button"
+      onClick={async () => {
+        setSending(true);
+        await auth.emailPasswordResendVerificationEmail({
+          verification_token: verificationToken,
+        });
+        setSent(true);
+        setSending(false);
+      }}
+      className="text-sky-600 mt-2"
+    >
+      Resend verification email
+    </button>
   );
 }
