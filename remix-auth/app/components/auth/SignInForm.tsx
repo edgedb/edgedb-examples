@@ -1,14 +1,16 @@
-import { Form, useActionData, Link } from "@remix-run/react";
-import { SubmitButton } from "./buttons";
+import { Form, Link } from "@remix-run/react";
+import SubmitButton from "./SubmitButton";
 
-export function SignInForm({ action }: { action: any }) {
-  const actionData = useActionData<typeof action>();
+interface SigninFormProps {
+  error?: string | null;
+}
 
+export default function SignInForm({ error }: SigninFormProps) {
   return (
     <Form className="flex flex-col w-[22rem]" method="post">
-      {actionData?.error ? (
+      {error ? (
         <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3">
-          {actionData.error}
+          {error}
         </div>
       ) : null}
       <label htmlFor="email" className="font-medium text-sm mb-1 ml-2">

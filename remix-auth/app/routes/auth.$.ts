@@ -2,7 +2,7 @@ import { redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 
 export const { loader } = auth.createAuthRouteHandlers({
-  async onOAuthCallback({ error, tokenData, provider, isSignUp, headers }) {
+  async onOAuthCallback({ error, tokenData, provider, isSignUp }) {
     if (error) {
       return redirect(
         `/signin?oauth_error=${encodeURIComponent(
@@ -13,9 +13,9 @@ export const { loader } = auth.createAuthRouteHandlers({
     if (isSignUp) {
       await auth.createUser(tokenData, provider);
     }
-    return redirect("/", { headers });
+    return redirect("/");
   },
-  async onBuiltinUICallback({ error, provider, tokenData, isSignUp, headers }) {
+  async onBuiltinUICallback({ error, provider, tokenData, isSignUp }) {
     if (error) {
       return redirect(
         `/?error=${encodeURIComponent(
@@ -29,17 +29,17 @@ export const { loader } = auth.createAuthRouteHandlers({
         `/?info=${encodeURIComponent(
           `Your email address requires validation before you can sign in. ` +
             `Follow the link in the verification email to continue.`
-        )}`,
-        { headers: headers || undefined }
+        )}`
       );
     }
+
     if (isSignUp) {
       await auth.createUser(tokenData, provider);
     }
 
-    return redirect("/", { headers });
+    return redirect("/");
   },
-  async onEmailVerify({ error, tokenData, verificationToken, headers }) {
+  async onEmailVerify({ error, tokenData, verificationToken }) {
     if (error) {
       const params = new URLSearchParams({
         email_verification_error: `Email verification failed: ${error.message}`,
@@ -53,9 +53,9 @@ export const { loader } = auth.createAuthRouteHandlers({
 
     await auth.createUser(tokenData);
 
-    return redirect("/", { headers });
+    return redirect("/");
   },
-  async onSignout({ headers }) {
-    return redirect("/", { headers });
+  async onSignout() {
+    return redirect("/");
   },
 });

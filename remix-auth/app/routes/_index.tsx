@@ -1,8 +1,12 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData, Link } from "@remix-run/react";
-import TodosPage from "~/components/todos";
-import type { Todo } from "~/components/todos/todoList";
+import Todos from "~/components/todos";
+import type { Todo } from "~/components/todos/TodoCard";
 import { client, auth } from "~/services/auth.server";
 import { transformSearchParams2 } from "~/utils";
 
@@ -19,20 +23,28 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   );
 
   const session = auth.getSession(request);
+  const isLoggedIn = await session.isLoggedIn();
+  const todos = isLoggedIn
+    ? await session.client.query<Todo>(
+        `select Todo {id, content, completed, created_on}
+    order by .created_on desc`
+      )
+    : [];
+
+  const username = isLoggedIn
+    ? (await session.client.querySingle<string>(
+        `select global currentUser.name`
+      )) || ""
+    : "";
 
   let params = new URL(request.url).searchParams;
 
   return json({
     builtinUIEnabled,
     builtinUIUrl: auth.getBuiltinUIUrl(),
-    isLoggedIn: await session.isLoggedIn(),
-    todos: await session.client.query<Todo>(
-      `select Todo {id, content, completed, created_on}
-        order by .created_on desc`
-    ),
-    username: await session.client.querySingle<string>(
-      `select global currentUser.name`
-    ),
+    isLoggedIn,
+    todos,
+    username,
     signoutUrl: auth.getSignoutUrl(),
     params: transformSearchParams2(params),
   });
@@ -60,7 +72,7 @@ export default function Index() {
   if (isLoggedIn) {
     return (
       <main className="h-screen flex justify-center">
-        <TodosPage
+        <Todos
           todos={parsedTodos}
           username={username}
           signoutUrl={signoutUrl}
@@ -130,4 +142,53 @@ export default function Index() {
       </div>
     </main>
   );
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const session = auth.getSession(request);
+
+  const data = await request.formData();
+
+  if (request.method === "POST") {
+    await session.client
+      //workaround for this bug: https://github.com/edgedb/edgedb/issues/6340
+      .withConfig({ apply_access_policies: false })
+      .query(
+        `
+        insert Todo {
+          content := <str>$content
+        }`,
+        { content: data.get("newTodo")?.toString() }
+      );
+  }
+
+  if (request.method === "PUT") {
+    const todo = data.get("todo");
+    const { id, completed } = JSON.parse(todo as string);
+
+    await session.client.query(
+      `
+        update Todo
+        filter .id = <uuid>$id
+        set {
+          completed := <bool>$completed
+        }`,
+      { id, completed: !completed }
+    );
+  }
+
+  if (request.method === "DELETE") {
+    const todo = data.get("todo");
+
+    const { id } = JSON.parse(todo as string);
+
+    await session.client.query(
+      `
+        delete Todo
+        filter .id = <uuid>$id`,
+      { id }
+    );
+  }
+
+  return redirect("/");
 }

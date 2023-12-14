@@ -7,7 +7,7 @@ import {
 } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 import { BackIcon } from "../icons";
-import { SubmitButton } from "~/components/auth/buttons";
+import ResetPasswordForm from "~/components/auth/ResetPasswordForm";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const providers = await auth.getProvidersInfo();
@@ -26,19 +26,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  return auth.emailPasswordResetPassword(request.clone(), ({ error }) => {
-    if (error) {
-      return json({ error });
-    } else {
-      return redirect("/");
-    }
-  });
-};
-
 export default function ResetPasswordPage() {
   const { providers, isTokenValid } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const data = useActionData<typeof action>();
 
   return (
     <main className="my-auto p-8 min-w-[32rem]">
@@ -56,36 +46,7 @@ export default function ResetPasswordPage() {
           <h2 className="text-xl font-semibold">Reset password</h2>
           {providers.emailPassword ? (
             isTokenValid ? (
-              <form method="post" className="flex flex-col w-[22rem]">
-                {actionData?.error ? (
-                  <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3">
-                    {actionData.error}
-                  </div>
-                ) : null}
-
-                {actionData?.message ? (
-                  <div className="bg-sky-200 text-sky-950 px-4 py-3 rounded-md mb-3">
-                    {actionData.message}
-                  </div>
-                ) : (
-                  <>
-                    <label
-                      htmlFor="password"
-                      className="font-medium text-sm mb-1 ml-2"
-                    >
-                      New password
-                    </label>
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      required
-                      className="bg-slate-50 border border-slate-200 rounded-lg mb-4 px-4 py-3 outline-sky-500 outline-2 focus:outline focus:bg-white"
-                    />
-                    <SubmitButton label="Set new password" />
-                  </>
-                )}
-              </form>
+              <ResetPasswordForm error={data?.error.message} />
             ) : (
               <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3 w-[22rem]">
                 Reset token is invalid, it may have expired.{" "}
@@ -104,3 +65,13 @@ export default function ResetPasswordPage() {
     </main>
   );
 }
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  return auth.emailPasswordResetPassword(request.clone(), ({ error }) => {
+    if (error) {
+      return json({ error });
+    } else {
+      return redirect("/");
+    }
+  });
+};

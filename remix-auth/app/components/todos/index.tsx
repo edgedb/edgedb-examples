@@ -1,13 +1,13 @@
 import { Form } from "@remix-run/react";
-import { TodosList, type Todo } from "~/components/todos/todoList";
+import { TodosList, type Todo } from "~/components/todos/TodoList";
 
 interface TodosProps {
   todos: Todo[];
-  username: string | null;
+  username: string;
   signoutUrl: string;
 }
 
-export default function TodosPage({ todos, username, signoutUrl }: TodosProps) {
+export default function Todos({ todos, username, signoutUrl }: TodosProps) {
   return (
     <main className="p-8 w-[40rem]">
       <div className="flex bg-slate-50 shadow-sm p-3 rounded-xl mb-8 items-center gap-3">

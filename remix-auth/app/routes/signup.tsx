@@ -1,11 +1,16 @@
-import { useLoaderData, Link, useSearchParams } from "@remix-run/react";
+import {
+  useLoaderData,
+  Link,
+  useSearchParams,
+  useActionData,
+} from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 import { BackIcon } from "../icons";
-import { SignUpForm } from "../components/auth/signUpForm";
+import SignUpForm from "../components/auth/SignUpForm";
 import { type ActionFunctionArgs } from "@remix-run/node";
 import { transformSearchParams } from "~/utils";
-import { ResendVerificationEmail } from "~/components/auth/resendVerificationEmail";
+import ResendVerificationEmail from "~/components/auth/ResendVerificationEmail";
 
 export const loader = async () => {
   const providerInfo = await auth.getProvidersInfo();
@@ -15,42 +20,9 @@ export const loader = async () => {
   });
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  return auth.emailPasswordSignUp(request, async ({ error, tokenData }) => {
-    if (error) {
-      return json({ error });
-    } else {
-      try {
-        if (!tokenData) {
-          return json({
-            error: null,
-            message:
-              `Email verification required: ` +
-              `Follow the link in the verification email to finish registration`,
-          });
-        }
-
-        await auth.createUser(tokenData);
-
-        return redirect("/");
-      } catch (e) {
-        let err: any = e instanceof Error ? e.message : String(e);
-        try {
-          err = JSON.parse(err);
-        } catch {}
-        return json({
-          error: `Error signing up: ${
-            err?.error?.message ?? JSON.stringify(err)
-          }`,
-          message: null,
-        });
-      }
-    }
-  });
-};
-
 export default function SignUpPage() {
   const { providerInfo } = useLoaderData<typeof loader>();
+  const data = useActionData<typeof action>();
 
   const [searchParams] = useSearchParams();
   const params = transformSearchParams(searchParams);
@@ -87,7 +59,7 @@ export default function SignUpPage() {
             ) : null}
 
             {providerInfo.emailPassword ? (
-              <SignUpForm action={action} />
+              <SignUpForm error={data?.error} message={data?.message} />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled
@@ -99,3 +71,37 @@ export default function SignUpPage() {
     </main>
   );
 }
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  return auth.emailPasswordSignUp(request, async ({ error, tokenData }) => {
+    if (error) {
+      return json({ error: error.message, message: null });
+    } else {
+      try {
+        if (!tokenData) {
+          return json({
+            error: null,
+            message:
+              `Email verification required: ` +
+              `Follow the link in the verification email to finish registration`,
+          });
+        }
+
+        await auth.createUser(tokenData);
+
+        return redirect("/");
+      } catch (e) {
+        let err: any = e instanceof Error ? e.message : String(e);
+        try {
+          err = JSON.parse(err);
+        } catch {}
+        return json({
+          error: `Error signing up: ${
+            err?.error?.message ?? JSON.stringify(err)
+          }`,
+          message: null,
+        });
+      }
+    }
+  });
+};

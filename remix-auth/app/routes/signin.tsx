@@ -1,8 +1,13 @@
-import { useLoaderData, Link, useSearchParams } from "@remix-run/react";
+import {
+  useLoaderData,
+  Link,
+  useSearchParams,
+  useActionData,
+} from "@remix-run/react";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
 import { BackIcon, OAuthIcons } from "../icons";
-import { SignInForm } from "../components/auth/signInForm";
+import SignInForm from "../components/auth/SignInForm";
 import { transformSearchParams } from "~/utils";
 
 export const loader = async () => {
@@ -16,18 +21,9 @@ export const loader = async () => {
   });
 };
 
-export const action = ({ request }: ActionFunctionArgs) => {
-  return auth.emailPasswordSignIn(request, ({ error }) => {
-    if (error) {
-      return json({ error });
-    } else {
-      return redirect("/");
-    }
-  });
-};
-
 export default function SignInPage() {
   const { providers, OAuthUrls } = useLoaderData<typeof loader>();
+  const data = useActionData<typeof action>();
 
   const [searchParams] = useSearchParams();
   const params = transformSearchParams(searchParams);
@@ -76,7 +72,7 @@ export default function SignInPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-semibold">Email+Password</h2>
             {providers.emailPassword ? (
-              <SignInForm action={action} />
+              <SignInForm error={data?.error.message} />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled
@@ -88,3 +84,13 @@ export default function SignInPage() {
     </main>
   );
 }
+
+export const action = ({ request }: ActionFunctionArgs) => {
+  return auth.emailPasswordSignIn(request, ({ error }) => {
+    if (error) {
+      return json({ error });
+    } else {
+      return redirect("/");
+    }
+  });
+};

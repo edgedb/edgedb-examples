@@ -1,8 +1,8 @@
-import { useLoaderData, Link, useActionData, Form } from "@remix-run/react";
+import { useLoaderData, Link, useActionData } from "@remix-run/react";
 import { auth } from "~/services/auth.server";
 import { BackIcon } from "../icons";
 import { type ActionFunctionArgs, json } from "@remix-run/node";
-import { SubmitButton } from "~/components/auth/buttons";
+import ForgotPasswordForm from "~/components/auth/ForgotPasswordForm";
 
 export const loader = async () => {
   return json({
@@ -10,27 +10,9 @@ export const loader = async () => {
   });
 };
 
-export async function action({ request }: ActionFunctionArgs) {
-  return auth.emailPasswordSendPasswordResetEmail(
-    request.clone(),
-    async ({ error }) => {
-      if (error) {
-        return json({ error });
-      } else {
-        const email = (await request.formData()).get("email")!.toString();
-
-        return json({
-          error: null,
-          message: `Password reset email has been sent to '${email}'`,
-        });
-      }
-    }
-  );
-}
-
 export default function ForgotPasswordPage() {
   const { providerInfo } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const data = useActionData<typeof action>();
 
   return (
     <main className="h-screen flex justify-center items-center">
@@ -48,36 +30,10 @@ export default function ForgotPasswordPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-semibold">Send password reset email</h2>
             {providerInfo.emailPassword ? (
-              <Form className="flex flex-col w-[22rem]" method="post">
-                {actionData?.error ? (
-                  <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3">
-                    {actionData.error}
-                  </div>
-                ) : null}
-
-                {actionData?.message ? (
-                  <div className="bg-sky-200 text-sky-950 px-4 py-3 rounded-md mb-3">
-                    {actionData.message}
-                  </div>
-                ) : (
-                  <>
-                    <label
-                      htmlFor="email"
-                      className="font-medium text-sm mb-1 ml-2"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      className="bg-slate-50 border border-slate-200 rounded-lg mb-4 px-4 py-3 outline-teal-600 outline-2 focus:outline focus:bg-white"
-                    />
-                    <SubmitButton label="Send reset email" />
-                  </>
-                )}
-              </Form>
+              <ForgotPasswordForm
+                error={data?.error?.message}
+                message={data?.message}
+              />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled
@@ -87,5 +43,23 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  return auth.emailPasswordSendPasswordResetEmail(
+    request.clone(),
+    async ({ error }) => {
+      if (error) {
+        return json({ error, message: null });
+      } else {
+        const email = (await request.formData()).get("email")!.toString();
+
+        return json({
+          error: null,
+          message: `Password reset email has been sent to '${email}'`,
+        });
+      }
+    }
   );
 }
