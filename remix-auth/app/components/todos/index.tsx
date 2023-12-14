@@ -1,5 +1,6 @@
 import { Form } from "@remix-run/react";
-import { TodosList, type Todo } from "~/components/todos/TodoList";
+import { TodoList } from "~/components/todos/TodoList";
+import type { Todo } from "./TodoCard";
 
 interface TodosProps {
   todos: Todo[];
@@ -32,7 +33,7 @@ export default function Todos({ todos, username, signoutUrl }: TodosProps) {
       </div>
 
       <h1 className="text-3xl font-semibold">Todo's</h1>
-      <TodosList todos={todos} />
+      <TodoList todos={todos} />
     </main>
   );
 }
