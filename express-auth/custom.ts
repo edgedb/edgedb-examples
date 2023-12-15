@@ -6,12 +6,11 @@ import { styles } from "./styles";
 import {
   auth,
   requireAuth,
-  factoriedEmailPasswordRouter,
-  signoutRoute,
+  emailPasswordRouter,
   oAuthRouter,
-  factoriedBuiltinUIRouter,
-  factoriedOAuthRouter,
+  signoutRoute,
 } from "./auth";
+import { router as todosRouter } from "./todos";
 
 const app = express();
 
@@ -20,9 +19,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(auth.createSessionMiddleware());
 
-app.use(factoriedEmailPasswordRouter);
-app.use(factoriedOAuthRouter);
-app.use("/auth", factoriedBuiltinUIRouter);
+app.use("/api/todos", todosRouter);
+
+app.use("/auth/email-password", emailPasswordRouter);
+app.use("/auth/oauth", oAuthRouter);
 app.use("/auth/signout", signoutRoute);
 
 const pageTemplate = (body: string) => `
@@ -66,11 +66,6 @@ app.get("/verify", (req, res) => {
   );
 });
 
-app.get("/signin", (_, res) => {
-  res.redirect("/auth/signin");
-});
-
-/*
 app.get("/signin", async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const errors = url.searchParams.getAll("error");
@@ -128,7 +123,6 @@ app.get("/forgot-password", (req, res) => {
   `)
   );
 });
-*/
 
 app.get("/", requireAuth, async (req: AuthRequest, res) => {
   res.redirect("/dashboard");

@@ -27,7 +27,7 @@ export const requireAuth = async (
   }
 };
 
-/************ 
+/************
  * Sign Out *
  ************/
 
@@ -39,7 +39,7 @@ export const signoutRoute = Router().get(
   }
 );
 
-/*************** 
+/***************
  * Built-in UI *
  ***************/
 
