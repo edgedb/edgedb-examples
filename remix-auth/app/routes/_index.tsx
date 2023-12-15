@@ -8,7 +8,7 @@ import { useLoaderData, Link } from "@remix-run/react";
 import Todos from "~/components/todos";
 import type { Todo } from "~/components/todos/TodoCard";
 import { client, auth } from "~/services/auth.server";
-import { transformSearchParams2 } from "~/utils";
+import { transformSearchParams } from "~/utils";
 
 export const meta: MetaFunction = () => {
   return [
@@ -46,7 +46,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     todos,
     username,
     signoutUrl: auth.getSignoutUrl(),
-    params: transformSearchParams2(params),
+    params: transformSearchParams(params),
   });
 };
 
