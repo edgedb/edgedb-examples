@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@edgedb/auth-express": "^0.1.0-beta.1",
     "cookie-parser": "^1.4.6",
     "edgedb": "^1.4.1",
     "express": "^4.18.2"
