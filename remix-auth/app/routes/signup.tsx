@@ -87,7 +87,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           });
         }
 
-        await auth.createUser(tokenData);
+        await createUser(tokenData);
 
         return redirect("/");
       } catch (e) {

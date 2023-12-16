@@ -11,7 +11,7 @@ export const { loader } = auth.createAuthRouteHandlers({
       );
     }
     if (isSignUp) {
-      await auth.createUser(tokenData, provider);
+      await createUser(tokenData, provider);
     }
     return redirect("/");
   },
@@ -34,7 +34,7 @@ export const { loader } = auth.createAuthRouteHandlers({
     }
 
     if (isSignUp) {
-      await auth.createUser(tokenData, provider);
+      await createUser(tokenData, provider);
     }
 
     return redirect("/");
@@ -51,7 +51,7 @@ export const { loader } = auth.createAuthRouteHandlers({
       return redirect(`/signup?${params.toString()}`);
     }
 
-    await auth.createUser(tokenData);
+    await createUser(tokenData);
 
     return redirect("/");
   },
