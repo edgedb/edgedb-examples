@@ -1,5 +1,7 @@
-# Welcome to Remix!
+# Welcome to EdgeDB Auth todo example app built with Remix!
 
+- [EdgeDB Auth](https://www.edgedb.com/docs/guides/auth/index)
+- [EdgeDB Docs](https://www.edgedb.com/docs)
 - [Remix Docs](https://remix.run/docs)
 
 ## Development
