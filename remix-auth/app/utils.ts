@@ -10,6 +10,7 @@ export async function createUser(
   provider?: BuiltinProviderNames
 ) {
   let username: string | null = null;
+
   if (tokenData.provider_token && provider === "builtin::oauth_github") {
     const { data } = await new Octokit({
       auth: tokenData.provider_token,

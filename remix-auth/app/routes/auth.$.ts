@@ -1,5 +1,6 @@
 import { redirect } from "@remix-run/node";
 import { auth } from "~/services/auth.server";
+import { createUser } from "~/utils";
 
 export const { loader } = auth.createAuthRouteHandlers({
   async onOAuthCallback({ error, tokenData, provider, isSignUp }) {
@@ -10,6 +11,7 @@ export const { loader } = auth.createAuthRouteHandlers({
         )}`
       );
     }
+
     if (isSignUp) {
       await createUser(tokenData, provider);
     }

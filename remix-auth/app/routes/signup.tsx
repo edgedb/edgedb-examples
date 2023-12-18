@@ -9,7 +9,7 @@ import { auth } from "~/services/auth.server";
 import { BackIcon } from "../icons";
 import SignupForm from "../components/auth/SignupForm";
 import { type ActionFunctionArgs } from "@remix-run/node";
-import { transformSearchParams } from "~/utils";
+import { createUser, transformSearchParams } from "~/utils";
 import ResendVerificationEmail from "~/components/auth/ResendVerificationEmail";
 
 export const loader = async () => {
