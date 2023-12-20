@@ -29,13 +29,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         `select Todo {id, content, completed, created_on}
     order by .created_on desc`
       )
-    : [];
+    : null;
 
   const username = isLoggedIn
-    ? (await session.client.querySingle<string>(
+    ? await session.client.queryRequiredSingle<string>(
         `select global currentUser.name`
-      )) || ""
-    : "";
+      )
+    : null;
 
   let params = new URL(request.url).searchParams;
 
@@ -61,22 +61,10 @@ export default function Index() {
     params,
   } = useLoaderData<typeof loader>();
 
-  const parsedTodos =
-    todos?.map(({ id, content, completed, created_on }) => ({
-      id,
-      content,
-      completed,
-      created_on: new Date(created_on),
-    })) || [];
-
   if (isLoggedIn) {
     return (
       <main className="h-screen flex justify-center">
-        <Todos
-          todos={parsedTodos}
-          username={username}
-          signoutUrl={signoutUrl}
-        />
+        <Todos todos={todos} username={username} signoutUrl={signoutUrl} />
       </main>
     );
   }

@@ -3,7 +3,7 @@ import { Form, useNavigation } from "@remix-run/react";
 import { type Todo, TodoCard } from "./TodoCard";
 import { useEffect, useRef } from "react";
 
-export function TodoList({ todos }: { todos: Todo[] }) {
+export function TodoList({ todos }: { todos: Todo[] | null }) {
   const navigation = useNavigation();
 
   const isSubmitting = navigation.state === "submitting";
@@ -40,7 +40,7 @@ export function TodoList({ todos }: { todos: Todo[] }) {
         </button>
       </Form>
 
-      {todos.length ? (
+      {todos?.length ? (
         todos.map((todo) => <TodoCard key={todo.id} {...todo} />)
       ) : (
         <div className="border-dashed border-2 border-slate-300 text-slate-500 h-8 py-4 px-8 box-content flex items-center rounded-xl">

@@ -5,7 +5,7 @@ export interface Todo {
   id: string;
   content: string;
   completed: boolean;
-  created_on: Date;
+  created_on: string;
 }
 
 export function TodoCard({ id, content, completed, created_on }: Todo) {

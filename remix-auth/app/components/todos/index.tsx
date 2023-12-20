@@ -3,8 +3,8 @@ import { TodoList } from "~/components/todos/TodoList";
 import type { Todo } from "./TodoCard";
 
 interface TodosProps {
-  todos: Todo[];
-  username: string;
+  todos: Todo[] | null;
+  username: string | null;
   signoutUrl: string;
 }
 
