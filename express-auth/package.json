@@ -5,13 +5,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "DEBUG=* EDGEDB_CLIENT_SECURITY=insecure_dev_mode tsx watch --clear-screen=false index.ts"
+    "builtin": "DEBUG=* EDGEDB_CLIENT_SECURITY=insecure_dev_mode tsx watch --clear-screen=false builtin.ts",
+    "custom": "DEBUG=* EDGEDB_CLIENT_SECURITY=insecure_dev_mode tsx watch --clear-screen=false custom.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@edgedb/auth-express": "^0.1.0-beta.1",
+    "@edgedb/auth-express": "^0.1.0-canary.20231219T151133",
     "cookie-parser": "^1.4.6",
     "edgedb": "^1.4.1",
     "express": "^4.18.2"

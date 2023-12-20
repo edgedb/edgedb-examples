@@ -5,11 +5,11 @@ import {
   Router,
 } from "express";
 import createExpressAuth, {
-  AuthRequest,
-  CallbackRequest,
-  ExpressAuthSession,
+  type AuthRequest,
+  type CallbackRequest,
+  type ExpressAuthSession,
 } from "@edgedb/auth-express";
-import { client } from "./db";
+import { client } from "./db.js";
 
 export const auth = createExpressAuth(client, {
   baseUrl: "http://localhost:3333",
