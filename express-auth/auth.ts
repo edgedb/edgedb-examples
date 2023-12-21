@@ -77,7 +77,12 @@ const emailPassword = {
   signUp: [
     async (req: AuthRequest, res: Response) => {
       if (!req.tokenData?.identity_id) {
-        throw new Error("Not logged in");
+        // Requires email validation
+        return res.redirect(
+          `/signin?error=${encodeURIComponent(
+            "Check your email for verification instructions."
+          )}`
+        );
       }
 
       await client.query(
