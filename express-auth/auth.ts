@@ -148,7 +148,7 @@ export const emailPasswordRouter = Router()
   .post("/signin", auth.emailPassword.signIn, ...emailPassword.signIn)
   .post(
     "/signup",
-    auth.emailPassword.signUp("http://localhost:3333/auth/verify"),
+    auth.emailPassword.signUp("http://localhost:3333/auth/email-password/verify"),
     ...emailPassword.signUp
   )
   .get("/verify", auth.emailPassword.verify, ...emailPassword.verify)
