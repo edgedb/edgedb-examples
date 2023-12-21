@@ -87,7 +87,7 @@ app.get("/signin", async (req, res) => {
     <div>
       ${oAuthProviderButtons.join("")}
     </div>
-    <form method="POST" action="/auth/signin">
+    <form method="POST" action="/auth/email-password/signin">
       <div class="form-control">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" placeholder="email@example.com" autofocus />
@@ -98,7 +98,7 @@ app.get("/signin", async (req, res) => {
       </div>
       <div class="actions">
         <button type="submit">Sign In</button>
-        <button type="submit" formaction="/auth/signup">Sign Up</button>
+        <button type="submit" formaction="/auth/email-password/signup">Sign Up</button>
       </div>
     </form>
     <a href="/forgot-password">Forgot your password?</a>
@@ -110,7 +110,7 @@ app.get("/forgot-password", (req, res) => {
   res.send(
     pageTemplate(`
     <h1>Forgot Password</h1>
-    <form method="POST" action="/auth/send-password-reset-email">
+    <form method="POST" action="/auth/email-password/send-password-reset-email">
       <div class="form-control">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" placeholder="email@example.com" autofocus />
