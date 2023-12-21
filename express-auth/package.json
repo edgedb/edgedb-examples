@@ -1,0 +1,27 @@
+{
+  "name": "express-auth",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "builtin": "DEBUG=* EDGEDB_CLIENT_SECURITY=insecure_dev_mode tsx watch --clear-screen=false builtin.ts",
+    "custom": "DEBUG=* EDGEDB_CLIENT_SECURITY=insecure_dev_mode tsx watch --clear-screen=false custom.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@edgedb/auth-express": "^0.1.0-canary.20231219T151133",
+    "cookie-parser": "^1.4.6",
+    "edgedb": "^1.4.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.6",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.3",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2"
+  }
+}
