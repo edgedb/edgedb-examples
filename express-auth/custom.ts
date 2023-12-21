@@ -2,15 +2,15 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import { AuthRequest } from "@edgedb/auth-express";
 
-import { styles } from "./styles";
+import { styles } from "./styles.js";
 import {
   auth,
   requireAuth,
   emailPasswordRouter,
   oAuthRouter,
   signoutRoute,
-} from "./auth";
-import { router as todosRouter } from "./todos";
+} from "./auth.js";
+import { router as todosRouter } from "./todos.js";
 
 const app = express();
 

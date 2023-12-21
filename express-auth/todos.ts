@@ -1,7 +1,7 @@
 import express from "express";
 import { AuthRequest } from "@edgedb/auth-express";
 
-import { requireAuth } from "./auth";
+import { requireAuth } from "./auth.js";
 
 export const router = express.Router();
 
