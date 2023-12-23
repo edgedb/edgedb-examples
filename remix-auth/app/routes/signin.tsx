@@ -5,7 +5,8 @@ import {
   useActionData,
 } from "@remix-run/react";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { auth } from "~/services/auth.server";
+import auth from "~/services/auth.server";
+import clientAuth from "~/services/auth";
 import { BackIcon, OAuthIcons } from "../icons";
 import SigninForm from "../components/auth/SigninForm";
 import { transformSearchParams } from "~/utils";
@@ -15,14 +16,11 @@ export const loader = async () => {
 
   return json({
     providers,
-    OAuthUrls: providers.oauth.map((provider) =>
-      auth.getOAuthUrl(provider.name)
-    ),
   });
 };
 
 export default function SignInPage() {
-  const { providers, OAuthUrls } = useLoaderData<typeof loader>();
+  const { providers } = useLoaderData<typeof loader>();
   const data = useActionData<typeof action>();
 
   const [searchParams] = useSearchParams();
@@ -51,10 +49,10 @@ export default function SignInPage() {
             ) : null}
 
             {providers.oauth.length ? (
-              providers.oauth.map((provider, index) => (
+              providers.oauth.map((provider) => (
                 <a
                   key={provider.name}
-                  href={OAuthUrls[index]}
+                  href={clientAuth.getOAuthUrl(provider.name)}
                   className="rounded-lg bg-slate-50 p-3 font-medium shadow-md shrink-0 hover:bg-white hover:scale-[1.03] transition-transform
                 flex items-center"
                 >
@@ -72,7 +70,7 @@ export default function SignInPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-semibold">Email+Password</h2>
             {providers.emailPassword ? (
-              <SigninForm error={data?.error.message} />
+              <SigninForm error={data?.error} />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled
@@ -88,7 +86,7 @@ export default function SignInPage() {
 export const action = ({ request }: ActionFunctionArgs) => {
   return auth.emailPasswordSignIn(request, ({ error }) => {
     if (error) {
-      return json({ error });
+      return json({ error: error.message });
     } else {
       return redirect("/");
     }

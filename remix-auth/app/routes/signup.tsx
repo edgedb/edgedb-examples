@@ -5,7 +5,7 @@ import {
   useActionData,
 } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
-import { auth } from "~/services/auth.server";
+import auth from "~/services/auth.server";
 import { BackIcon } from "../icons";
 import SignupForm from "../components/auth/SignupForm";
 import { type ActionFunctionArgs } from "@remix-run/node";
@@ -42,12 +42,13 @@ export default function SignUpPage() {
         <div className="flex gap-[5rem] w-max">
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-semibold">Email+Password</h2>
-
             {params.email_verification_error ? (
               <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md w-[22rem] flex flex-col items-start">
                 {params.email_verification_error}
                 {params.verification_token ? (
                   <ResendVerificationEmail
+                    error={data?.error}
+                    message={data?.message}
                     verificationToken={
                       Array.isArray(params.verification_token)
                         ? params.verification_token[0]
@@ -73,35 +74,49 @@ export default function SignUpPage() {
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  return auth.emailPasswordSignUp(request, async ({ error, tokenData }) => {
-    if (error) {
-      return json({ error: error.message, message: null });
-    } else {
-      try {
-        if (!tokenData) {
+  const formData = await request.clone().formData();
+  const action = formData.get("action");
+
+  if (action && action === "resendVerEmail")
+    return auth.emailPasswordResendVerificationEmail(request, async (error) => {
+      if (error) {
+        return json({ error: error.message, message: null });
+      } else
+        return json({
+          error: null,
+          message: "Verification email sent!",
+        });
+    });
+  else
+    return auth.emailPasswordSignUp(request, async ({ error, tokenData }) => {
+      if (error) {
+        return json({ error: error.message, message: null });
+      } else {
+        try {
+          if (!tokenData) {
+            return json({
+              error: null,
+              message:
+                `Email verification required: ` +
+                `Follow the link in the verification email to finish registration`,
+            });
+          }
+
+          await createUser(tokenData);
+
+          return redirect("/");
+        } catch (e) {
+          let err: any = e instanceof Error ? e.message : String(e);
+          try {
+            err = JSON.parse(err);
+          } catch {}
           return json({
-            error: null,
-            message:
-              `Email verification required: ` +
-              `Follow the link in the verification email to finish registration`,
+            error: `Error signing up: ${
+              err?.error?.message ?? JSON.stringify(err)
+            }`,
+            message: null,
           });
         }
-
-        await createUser(tokenData);
-
-        return redirect("/");
-      } catch (e) {
-        let err: any = e instanceof Error ? e.message : String(e);
-        try {
-          err = JSON.parse(err);
-        } catch {}
-        return json({
-          error: `Error signing up: ${
-            err?.error?.message ?? JSON.stringify(err)
-          }`,
-          message: null,
-        });
       }
-    }
-  });
+    });
 };

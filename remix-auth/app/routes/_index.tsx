@@ -3,11 +3,12 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { json } from "@remix-run/node";
+import { useLoaderData, Link, useSearchParams } from "@remix-run/react";
 import Todos from "~/components/todos";
 import type { Todo } from "~/components/todos/TodoCard";
-import { client, auth } from "~/services/auth.server";
+import auth, { client } from "~/services/auth.server";
+import clientAuth from "~/services/auth";
 import { transformSearchParams } from "~/utils";
 
 export const meta: MetaFunction = () => {
@@ -23,48 +24,44 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   );
 
   const session = auth.getSession(request);
-  const isLoggedIn = await session.isLoggedIn();
-  const todos = isLoggedIn
+  const isSignedIn = await session.isSignedIn();
+  const todos = isSignedIn
     ? await session.client.query<Todo>(
         `select Todo {id, content, completed, created_on}
     order by .created_on desc`
       )
     : null;
 
-  const username = isLoggedIn
+  const username = isSignedIn
     ? await session.client.queryRequiredSingle<string>(
         `select global currentUser.name`
       )
     : null;
 
-  let params = new URL(request.url).searchParams;
-
   return json({
     builtinUIEnabled,
-    builtinUIUrl: auth.getBuiltinUIUrl(),
-    isLoggedIn,
+    isSignedIn,
     todos,
     username,
-    signoutUrl: auth.getSignoutUrl(),
-    params: transformSearchParams(params),
   });
 };
 
 export default function Index() {
-  const {
-    builtinUIEnabled,
-    builtinUIUrl,
-    isLoggedIn,
-    todos,
-    username,
-    signoutUrl,
-    params,
-  } = useLoaderData<typeof loader>();
+  const { builtinUIEnabled, isSignedIn, todos, username } =
+    useLoaderData<typeof loader>();
 
-  if (isLoggedIn) {
+  const [urlSearchParams] = useSearchParams();
+
+  const params = transformSearchParams(urlSearchParams);
+
+  if (isSignedIn) {
     return (
       <main className="h-screen flex justify-center">
-        <Todos todos={todos} username={username} signoutUrl={signoutUrl} />
+        <Todos
+          todos={todos}
+          username={username}
+          signoutUrl={clientAuth.getSignoutUrl()}
+        />
       </main>
     );
   }
@@ -116,7 +113,7 @@ export default function Index() {
               className={`block rounded-lg bg-slate-50 py-3 px-5 font-medium shadow-md shrink-0 whitespace-nowrap hover:bg-white hover:scale-[1.03] transition-transform ${
                 !builtinUIEnabled ? "opacity-60 pointer-events-none" : ""
               }`}
-              to={builtinUIUrl}
+              to={clientAuth.getBuiltinUIUrl()}
             >
               Sign in with ✨Built-in UI✨
             </Link>
@@ -175,5 +172,5 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  return redirect("/");
+  return null;
 }

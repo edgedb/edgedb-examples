@@ -1,5 +1,5 @@
 import { useLoaderData, Link, useActionData } from "@remix-run/react";
-import { auth } from "~/services/auth.server";
+import auth from "~/services/auth.server";
 import { BackIcon } from "../icons";
 import { type ActionFunctionArgs, json } from "@remix-run/node";
 import ForgotPasswordForm from "~/components/auth/ForgotPasswordForm";
@@ -30,10 +30,7 @@ export default function ForgotPasswordPage() {
           <div className="flex flex-col gap-4">
             <h2 className="text-xl font-semibold">Send password reset email</h2>
             {providerInfo.emailPassword ? (
-              <ForgotPasswordForm
-                error={data?.error?.message}
-                message={data?.message}
-              />
+              <ForgotPasswordForm error={data?.error} message={data?.message} />
             ) : (
               <div className="text-slate-500 italic w-[14rem]">
                 Email+Password provider is not enabled
@@ -48,12 +45,14 @@ export default function ForgotPasswordPage() {
 
 export async function action({ request }: ActionFunctionArgs) {
   return auth.emailPasswordSendPasswordResetEmail(
-    request.clone(),
+    request,
     async ({ error }) => {
       if (error) {
-        return json({ error, message: null });
+        return json({ error: error.message, message: null });
       } else {
-        const email = (await request.formData()).get("email")!.toString();
+        const email = (await request.clone().formData())
+          .get("email")!
+          .toString();
 
         return json({
           error: null,

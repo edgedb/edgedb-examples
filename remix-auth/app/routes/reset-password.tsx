@@ -5,7 +5,7 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { auth } from "~/services/auth.server";
+import auth from "~/services/auth.server";
 import { BackIcon } from "../icons";
 import ResetPasswordForm from "~/components/auth/ResetPasswordForm";
 
@@ -23,11 +23,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({
     providers,
     isTokenValid,
+    resetToken,
   });
 };
 
 export default function ResetPasswordPage() {
-  const { providers, isTokenValid } = useLoaderData<typeof loader>();
+  const { providers, isTokenValid, resetToken } =
+    useLoaderData<typeof loader>();
   const data = useActionData<typeof action>();
 
   return (
@@ -45,8 +47,8 @@ export default function ResetPasswordPage() {
         <div className="flex flex-col gap-4">
           <h2 className="text-xl font-semibold">Reset password</h2>
           {providers.emailPassword ? (
-            isTokenValid ? (
-              <ResetPasswordForm error={data?.error.message} />
+            resetToken && isTokenValid ? (
+              <ResetPasswordForm error={data?.error} resetToken={resetToken} />
             ) : (
               <div className="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3 w-[22rem]">
                 Reset token is invalid, it may have expired.{" "}
@@ -67,9 +69,9 @@ export default function ResetPasswordPage() {
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  return auth.emailPasswordResetPassword(request.clone(), ({ error }) => {
+  return auth.emailPasswordResetPassword(request, ({ error }) => {
     if (error) {
-      return json({ error });
+      return json({ error: error.message });
     } else {
       return redirect("/");
     }

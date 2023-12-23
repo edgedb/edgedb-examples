@@ -1,32 +1,39 @@
-import { useState } from "react";
-import { auth } from "~/services/auth.server";
+interface ResendVerificationEmailProps {
+  verificationToken: string;
+  error?: string | null;
+  message?: string | null;
+}
 
 export default function ResendVerificationEmail({
   verificationToken,
-}: {
-  verificationToken: string;
-}) {
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
+  error,
+  message,
+}: ResendVerificationEmailProps) {
+  return (
+    <form method="post">
+      {error || message ? (
+        <div
+          className={`${
+            error ? "bg-rose-100 text-rose-950" : "bg-sky-200 text-sky-950"
+          } px-4 py-3 rounded-md mb-3`}
+        >
+          {error || message}
+        </div>
+      ) : null}
 
-  return sent || sending ? (
-    <div className="text-slate-600 mt-2">
-      {sent ? "Verification email sent!" : "Sending verification email..."}
-    </div>
-  ) : (
-    <button
-      type="button"
-      onClick={async () => {
-        setSending(true);
-        await auth.emailPasswordResendVerificationEmail({
-          verification_token: verificationToken,
-        });
-        setSent(true);
-        setSending(false);
-      }}
-      className="text-sky-600 mt-2"
-    >
-      Resend verification email
-    </button>
+      <input
+        type="hidden"
+        name="verification_token"
+        defaultValue={verificationToken}
+      />
+      <button
+        name="action"
+        value="resendVerEmail"
+        type="submit"
+        className="text-sky-600 mt-2"
+      >
+        Resend verification email
+      </button>
+    </form>
   );
 }

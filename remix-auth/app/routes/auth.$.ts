@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
-import { auth } from "~/services/auth.server";
+import auth from "~/services/auth.server";
 import { createUser } from "~/utils";
 
 export const { loader } = auth.createAuthRouteHandlers({
