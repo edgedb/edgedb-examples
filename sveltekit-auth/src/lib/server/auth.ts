@@ -1,4 +1,4 @@
-import createServerAuth from "@edgedb/auth-svelte/server";
+import createServerAuth from "@edgedb/auth-sveltekit/server";
 import { createClient } from "edgedb";
 import { options } from "$lib/auth";
 

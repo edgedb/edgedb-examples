@@ -3,7 +3,7 @@ import { client } from "$lib/server/auth";
 import type {
   BuiltinProviderNames,
   TokenData,
-} from "@edgedb/auth-svelte/server";
+} from "@edgedb/auth-sveltekit/server";
 import { Octokit } from "@octokit/core";
 
 export async function createUser(

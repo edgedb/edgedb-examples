@@ -1,6 +1,6 @@
 import createClientAuth, {
   type SvelteAuthOptions,
-} from "@edgedb/auth-svelte/client";
+} from "@edgedb/auth-sveltekit/client";
 
 export const options: SvelteAuthOptions = {
   baseUrl: "http://localhost:5173",
