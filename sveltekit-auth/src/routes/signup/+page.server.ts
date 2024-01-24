@@ -1,59 +1,69 @@
-import type { Actions } from "./$types";
 import { fail, redirect } from "@sveltejs/kit";
-import auth from "$lib/server/auth";
 import { createUser } from "$lib/server/utils";
+import { parseError } from "$lib/utils";
+import type { Actions } from "./$types";
 
-export const load = async () => ({
-  providerInfo: await auth.getProvidersInfo(),
+export const load = async ({ locals }) => ({
+  providerInfo: await locals.auth.getProvidersInfo(),
 });
 
 export const actions = {
-  resendVerEmail: async ({ request, cookies }) => {
-    return auth.emailPasswordResendVerificationEmail(
-      request,
-      cookies,
-      async ({ error }) => {
-        if (error) {
-          return fail(400, { error: error.message });
-        } else
-          return {
-            message: "Verification email sent!",
-          };
-      }
-    );
-  },
-  signUp: async ({ request, cookies }) => {
-    return auth.emailPasswordSignUp(
-      request,
-      cookies,
-      async ({ error, tokenData }) => {
-        if (error) {
-          return fail(400, { error: error.message });
-        } else {
-          if (!tokenData) {
-            return {
-              message:
-                `Email verification required: ` +
-                `Follow the link in the verification email to finish registration`,
-            };
-          }
-          try {
-            await createUser(tokenData);
-          } catch (e) {
-            let err: any = e instanceof Error ? e.message : String(e);
-            try {
-              err = JSON.parse(err);
-            } catch {}
-            return fail(400, {
-              error: `Error signing up: ${
-                err?.error?.message ?? JSON.stringify(err)
-              }`,
-            });
-          }
+  resendVerEmail: async ({ request, locals }) => {
+    try {
+      const verificationToken = (await request.formData())
+        .get("verification_token")
+        ?.toString();
 
-          redirect(302, "/");
-        }
+      if (!verificationToken) {
+        return fail(400, { error: "verification token is required" });
       }
-    );
+
+      await locals.auth.emailPasswordResendVerificationEmail({
+        verificationToken,
+      });
+
+      return {
+        message: "Verification email sent!",
+      };
+    } catch (e) {
+      return fail(400, {
+        error: `Error signing up: ${parseError(e)}`,
+      });
+    }
+  },
+  signUp: async ({ locals, request }) => {
+    const formData = await request.formData();
+    const email = formData.get("email")?.toString();
+    const password = formData.get("password")?.toString();
+
+    if (!email) {
+      return fail(400, { error: "email is required" });
+    }
+    if (!password) {
+      return fail(400, { error: "password is required" });
+    }
+
+    try {
+      const { tokenData } = await locals.auth.emailPasswordSignUp({
+        email,
+        password,
+      });
+
+      if (!tokenData) {
+        return {
+          message:
+            `Email verification required: ` +
+            `Follow the link in the verification email to finish registration`,
+        };
+      }
+
+      await createUser({ client: locals.client, tokenData });
+    } catch (e) {
+      return fail(400, {
+        error: `Error signing up: ${parseError(e)}`,
+      });
+    }
+
+    redirect(303, "/");
   },
 } satisfies Actions;

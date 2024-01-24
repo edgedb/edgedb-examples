@@ -8,10 +8,6 @@
   export let data;
 </script>
 
-<!-- <svelte:head>
-	<title>Svelte Todo Example App</title>
-	<meta name="description" content="Svelte demo app" />
-</svelte:head> -->
 <main>
   {#if data.isSignedIn}
     <div class="p-8 w-[40rem]">

@@ -1,15 +1,19 @@
-import { client } from "$lib/server/auth";
-
 import type {
   BuiltinProviderNames,
   TokenData,
+  Client,
 } from "@edgedb/auth-sveltekit/server";
 import { Octokit } from "@octokit/core";
 
-export async function createUser(
-  tokenData: TokenData,
-  provider?: BuiltinProviderNames
-) {
+export async function createUser({
+  client,
+  tokenData,
+  provider,
+}: {
+  client: Client;
+  tokenData: TokenData;
+  provider?: BuiltinProviderNames;
+}) {
   let username: string | null = null;
 
   if (tokenData.provider_token && provider === "builtin::oauth_github") {
@@ -19,6 +23,7 @@ export async function createUser(
 
     username = data.login;
   }
+
   await client.query(
     `
   with identity := (select ext::auth::Identity filter .id = <uuid>$identity_id),

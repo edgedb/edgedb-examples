@@ -1,26 +1,25 @@
 import type { Todo } from "$lib/components/todos/types";
-import auth, { client } from "$lib/server/auth";
 import { addTodo, deleteTodo, updateTodo } from "$lib/server/database";
 import { fail, type Actions } from "@sveltejs/kit";
 
-export async function load({ request }) {
+export async function load({ locals }) {
+  const session = locals.auth.getSession();
+  const { client } = session;
+
   const builtinUIEnabled = await client.queryRequiredSingle<boolean>(
     `select exists ext::auth::UIConfig`
   );
 
-  const session = auth.getSession(request);
   const isSignedIn = await session.isSignedIn();
   const todos = isSignedIn
-    ? await session.client.query<Todo>(
+    ? await client.query<Todo>(
         `select Todo {id, content, completed, created_on}
     order by .created_on desc`
       )
     : null;
 
   const username = isSignedIn
-    ? await session.client.queryRequiredSingle<string>(
-        `select global currentUser.name`
-      )
+    ? await client.queryRequiredSingle<string>(`select global currentUser.name`)
     : null;
 
   return {
@@ -32,38 +31,38 @@ export async function load({ request }) {
 }
 
 export const actions = {
-  addTodo: async ({ request }) => {
-    const data = await request.formData();
-    const todo = data.get("newTodo")?.toString();
+  addTodo: async (event) => {
+    const formData = await event.request.formData();
+    const todo = formData.get("newTodo")?.toString();
 
     if (!todo) {
       return fail(400, { todo, missing: true });
     }
 
-    await addTodo(request, todo);
+    await addTodo(event, todo);
     return { success: true };
   },
-  updateTodo: async ({ request }) => {
-    const data = await request.formData();
-    const todo = data.get("todo")?.toString();
+  updateTodo: async (event) => {
+    const formData = await event.request.formData();
+    const todo = formData.get("todo")?.toString();
 
     if (!todo) {
       return fail(400, { todo, missing: true });
     }
 
     const { id, completed } = JSON.parse(todo);
-    await updateTodo(request, { id, completed: !completed });
+    await updateTodo(event, { id, completed: !completed });
     return { success: true };
   },
-  deleteTodo: async ({ request }) => {
-    const data = await request.formData();
-    const id = data.get("id")?.toString();
+  deleteTodo: async (event) => {
+    const formData = await event.request.formData();
+    const id = formData.get("id")?.toString();
 
     if (!id) {
       return fail(400, { id, missing: true });
     }
 
-    await deleteTodo(request, id);
+    await deleteTodo(event, id);
     return { success: true };
   },
 } satisfies Actions;

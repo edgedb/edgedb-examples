@@ -2,8 +2,8 @@
   import { enhance } from "$app/forms";
   import SubmitButton from "./SubmitButton.svelte";
 
-  export let error: string | null;
-  export let message: string | null;
+  export let error: string | undefined;
+  export let message: string | undefined;
 </script>
 
 <form

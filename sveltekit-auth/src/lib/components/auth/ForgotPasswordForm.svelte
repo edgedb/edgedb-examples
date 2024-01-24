@@ -2,8 +2,8 @@
   import SubmitButton from "./SubmitButton.svelte";
   import { enhance } from "$app/forms";
 
-  export let error: string | null;
-  export let message: string | null;
+  export let error: string | undefined;
+  export let message: string | undefined;
 </script>
 
 <form class="flex flex-col w-[22rem]" method="post" use:enhance>

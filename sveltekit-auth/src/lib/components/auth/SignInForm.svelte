@@ -5,7 +5,7 @@
   let email: string;
   let password: string;
 
-  export let error: string | null;
+  export let error: string | undefined;
 </script>
 
 <form class="flex flex-col w-[22rem]" method="post" use:enhance>

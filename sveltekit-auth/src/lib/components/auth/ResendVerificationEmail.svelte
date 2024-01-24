@@ -2,8 +2,8 @@
   import { enhance } from "$app/forms";
 
   export let verificationToken: string;
-  export let error: string | null;
-  export let message: string | null;
+  export let error: string | undefined;
+  export let message: string | undefined;
 </script>
 
 <form method="post" action="?/resendVerEmail" use:enhance>

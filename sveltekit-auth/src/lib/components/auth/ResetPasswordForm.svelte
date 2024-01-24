@@ -2,7 +2,7 @@
   import SubmitButton from "./SubmitButton.svelte";
   import { enhance } from "$app/forms";
 
-  export let error: string | null;
+  export let error: string | undefined;
   export let resetToken: string;
 </script>
 

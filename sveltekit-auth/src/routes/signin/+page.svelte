@@ -48,7 +48,7 @@ flex items-center"
   <div class="flex flex-col gap-4">
     <h2 class="text-xl font-semibold">Email+Password</h2>
     {#if data.providers.emailPassword}
-      <SignInForm error={form?.error ?? null} />
+      <SignInForm error={form?.error} />
     {:else}
       <div class="text-slate-500 italic w-[14rem]">
         Email+Password provider is not enabled

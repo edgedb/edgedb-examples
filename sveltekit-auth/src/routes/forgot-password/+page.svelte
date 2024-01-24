@@ -1,5 +1,4 @@
 <script>
-  import Icon from "@iconify/svelte";
   import ForgotPasswordForm from "$lib/components/auth/ForgotPasswordForm.svelte";
 
   export let data;
@@ -11,10 +10,7 @@
   <div class="flex flex-col gap-4">
     <h2 class="text-xl font-semibold">Send password reset email</h2>
     {#if data.providers.emailPassword}
-      <ForgotPasswordForm
-        error={form?.error || null}
-        message={form?.message || null}
-      />
+      <ForgotPasswordForm error={form?.error} message={form?.message} />
     {:else}
       <div class="text-slate-500 italic w-[14rem]">
         Email+Password provider is not enabled

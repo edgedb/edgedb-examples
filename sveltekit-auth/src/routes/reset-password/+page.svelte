@@ -1,5 +1,4 @@
 <script>
-  import Icon from "@iconify/svelte";
   import ResetPasswordForm from "$lib/components/auth/ResetPasswordForm.svelte";
 
   export let data;
@@ -12,10 +11,7 @@
     <h2 class="text-xl font-semibold">Reset password</h2>
     {#if data.providers.emailPassword}
       {#if data.resetToken && data.isTokenValid}
-        <ResetPasswordForm
-          error={form?.error || null}
-          resetToken={data.resetToken}
-        />
+        <ResetPasswordForm error={form?.error} resetToken={data.resetToken} />
       {:else}
         <div
           class="bg-rose-100 text-rose-950 px-4 py-3 rounded-md mb-3 w-[22rem]"

@@ -35,14 +35,12 @@ __metadata:
 
 "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit::locator=sveltekit-auth%40workspace%3A.":
   version: 0.1.0-alpha.1
-  resolution: "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit#../../edgedb-js/packages/auth-sveltekit::hash=e34bcb&locator=sveltekit-auth%40workspace%3A."
+  resolution: "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit#../../edgedb-js/packages/auth-sveltekit::hash=5ffd00&locator=sveltekit-auth%40workspace%3A."
   dependencies:
     "@edgedb/auth-core": ^0.1.0-beta.1
-    "@sveltejs/kit": ^2.3.2
-    cookie: ^0.6.0
   peerDependencies:
     edgedb: ^1.3.6
-  checksum: 9743942da313c5a2f5ef63b9ebd3c3765a6023ddb71c555fcde9e32966dd60905acf19a299647c5d10be88effaaac437e43a1c486b9b0e3d188544e36bcc4038
+  checksum: d29e7246c417d423b1dbde9ebde11e9bbba7121008c99bf72c54e2699e86eeedcd155a2bb3b9ddee235c043c5b1131ae2e0e8f73b3aac828623664a04ba54770
   languageName: node
   linkType: hard
 
@@ -542,7 +540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sveltejs/kit@npm:^2.0.0, @sveltejs/kit@npm:^2.3.2":
+"@sveltejs/kit@npm:^2.0.0":
   version: 2.3.2
   resolution: "@sveltejs/kit@npm:2.3.2"
   dependencies:

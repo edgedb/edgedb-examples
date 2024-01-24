@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import Icon from "@iconify/svelte";
   import ResendVerificationEmail from "$lib/components/auth/ResendVerificationEmail.svelte";
   import SignUpForm from "$lib/components/auth/SignUpForm.svelte";
   import { transformSearchParams } from "$lib/utils";
@@ -21,8 +20,8 @@
         {params.email_verification_error}
         {#if params.verification_token}
           <ResendVerificationEmail
-            error={form?.error || null}
-            message={form?.message || null}
+            error={form?.error}
+            message={form?.message}
             verificationToken={Array.isArray(params.verification_token)
               ? params.verification_token[0]
               : params.verification_token}
