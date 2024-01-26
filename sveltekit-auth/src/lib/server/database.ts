@@ -1,7 +1,7 @@
 import type { RequestEvent } from "@sveltejs/kit";
 
 export const addTodo = async ({ locals }: RequestEvent, todo: string) => {
-  const session = locals.auth.getSession();
+  const session = locals.auth.session;
 
   await session.client.query(
     `
@@ -16,7 +16,7 @@ export const updateTodo = async (
   { locals }: RequestEvent,
   { id, completed }: { id: string; completed: boolean }
 ) => {
-  const session = locals.auth.getSession();
+  const session = locals.auth.session;
 
   await session.client.query(
     `
@@ -30,7 +30,7 @@ export const updateTodo = async (
 };
 
 export const deleteTodo = async ({ locals }: RequestEvent, id: string) => {
-  const session = locals.auth.getSession();
+  const session = locals.auth.session;
 
   await session.client.query(
     `

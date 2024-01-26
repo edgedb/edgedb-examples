@@ -1,5 +1,6 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { createUser } from "$lib/server/utils";
+import { client } from "$lib/server/auth";
 import { parseError } from "$lib/utils";
 import type { Actions } from "./$types";
 
@@ -57,7 +58,7 @@ export const actions = {
         };
       }
 
-      await createUser({ client: locals.client, tokenData });
+      await createUser({ client, tokenData });
     } catch (e) {
       return fail(400, {
         error: `Error signing up: ${parseError(e)}`,

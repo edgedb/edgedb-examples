@@ -3,7 +3,7 @@ import { addTodo, deleteTodo, updateTodo } from "$lib/server/database";
 import { fail, type Actions } from "@sveltejs/kit";
 
 export async function load({ locals }) {
-  const session = locals.auth.getSession();
+  const session = locals.auth.session;
   const { client } = session;
 
   const builtinUIEnabled = await client.queryRequiredSingle<boolean>(
