@@ -35,12 +35,12 @@ __metadata:
 
 "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit::locator=sveltekit-auth%40workspace%3A.":
   version: 0.1.0-alpha.1
-  resolution: "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit#../../edgedb-js/packages/auth-sveltekit::hash=55c91d&locator=sveltekit-auth%40workspace%3A."
+  resolution: "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit#../../edgedb-js/packages/auth-sveltekit::hash=5ea2dc&locator=sveltekit-auth%40workspace%3A."
   dependencies:
     "@edgedb/auth-core": ^0.1.0-beta.1
   peerDependencies:
     edgedb: ^1.3.6
-  checksum: fb34d20eed51d33182fc2fc8b609746c088714115ec3792887cec7bc6af65b44616a3d13a9e4eebb8a5daad04941b0217305ad4cc5e726b939def3b986f8e883
+  checksum: 37767def38f72319e90f61a883a050fbf83f0bc1a724c7b7cb0046178709074fb34e485d64bb3b6c3565c563bd2f7c7a3a3190a88904906e55a37a9f52f51b34
   languageName: node
   linkType: hard
 

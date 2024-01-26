@@ -1,4 +1,4 @@
-import initializeEdgedbServerAuth, {
+import serverAuth, {
   type AuthRouteHandlers,
 } from "@edgedb/auth-sveltekit/server";
 import { redirect, type Handle } from "@sveltejs/kit";
@@ -71,11 +71,13 @@ const authRouteHandlers: AuthRouteHandlers = {
   },
 };
 
-const { createEdgedbServerAuth, createAuthRouteHook } =
-  initializeEdgedbServerAuth(client, options);
+const { createServerRequestAuth, createAuthRouteHook } = serverAuth(
+  client,
+  options
+);
 
 const createServerAuthClient: Handle = ({ event, resolve }) => {
-  event.locals.auth = createEdgedbServerAuth({ event });
+  event.locals.auth = createServerRequestAuth({ event });
 
   return resolve(event);
 };

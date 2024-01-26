@@ -1,4 +1,4 @@
-import createEdgedbClientAuth, {
+import createClientAuth, {
   type AuthOptions,
 } from "@edgedb/auth-sveltekit/client";
 
@@ -7,6 +7,6 @@ export const options: AuthOptions = {
   passwordResetPath: "/reset-password",
 };
 
-const auth = createEdgedbClientAuth(options);
+const auth = createClientAuth(options);
 
 export default auth;
