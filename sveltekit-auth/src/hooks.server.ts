@@ -77,7 +77,7 @@ const { createServerRequestAuth, createAuthRouteHook } = serverAuth(
 );
 
 const createServerAuthClient: Handle = ({ event, resolve }) => {
-  event.locals.auth = createServerRequestAuth({ event });
+  event.locals.auth = createServerRequestAuth(event);
 
   return resolve(event);
 };
