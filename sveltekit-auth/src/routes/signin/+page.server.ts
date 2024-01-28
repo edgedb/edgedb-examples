@@ -10,17 +10,7 @@ export const actions = {
   default: async ({ request, locals }) => {
     try {
       const formData = await request.formData();
-      const email = formData.get("email")?.toString();
-      const password = formData.get("password")?.toString();
-
-      if (!email) {
-        return fail(400, { error: "email is required" });
-      }
-      if (!password) {
-        return fail(400, { error: "password is required" });
-      }
-
-      await locals.auth.emailPasswordSignIn({ email, password });
+      await locals.auth.emailPasswordSignIn(formData);
     } catch (e) {
       return fail(400, {
         error: `Error signing up: ${parseError(e)}`,

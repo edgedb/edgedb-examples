@@ -11,17 +11,8 @@ export const load = async ({ locals }) => ({
 export const actions = {
   resendVerEmail: async ({ request, locals }) => {
     try {
-      const verificationToken = (await request.formData())
-        .get("verification_token")
-        ?.toString();
-
-      if (!verificationToken) {
-        return fail(400, { error: "verification token is required" });
-      }
-
-      await locals.auth.emailPasswordResendVerificationEmail({
-        verificationToken,
-      });
+      const formData = await request.formData();
+      await locals.auth.emailPasswordResendVerificationEmail(formData);
 
       return {
         message: "Verification email sent!",
@@ -34,21 +25,9 @@ export const actions = {
   },
   signUp: async ({ locals, request }) => {
     const formData = await request.formData();
-    const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
-
-    if (!email) {
-      return fail(400, { error: "email is required" });
-    }
-    if (!password) {
-      return fail(400, { error: "password is required" });
-    }
 
     try {
-      const { tokenData } = await locals.auth.emailPasswordSignUp({
-        email,
-        password,
-      });
+      const { tokenData } = await locals.auth.emailPasswordSignUp(formData);
 
       if (!tokenData) {
         return {

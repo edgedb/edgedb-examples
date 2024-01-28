@@ -23,18 +23,8 @@ export const load = async ({ locals, url }) => {
 export const actions = {
   default: async ({ locals, request }) => {
     try {
-      const formData = request.formData();
-      const resetToken = (await formData).get("reset_token")?.toString();
-      const password = (await formData).get("password")?.toString();
-
-      if (!resetToken) {
-        return fail(400, { error: "reset token is required" });
-      }
-      if (!password) {
-        return fail(400, { error: "password is required" });
-      }
-
-      await locals.auth.emailPasswordResetPassword({ resetToken, password });
+      const formData = await request.formData();
+      await locals.auth.emailPasswordResetPassword(formData);
     } catch (e) {
       return fail(400, {
         error: `Error signing up: ${parseError(e)}`,
