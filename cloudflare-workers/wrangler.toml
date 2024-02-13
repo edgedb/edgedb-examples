@@ -1,0 +1,7 @@
+name = "cloudflare-edgedb"
+main = "src/index.ts"
+compatibility_date = "2024-02-08"
+node_compat = true
+
+[vars]
+EDGEDB_DSN = ""
