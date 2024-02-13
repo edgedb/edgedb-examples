@@ -4,14 +4,15 @@ This repo contains starter projects that demonstrate usage of EdgeDB with differ
 
 ## TypeScript
 
-| Framework    | Link                                                                           |
-| ------------ | ------------------------------------------------------------------------------ |
-| Deno Fresh   | [deno-fresh](https://github.com/edgedb/edgedb-examples/tree/main/deno-fresh)   |
-| Nest.js      | [nestjs-crud](https://github.com/edgedb/edgedb-examples/tree/main/nestjs-crud) |
-| Next.js Blog | [nextjs-blog](https://github.com/edgedb/edgedb-examples/tree/main/nextjs-blog) |
-| Next.js Todo | [nextjs-todo](https://github.com/edgedb/edgedb-examples/tree/main/nextjs-todo) |
-| Remix        | [remix](https://github.com/edgedb/edgedb-examples/tree/main/remix)             |
-| SvelteKit    | [sveltekit](https://github.com/edgedb/edgedb-examples/tree/main/sveltekit)     |
+| Framework          | Link                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| Deno Fresh         | [deno-fresh](https://github.com/edgedb/edgedb-examples/tree/main/deno-fresh)                 |
+| Nest.js            | [nestjs-crud](https://github.com/edgedb/edgedb-examples/tree/main/nestjs-crud)               |
+| Next.js Blog       | [nextjs-blog](https://github.com/edgedb/edgedb-examples/tree/main/nextjs-blog)               |
+| Next.js Todo       | [nextjs-todo](https://github.com/edgedb/edgedb-examples/tree/main/nextjs-todo)               |
+| Remix              | [remix](https://github.com/edgedb/edgedb-examples/tree/main/remix)                           |
+| SvelteKit          | [sveltekit](https://github.com/edgedb/edgedb-examples/tree/main/sveltekit)                   |
+| Cloudflare Workers | [cloudflare-workers](https://github.com/edgedb/edgedb-examples/tree/main/cloudflare-workers) |
 
 ## Python
 
@@ -20,7 +21,7 @@ This repo contains starter projects that demonstrate usage of EdgeDB with differ
 | FastAPI            | [fastapi-crud](https://github.com/edgedb/edgedb-examples/tree/main/fastapi-crud)     |
 | Flask CRUD         | [flask-crud](https://github.com/edgedb/edgedb-examples/tree/main/flask-crud)         |
 | Flask Proxy        | [flask-proxy](https://github.com/edgedb/edgedb-examples/tree/main/flask-proxy)       |
-| Strawberry graphQL | [strawberry-gql](https://github.com/edgedb/edgedb-examples/tree/main/strawberry-gql) |
+| Strawberry GraphQL | [strawberry-gql](https://github.com/edgedb/edgedb-examples/tree/main/strawberry-gql) |
 
 ## Go
 
