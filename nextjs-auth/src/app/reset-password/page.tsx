@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/edgedb";
 import { BackIcon } from "@/app/icons";
 
-import { ResetPasswordForm } from "../_components/auth";
+import { ResetPasswordForm } from "@/components/auth";
 
 export default async function ResetPasswordPage({
   searchParams,

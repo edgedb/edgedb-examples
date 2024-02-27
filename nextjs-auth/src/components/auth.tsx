@@ -1,12 +1,19 @@
 "use client";
 
+import { startTransition, useState, useTransition } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
-import { redirect } from "next/navigation";
-
-import * as actions from "@/actions";
 import Link from "next/link";
-import { startTransition, useState, useTransition } from "react";
+
+import {
+  AuthFormState,
+  signout,
+  signinWithState,
+  signupWithState,
+  sendPasswordResetWithState,
+  resetPasswordWithState,
+  emailPasswordResendVerificationEmail,
+} from "@/actions/auth";
 
 export function SignOutButton() {
   return (
@@ -14,7 +21,7 @@ export function SignOutButton() {
       className="border border-slate-200 rounded-lg bg-white py-2 px-3 font-medium text-sm"
       onClick={() =>
         startTransition(() => {
-          actions.signout();
+          signout();
         })
       }
     >
@@ -43,31 +50,6 @@ function SubmitButton({
       {pending ? submittingLabel : label}
     </button>
   );
-}
-
-interface AuthFormState {
-  error: string | null;
-  message?: string;
-}
-
-// Sign in form
-
-async function signinWithState(
-  prevState: AuthFormState | void,
-  formData: FormData
-) {
-  try {
-    await actions.emailPasswordSignIn(formData);
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return {
-      error: `Error signing in: ${err?.error?.message ?? JSON.stringify(err)}`,
-    };
-  }
-  redirect("/");
 }
 
 export function SignInForm() {
@@ -124,35 +106,6 @@ export function SignInForm() {
   );
 }
 
-// Sign up form
-
-async function signupWithState(
-  prevState: AuthFormState | void,
-  formData: FormData
-) {
-  try {
-    const tokenData = await actions.emailPasswordSignUp(formData);
-    if (!tokenData) {
-      return {
-        error: null,
-        message:
-          `Email verification required: ` +
-          `Follow the link in the verification email to finish registration`,
-      };
-    }
-    await actions.createUser(tokenData);
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return {
-      error: `Error signing up: ${err?.error?.message ?? JSON.stringify(err)}`,
-    };
-  }
-  redirect("/");
-}
-
 export function SignUpForm() {
   const [state, formAction] = useFormState<AuthFormState | void, FormData>(
     signupWithState,
@@ -205,32 +158,6 @@ export function SignUpForm() {
   );
 }
 
-// Send password reset email form
-
-async function sendPasswordResetWithState(
-  prevState: AuthFormState | void,
-  formData: FormData
-) {
-  try {
-    const email = formData.get("email")!.toString();
-    await actions.emailPasswordSendPasswordResetEmail({ email });
-    return {
-      error: null,
-      message: `Password reset email has been sent to '${email}'`,
-    };
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return {
-      error: `Error sending password reset: ${
-        err?.error?.message ?? JSON.stringify(err)
-      }`,
-    };
-  }
-}
-
 export function SendResetEmailForm() {
   const [state, formAction] = useFormState<AuthFormState | void, FormData>(
     sendPasswordResetWithState,
@@ -266,32 +193,6 @@ export function SendResetEmailForm() {
       )}
     </form>
   );
-}
-
-// Reset password form
-
-async function resetPasswordWithState(
-  reset_token: string,
-  prevState: AuthFormState | void,
-  formData: FormData
-) {
-  try {
-    await actions.emailPasswordResetPassword({
-      reset_token,
-      password: formData.get("password")!.toString(),
-    });
-  } catch (e) {
-    let err: any = e instanceof Error ? e.message : String(e);
-    try {
-      err = JSON.parse(err);
-    } catch {}
-    return {
-      error: `Error resetting password: ${
-        err?.error?.message ?? JSON.stringify(err)
-      }`,
-    };
-  }
-  redirect("/");
 }
 
 export function ResetPasswordForm({ resetToken }: { resetToken: string }) {
@@ -334,8 +235,6 @@ export function ResetPasswordForm({ resetToken }: { resetToken: string }) {
   );
 }
 
-// Resend verification email
-
 export function ResendVerificationEmail({
   verificationToken,
 }: {
@@ -353,7 +252,7 @@ export function ResendVerificationEmail({
       type="button"
       onClick={() =>
         startTransition(async () => {
-          await actions.emailPasswordResendVerificationEmail({
+          await emailPasswordResendVerificationEmail({
             verification_token: verificationToken,
           });
           setSent(true);

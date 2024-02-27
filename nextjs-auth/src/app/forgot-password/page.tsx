@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/edgedb";
 import { BackIcon } from "@/app/icons";
 
-import { SendResetEmailForm } from "../_components/auth";
+import { SendResetEmailForm } from "@/components/auth";
 
 export default async function ForgotPasswordPage() {
   const providerInfo = await auth.getProvidersInfo();

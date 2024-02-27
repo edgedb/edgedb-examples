@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/edgedb";
 import { BackIcon, OAuthIcons } from "@/app/icons";
 
-import { SignInForm } from "../_components/auth";
+import { SignInForm } from "@/components/auth";
 
 export default async function SignInPage({
   searchParams,

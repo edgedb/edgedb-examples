@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/edgedb";
 import { BackIcon } from "@/app/icons";
 
-import { ResendVerificationEmail, SignUpForm } from "../_components/auth";
+import { ResendVerificationEmail, SignUpForm } from "@/components/auth";
 
 export default async function SignUpPage({
   searchParams,
