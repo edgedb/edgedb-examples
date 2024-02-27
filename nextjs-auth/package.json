@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@edgedb/auth-nextjs": "0.1.0-beta.1",
+    "@edgedb/auth-nextjs": "file:../../edgedb-js/packages/auth-nextjs",
     "@octokit/core": "^5.0.1",
     "edgedb": "^1.4.1",
     "next": "14.0.4",

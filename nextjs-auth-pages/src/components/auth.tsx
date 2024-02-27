@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
+import { UserError } from "@edgedb/auth-nextjs/pages/client";
 import { auth } from "@/edgedb.client";
 
 function SubmitButton({ label, pending }: { label: string; pending: boolean }) {
@@ -37,13 +38,12 @@ export function SignInForm() {
         try {
           await auth.emailPasswordSignIn(new FormData(e.currentTarget));
           router.push("/");
-        } catch (e) {
-          let err: any = e instanceof Error ? e.message : String(e);
-          try {
-            err = JSON.parse(err);
-          } catch {}
+        } catch (err) {
+          console.error(err);
           setError(
-            `Error signing in: ${err?.error?.message ?? JSON.stringify(err)}`
+            err instanceof UserError
+              ? `Error signing in: ${err.message}`
+              : `Unknown error occurred signing in`
           );
         } finally {
           setPending(false);
@@ -120,13 +120,12 @@ export function SignUpForm() {
           if (message) {
             setMessage(message);
           }
-        } catch (e) {
-          let err: any = e instanceof Error ? e.message : String(e);
-          try {
-            err = JSON.parse(err);
-          } catch {}
+        } catch (err) {
+          console.error(err);
           setError(
-            `Error signing up: ${err?.error?.message ?? JSON.stringify(err)}`
+            err instanceof UserError
+              ? `Error signing up: ${err.message}`
+              : `Unknown error occurred signing up`
           );
         } finally {
           setPending(false);
@@ -196,15 +195,12 @@ export function SendResetEmailForm() {
           const email = new FormData(e.currentTarget).get("email")!.toString();
           await auth.emailPasswordSendPasswordResetEmail({ email });
           setMessage(`Password reset email has been sent to '${email}'`);
-        } catch (e) {
-          let err: any = e instanceof Error ? e.message : String(e);
-          try {
-            err = JSON.parse(err);
-          } catch {}
+        } catch (err) {
+          console.error(err);
           setError(
-            `Error sending password reset: ${
-              err?.error?.message ?? JSON.stringify(err)
-            }`
+            err instanceof UserError
+              ? `Error sending password reset: ${err.message}`
+              : `Unknown error occurred sending password reset`
           );
         } finally {
           setPending(false);
@@ -263,16 +259,12 @@ export function ResetPasswordForm({ resetToken }: { resetToken: string }) {
             password: new FormData(e.currentTarget).get("password")!.toString(),
           });
           router.push("/");
-        } catch (e) {
-          console.log(e);
-          let err: any = e instanceof Error ? e.message : String(e);
-          try {
-            err = JSON.parse(err);
-          } catch {}
+        } catch (err) {
+          console.error(err);
           setError(
-            `Error resetting password: ${
-              err?.error?.message ?? JSON.stringify(err)
-            }`
+            err instanceof UserError
+              ? `Error resetting password: ${err.message}`
+              : `Unknown error occurred resetting password`
           );
         } finally {
           setPending(false);

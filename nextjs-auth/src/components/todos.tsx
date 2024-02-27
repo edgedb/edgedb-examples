@@ -1,7 +1,7 @@
 "use client";
 
 import { useOptimistic, useRef } from "react";
-import { addTodo, deleteTodo, updateTodo } from "@/actions";
+import { addTodo, deleteTodo, updateTodo } from "@/actions/todos";
 import { CheckIcon, DeleteIcon, SendIcon } from "@/app/icons";
 
 export interface Todo {

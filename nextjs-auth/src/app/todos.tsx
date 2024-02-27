@@ -1,7 +1,7 @@
 import { auth } from "@/edgedb";
 
-import { TodosList, type Todo } from "./_components/todos";
-import { SignOutButton } from "./_components/auth";
+import { TodosList, type Todo } from "@/components/todos";
+import { SignOutButton } from "@/components/auth";
 
 export async function TodosPage() {
   const session = auth.getSession();

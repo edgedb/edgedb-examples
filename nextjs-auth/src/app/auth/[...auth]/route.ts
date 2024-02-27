@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/edgedb";
-import { createUser } from "@/actions";
+import { createUser } from "@/actions/auth";
 
 export const { GET, POST } = auth.createAuthRouteHandlers({
   async onOAuthCallback({ error, tokenData, provider, isSignUp }) {

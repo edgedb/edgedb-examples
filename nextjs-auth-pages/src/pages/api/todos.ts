@@ -18,16 +18,13 @@ export default async function handler(
       break;
     case "POST":
       res.status(201).json(
-        await session.client
-          // workaround for this bug: https://github.com/edgedb/edgedb/issues/6535
-          .withConfig({ apply_access_policies: false })
-          .querySingle(
-            `
+        await session.client.querySingle(
+          `
             select (insert Todo {
               content := <str>$content
             }) {id, content, completed, created_on}`,
-            { content: req.body.content }
-          )
+          { content: req.body.content }
+        )
       );
       break;
     case "PATCH":
