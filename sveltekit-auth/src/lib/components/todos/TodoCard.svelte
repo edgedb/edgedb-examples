@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
   import Icon from "@iconify/svelte";
-  import { stringify } from "postcss";
 
   export let id: string;
   export let completed: boolean;

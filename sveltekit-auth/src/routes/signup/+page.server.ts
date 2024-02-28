@@ -1,6 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { createUser } from "$lib/server/utils";
-import { client } from "$lib/server/auth";
 import { parseError } from "$lib/utils";
 import type { Actions } from "./$types";
 
@@ -25,6 +24,7 @@ export const actions = {
   },
   signUp: async ({ locals, request }) => {
     const formData = await request.formData();
+    const client = locals.auth.session.client;
 
     try {
       const { tokenData } = await locals.auth.emailPasswordSignUp(formData);

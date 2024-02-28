@@ -26,7 +26,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@edgedb/auth-sveltekit": "../../edgedb-js/packages/auth-sveltekit",
+    "@edgedb/auth-sveltekit": "^0.1.1",
     "@octokit/core": "^5.0.2",
     "edgedb": "^1.4.1"
   }

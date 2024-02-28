@@ -22,25 +22,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@edgedb/auth-core@npm:^0.1.0-beta.1":
-  version: 0.1.0-canary.20240112T203300
-  resolution: "@edgedb/auth-core@npm:0.1.0-canary.20240112T203300"
+"@edgedb/auth-core@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@edgedb/auth-core@npm:0.1.0"
   dependencies:
     jwt-decode: ^3.1.2
   peerDependencies:
     edgedb: ^1.3.6
-  checksum: a726f32bf7903a5894cb8f64cbbe7bc17feed9b4ae64f896024029542890eaf6ddf47df1427882453a47676c293edf47f004e4d0f9a859ee67d6406c02615a2c
+  checksum: 50b252e5b063e8c26eb1c3014fbff4e1e3a111b478abd677f62f96778e78eaa80531e6449562e35d825d01db4b56e59d8583592d7ea5761d13a26ba4456deead
   languageName: node
   linkType: hard
 
-"@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit::locator=sveltekit-auth%40workspace%3A.":
-  version: 0.1.0-alpha.1
-  resolution: "@edgedb/auth-sveltekit@file:../../edgedb-js/packages/auth-sveltekit#../../edgedb-js/packages/auth-sveltekit::hash=a6a29e&locator=sveltekit-auth%40workspace%3A."
+"@edgedb/auth-sveltekit@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@edgedb/auth-sveltekit@npm:0.1.1"
   dependencies:
-    "@edgedb/auth-core": ^0.1.0-beta.1
+    "@edgedb/auth-core": ^0.1.0
   peerDependencies:
     edgedb: ^1.3.6
-  checksum: 50e515b7022a4eccad037eee2844b26fd25074ad5a50f5a87786c392aa3f7f9ddd06dde937c70ea728b7a8fbefd411f222eaa87573813b200d4e193dae05d2d8
+  checksum: 5acdb4b23c077b625de4d228011cf59e6f0b676b05254a65a49e275f2d323072384a2a857da066a52ab949a1ae22fed9feebc12814669335a2baff941bad33ed
   languageName: node
   linkType: hard
 
@@ -2585,7 +2585,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "sveltekit-auth@workspace:."
   dependencies:
-    "@edgedb/auth-sveltekit": ../../edgedb-js/packages/auth-sveltekit
+    "@edgedb/auth-sveltekit": ^0.1.1
     "@fontsource/fira-mono": ^4.5.10
     "@iconify/svelte": ^3.1.6
     "@neoconfetti/svelte": ^1.0.0
