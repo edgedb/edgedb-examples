@@ -1,29 +1,43 @@
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 import { auth, client } from "@/edgedb";
+import { auth as clientAuth } from "@/edgedb.client";
 
-import { TodosPage } from "./todos";
-
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const session = auth.getSession();
+export const getServerSideProps = (async ({ req }) => {
+  const session = auth.getSession(req);
 
   if (await session.isSignedIn()) {
-    return <TodosPage />;
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
   }
 
   const builtinUIEnabled = await client.queryRequiredSingle<boolean>(
     `select exists ext::auth::UIConfig`
   );
 
+  return {
+    props: { builtinUIEnabled },
+  };
+}) satisfies GetServerSideProps<{
+  builtinUIEnabled: boolean;
+}>;
+
+export default function WelcomePage({
+  builtinUIEnabled,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const searchParams = useRouter().query;
+
   return (
     <main className="my-auto p-8 min-w-[32rem] w-min">
       <h1 className="text-3xl font-semibold">Todo Example App</h1>
       <h2 className="text-xl text-slate-600">
-        Next.js (App router) + EdgeDB Auth
+        Next.js (Pages router) + EdgeDB Auth
       </h2>
 
       <p className="my-4">
@@ -67,7 +81,7 @@ export default async function Home({
             className={`block rounded-lg bg-slate-50 py-3 px-5 font-medium shadow-md shrink-0 whitespace-nowrap hover:bg-white hover:scale-[1.03] transition-transform ${
               !builtinUIEnabled ? "opacity-60 pointer-events-none" : ""
             }`}
-            href={auth.getBuiltinUIUrl()}
+            href={clientAuth.getBuiltinUIUrl()}
           >
             Sign in with ✨Built-in UI✨
           </Link>
