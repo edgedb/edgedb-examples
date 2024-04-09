@@ -1,7 +1,7 @@
 module default {
   type Task {
-    required property text -> str;
-    required property completed -> bool{
+    required text: str;
+    required completed: bool {
       default := false;
     };
   }
