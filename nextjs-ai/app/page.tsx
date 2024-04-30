@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import {
+  createParser,
+  type ParsedEvent,
+  type ReconnectInterval,
+} from "eventsource-parser";
 import { GPTLogo, RunIcon } from "./icons";
 
 export default function Home() {
@@ -10,7 +15,18 @@ export default function Home() {
   const [answer, setAnswer] = useState("");
   const [err, setErr] = useState<string | undefined>(undefined);
 
+  function onParse(event: ParsedEvent | ReconnectInterval) {
+    if (event.type === "event" && event.event === "content_block_delta") {
+      setAnswer((answer) => answer + JSON.parse(event.data).delta.text);
+    }
+    return event.event === "message_stop";
+  }
+
+  const parser = createParser(onParse);
+
   const handleQuery = async () => {
+    parser.reset();
+
     setQuestion(prompt);
     setPrompt("");
 
@@ -28,7 +44,7 @@ export default function Home() {
       throw new Error(res.statusText);
     }
 
-    // This data is a ReadableStream?
+    // This data is a ReadableStream
     const data = res.body;
     if (!data) return;
 
@@ -40,20 +56,8 @@ export default function Home() {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const decoded = decoder.decode(value, { stream: true });
-
-        const [_, data] = decoded.split(/data: /, 2);
-
-        if (!data) {
-          throw new Error("Expected SSE message to include a data payload");
-        }
-
-        const message = JSON.parse(data);
-
-        if (message.type === "content_block_delta")
-          setAnswer((answer) => answer + message.delta.text);
-
-        if (message.type === "message_stop") break;
+        const decoded = decoder.decode(value);
+        parser.feed(decoded);
       }
     } catch (err) {
       console.log(err);

@@ -11,6 +11,7 @@
   "dependencies": {
     "@edgedb/ai": "file:../../edgedb-js/packages/ai",
     "edgedb": "1.x",
+    "eventsource-parser": "^1.1.2",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18"
