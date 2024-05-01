@@ -11,11 +11,5 @@ const booksAi = gpt3Ai.withContext({ query: "Book" });
 
 export async function POST(req: Request) {
   const requestData = await req.json();
-  const res = await booksAi.streamRag(requestData.prompt);
-
-  return new Response(res.body, {
-    headers: {
-      "Content-Type": "text/event-stream",
-    },
-  });
+  return booksAi.streamRag(requestData.prompt);
 }
