@@ -1,11 +1,7 @@
 import { createClient } from "edgedb";
 import { createAI } from "@edgedb/ai";
 
-export const client = createClient({
-  instanceName: "nextjs_ai",
-  database: "main",
-  tlsSecurity: "insecure",
-});
+export const client = createClient();
 
 const gpt3Ai = createAI(client, {
   model: "gpt-3.5-turbo",
