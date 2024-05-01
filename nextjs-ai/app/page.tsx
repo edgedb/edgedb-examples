@@ -19,7 +19,7 @@ export default function Home() {
     if (event.type === "event" && event.event === "content_block_delta") {
       setAnswer((answer) => answer + JSON.parse(event.data).delta.text);
     }
-    return event.event === "message_stop";
+    return "event" in event ? event.event === "message_stop" : false;
   }
 
   const parser = createParser(onParse);
