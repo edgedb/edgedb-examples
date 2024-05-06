@@ -2,7 +2,9 @@ using extension ai;
 
 module default {
   type Author {
-    required name: str;
+    required name: str {
+      constraint exclusive;
+    };
     books := .<author[is Book]
   }
 
