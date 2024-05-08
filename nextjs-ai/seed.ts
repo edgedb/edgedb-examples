@@ -104,6 +104,11 @@ insert Book {
           summary:
             "A forbidden forest filled with nightshade flowers promises eternal youth, but at a price that could be too perilous.",
         },
+        {
+          author_name: "Elena Marquez",
+          title: "Whispers of the Forgotten City",
+          summary: `In the sprawling, labyrinthine city of Velloria, ancient secrets lie buried beneath cobblestone streets and candle-lit alleyways. Ivy Donovan, a young historian, stumbles upon a cryptic map that hints at the location of the legendary Sunken Library, believed to house texts lost since the city's mysterious decline centuries ago. As Ivy delves deeper into the city’s dark past, she must dodge shadowy figures who seek to keep the library's secrets hidden. Alongside an unlikely band of allies, Ivy's quest leads her through hidden passages, haunted catacombs, and forgotten ruins, where she discovers truths that could shake the foundations of her world. As they inch closer to uncovering the city's ancient mysteries, they realize some secrets might have been better left untouched.`,
+        },
       ],
     }
   );

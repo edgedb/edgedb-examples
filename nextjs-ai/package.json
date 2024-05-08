@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "tsx seed.ts"
   },
   "dependencies": {
     "@edgedb/ai": "file:../../edgedb-js/packages/ai",

@@ -14,9 +14,9 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const requestData = await req.json();
-  const query = requestData.messages.map(
-    (m: { role: string; content: string }) => `${m.role}: ${m.content}`
-  ).join("\n");
+  const query = requestData.messages
+    .map((m: { role: string; content: string }) => `${m.role}: ${m.content}`)
+    .join("\n");
   console.dir({ requestData, query }, { depth: 5 });
   const res = await booksAi.streamRag(query);
 
