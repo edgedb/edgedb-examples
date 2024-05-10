@@ -1,5 +1,7 @@
 import { createClient } from "edgedb";
 
+import "./envConfig.ts";
+
 const client = createClient();
 
 async function main() {
