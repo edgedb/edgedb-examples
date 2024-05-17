@@ -1,0 +1,30 @@
+# Linter configuruation.
+[tool.isort]
+profile = "black"
+atomic = true
+extend_skip_glob = "migrations,scripts,app/queries,myvenv,tests"
+line_length = 88
+
+
+[tool.black]
+extend-exclude = "migrations,scripts"
+force-exclude = "app/queries/.*|tests"
+
+
+[tool.mypy]
+follow_imports = "skip"
+ignore_missing_imports = true
+warn_no_return = false
+warn_unused_ignores = true
+allow_untyped_globals = true
+allow_redefinition = true
+pretty = true
+exclude = "myvenv"
+
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
