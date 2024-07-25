@@ -17,12 +17,13 @@ This repo contains starter projects that demonstrate usage of EdgeDB with differ
 
 ## Python
 
-| Framework          | Link                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| FastAPI            | [fastapi-crud](https://github.com/edgedb/edgedb-examples/tree/main/fastapi-crud)     |
-| Flask CRUD         | [flask-crud](https://github.com/edgedb/edgedb-examples/tree/main/flask-crud)         |
-| Flask Proxy        | [flask-proxy](https://github.com/edgedb/edgedb-examples/tree/main/flask-proxy)       |
-| Strawberry GraphQL | [strawberry-gql](https://github.com/edgedb/edgedb-examples/tree/main/strawberry-gql) |
+| Framework          | Link                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------|
+| FastAPI            | [fastapi-crud](https://github.com/edgedb/edgedb-examples/tree/main/fastapi-crud)           |
+| FastAPI with Auth  | [fastapi-crud-auth](https://github.com/edgedb/edgedb-examples/tree/main/fastapi-crud-auth) |
+| Flask CRUD         | [flask-crud](https://github.com/edgedb/edgedb-examples/tree/main/flask-crud)               |
+| Flask Proxy        | [flask-proxy](https://github.com/edgedb/edgedb-examples/tree/main/flask-proxy)             |
+| Strawberry GraphQL | [strawberry-gql](https://github.com/edgedb/edgedb-examples/tree/main/strawberry-gql)       |
 
 ## Go
 
