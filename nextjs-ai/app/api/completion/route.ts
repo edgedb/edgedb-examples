@@ -10,22 +10,12 @@ const gpt4Ai = createAI(client, {
   model: "gpt-4-turbo-preview",
 });
 
-let booksAi = gpt4Ai.withContext({ query: "Book" });
+const booksAi = gpt4Ai.withContext({ query: "Book" });
 
 export async function POST(req: Request) {
-  const requestData = await req.json();
-  const query = requestData.messages.at(-1).content;
+  const { prompt } = await req.json();
+  const res = await booksAi.streamRag(prompt);
 
-  // provide history with withConfig -> prompt.custom,
-  // and the name of the prompt that has the system msg
-  booksAi = booksAi.withConfig({
-    prompt: {
-      custom: requestData.messages,
-      name: "light-rag",
-    },
-  });
-
-  const res = await booksAi.streamRag(query);
   const stream = EdgeDBStream(res);
   return new StreamingTextResponse(stream);
 }

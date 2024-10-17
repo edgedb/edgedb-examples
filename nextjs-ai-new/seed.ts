@@ -50,37 +50,37 @@ insert Book {
           author_name: "Elara Thornwood",
           title: "Whispers of the Forgotten",
           summary:
-            "Written by Elara Thornwood: An enchanting tale of a hidden village that exists between the folds of time, where the forgotten are remembered.",
+            "An enchanting tale of a hidden village that exists between the folds of time, where the forgotten are remembered.",
         },
         {
           author_name: "Milo Vesper",
           title: "Echoes of the Void",
           summary:
-            "Written by Milo Vesper: A cosmic adventure across starlit galaxies to uncover the mysteries of a universe humming with the echo of ancient civilizations.",
+            "A cosmic adventure across starlit galaxies to uncover the mysteries of a universe humming with the echo of ancient civilizations.",
         },
         {
           author_name: "Sylvia Quill",
           title: "The Last Alchemist",
           summary:
-            "Written by Sylvia Quill: In a world drained of magic, the last alchemist undertakes a quest to reignite the lost sparks of enchantment.",
+            "In a world drained of magic, the last alchemist undertakes a quest to reignite the lost sparks of enchantment.",
         },
         {
           author_name: "Finn Barlow",
           title: "Beneath the Drifts",
           summary:
-            "Written by Finn Barlow: A chilling expedition beneath the ice where darkness unveils not just secrets, but a dormant, sinister will.",
+            "A chilling expedition beneath the ice where darkness unveils not just secrets, but a dormant, sinister will.",
         },
         {
           author_name: "Lysandra Vale",
           title: "The Gilded Mirror",
           summary:
-            "Written by Lysandra Vale: A cursed mirror reflects alternative realities, trapping its viewers in a labyrinth of their potential lives.",
+            "A cursed mirror reflects alternative realities, trapping its viewers in a labyrinth of their potential lives.",
         },
         {
           author_name: "Caspian Rook",
-          title: "The Clockmaker's Paradox",
+          title: "The Clockmaker’s Paradox",
           summary:
-            "Written by Caspian Rook: A clockmaker in a steampunk city discovers a time paradox that could unravel the very fabric of existence.",
+            "A clockmaker in a steampunk city discovers a time paradox that could unravel the very fabric of existence.",
         },
         {
           author_name: "Ariadne Thread",

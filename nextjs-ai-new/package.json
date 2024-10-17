@@ -10,11 +10,13 @@
     "seed": "tsx seed.ts"
   },
   "dependencies": {
+    "@ai-sdk/react": "^0.0.62",
     "@edgedb/ai": "file:../../edgedb-js/packages/ai",
     "@next/env": "^14.2.3",
-    "ai": "file:../../ai/packages/ai",
-    "edgedb": "^1.5.12",
+    "ai": "latest",
+    "edgedb": "^1.5.0",
     "eventsource-parser": "^1.1.2",
+    "gel": "file:../../edgedb-js/packages/gel",
     "next": "^14.2.3",
     "react": "^18",
     "react-dom": "^18"
