@@ -12,11 +12,11 @@
   "dependencies": {
     "@ai-sdk/react": "^0.0.62",
     "@edgedb/ai": "file:../../edgedb-js/packages/ai",
+    "@edgedb/ai-sdk": "file:../../edgedb-js/packages/edgedb-ai-sdk",
     "@next/env": "^14.2.3",
     "ai": "latest",
     "edgedb": "^1.5.0",
     "eventsource-parser": "^1.1.2",
-    "@edgedb/ai-sdk": "file:../../edgedb-js/packages/edgedb-ai-sdk",
     "next": "^14.2.3",
     "react": "^18",
     "react-dom": "^18"
