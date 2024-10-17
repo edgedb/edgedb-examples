@@ -16,7 +16,7 @@
     "ai": "latest",
     "edgedb": "^1.5.0",
     "eventsource-parser": "^1.1.2",
-    "gel": "file:../../edgedb-js/packages/gel",
+    "@edgedb/ai-sdk": "file:../../edgedb-js/packages/edgedb-ai-sdk",
     "next": "^14.2.3",
     "react": "^18",
     "react-dom": "^18"

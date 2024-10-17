@@ -1,16 +1,17 @@
 import { streamText } from "ai";
 import { createClient } from "edgedb";
-import { createGel } from "../../../../../edgedb-js/packages/gel/dist";
+import { createEdgeDBRag } from "../../../../../edgedb-js/packages/edgedb-ai-sdk/dist";
 
-export const client = createClient({ tlsSecurity: "insecure" });
+export const client = createClient();
 
 export async function POST(req: Request) {
   const requestData = await req.json();
 
+  const edgedbRag = await createEdgeDBRag(client);
+  const textModel = edgedbRag.languageModel("gpt-4-turbo-preview");
+
   const result = await streamText({
-    model: (
-      await createGel(client)
-    ).languageModel("gpt-4-turbo-preview", {
+    model: textModel.withSettings({
       context: { query: "Book" },
       prompt: {
         custom: requestData.messages,
